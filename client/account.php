@@ -74,7 +74,7 @@ $orders = $orders->fetchAll();
                 <?php foreach ($orders as $order): ?>
                     <tr>
                         <td><?php echo $order['id']; ?></td>
-                        <td><?php echo $order['total']; ?> د.ت</td>
+                        <td><?php echo $order['total']; ?> <?= __('currency') ?></td>
                         <td><?php echo htmlspecialchars($order['status']); ?></td>
                         <td><?php echo $order['created_at']; ?></td>
                     </tr>
@@ -96,7 +96,7 @@ $orders = $orders->fetchAll();
                     echo '<div style="background:#f4f6fb; border-radius:8px; box-shadow:0 1px 4px #0001; padding:12px; width:180px; text-align:center; position:relative;">';
                     echo '<a href="../product.php?id=' . $prod['id'] . '"><img src="../uploads/' . htmlspecialchars($prod['image']) . '" alt="' . htmlspecialchars($prod['name']) . '" style="max-width:100%;height:120px;object-fit:cover;border-radius:6px;"></a>';
                     echo '<div style="margin:8px 0 4px;font-weight:bold;">' . htmlspecialchars($prod['name']) . '</div>';
-                    echo '<div style="color:#00BFAE;font-weight:bold;">' . $prod['price'] . ' د.ت</div>';
+                    echo '<div style="color:#00BFAE;font-weight:bold;">' . $prod['price'] . ' ' . __('currency') . '</div>';
                     echo '<form method="post" action="remove_from_wishlist.php" style="margin-top:8px;">';
                     echo '<input type="hidden" name="id" value="' . $prod['id'] . '">';
                     echo '<button type="submit" style="background:#c00;color:#fff;border:none;border-radius:6px;padding:4px 12px;cursor:pointer;">' . __('remove') . '</button>';
@@ -120,7 +120,7 @@ $orders = $orders->fetchAll();
                     echo '<div style="background:#f4f6fb; border-radius:8px; box-shadow:0 1px 4px #0001; padding:12px; width:180px; text-align:center;">';
                     echo '<a href="../product.php?id=' . $prod['id'] . '"><img src="../uploads/' . htmlspecialchars($prod['image']) . '" alt="' . htmlspecialchars($prod['name']) . '" style="max-width:100%;height:120px;object-fit:cover;border-radius:6px;"></a>';
                     echo '<div style="margin:8px 0 4px;font-weight:bold;">' . htmlspecialchars($prod['name']) . '</div>';
-                    echo '<div style="color:#00BFAE;font-weight:bold;">' . $prod['price'] . ' د.ت</div>';
+                    echo '<div style="color:#00BFAE;font-weight:bold;">' . $prod['price'] . ' ' . __('currency') . '</div>';
                     echo '</div>';
                 }
                 echo '</div>';

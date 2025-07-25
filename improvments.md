@@ -23,8 +23,8 @@
 ### 1. UI/UX
 - [x] Add personalized recommendations ("For You", "Recently Viewed", etc.)
 - [x] Implement app-like navigation (SPA, page transitions, skeleton loaders)
-- [ ] Add more banners, carousels, and dynamic promotions
-- [ ] Polish mobile and tablet experience further
+- [x] Add more banners, carousels, and dynamic promotions
+- [x] Polish mobile and tablet experience further
 
 ### 2. Marketplace
 - [ ] Add multi-vendor support (seller registration, store pages)

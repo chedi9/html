@@ -84,24 +84,24 @@ $lang = $_GET['lang'] ?? $_SESSION['lang'] ?? 'ar';
                 <?php foreach ($cart_items as $item): ?>
   <?php $prod_name = $item['name_' . $lang] ?? $item['name']; ?>
   <tr>
-    <td><?php if ($item['image']): ?><img src="uploads/<?php echo htmlspecialchars($item['image']); ?>" alt="صورة المنتج" style="width:60px; height:60px; object-fit:cover; border-radius:6px; "><?php endif; ?></td>
-    <td><?php echo htmlspecialchars($prod_name); ?></td>
-    <td><?php echo htmlspecialchars($item['price']); ?> د.ت</td>
-    <td><input type="number" name="qty[<?php echo $item['id']; ?>]" value="<?php echo $item['qty']; ?>" min="1" style="width:60px;"></td>
-    <td><?php echo $item['subtotal']; ?> د.ت</td>
-    <td><a href="cart.php?remove=<?php echo $item['id']; ?>" class="remove-btn">إزالة</a></td>
+    <td><?php if ($item['image']): ?><img src="uploads/<?php echo htmlspecialchars($item['image']); ?>" alt="<?= __('product_image') ?>" style="width:60px; height:60px; object-fit:cover; border-radius:6px; "><?php endif; ?></td>
+    <td><a href="product.php?id=<?php echo $item['id']; ?>"><?php echo htmlspecialchars($item['name']); ?></a></td>
+    <td><?php echo htmlspecialchars($item['price']); ?> <?= __('currency') ?></td>
+    <td><?php echo $item['qty']; ?></td>
+    <td><?php echo $item['subtotal']; ?> <?= __('currency') ?></td>
+    <td><a href="cart.php?remove=<?php echo $item['id']; ?>" class="remove-btn"><?= __('remove') ?></a></td>
   </tr>
 <?php endforeach; ?>
             </tbody>
         </table>
-        <button type="submit" name="update" class="checkout-btn" style="background:var(--secondary-color);margin-top:20px;">تحديث الكميات</button>
+                  <button type="submit" name="update" class="checkout-btn" style="background:var(--secondary-color);margin-top:20px;"><?= __('update_quantities') ?></button>
         </form>
-        <h3 style="text-align:left; margin-top:30px;">الإجمالي: <?php echo $total; ?> د.ت</h3>
-        <a href="checkout.php" class="checkout-btn">إتمام الشراء</a>
-        <?php else: ?>
-        <p style="text-align:center;">سلة التسوق فارغة.</p>
+        <h3 style="text-align:left; margin-top:30px;"><?= __('total') ?>: <?php echo $total; ?> <?= __('currency') ?></h3>
+                  <a href="checkout.php" class="checkout-btn"><?= __('complete_purchase') ?></a>
+          <?php else: ?>
+          <p style="text-align:center;"><?= __('cart_empty') ?></p>
         <?php endif; ?>
-        <a href="index.html" class="checkout-btn" style="background:var(--secondary-color);margin-top:30px;">العودة للتسوق</a>
+                  <a href="index.php" class="checkout-btn" style="background:var(--secondary-color);margin-top:30px;"><?= __('continue_shopping') ?></a>
     </div>
 </div>
 </body>

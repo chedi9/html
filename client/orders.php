@@ -55,7 +55,7 @@ $orders = $orders->fetchAll();
                 </div>
                 <div><?php echo $order['created_at']; ?></div>
             </div>
-            <div><?= __('total') ?>: <?php echo $order['total']; ?> د.ت</div>
+            <div><?= __('total') ?>: <?php echo $order['total']; ?> <?= __('currency') ?></div>
             <table>
                 <thead>
                     <tr>
@@ -73,8 +73,8 @@ $orders = $orders->fetchAll();
                     <tr>
                         <td><?php echo htmlspecialchars($item['name']); ?></td>
                         <td><?php echo $item['qty']; ?></td>
-                        <td><?php echo $item['price']; ?> د.ت</td>
-                        <td><?php echo $item['subtotal']; ?> د.ت</td>
+                                            <td><?php echo $item['price']; ?> <?= __('currency') ?></td>
+                    <td><?php echo $item['subtotal']; ?> <?= __('currency') ?></td>
                     </tr>
                 <?php endforeach; ?>
                 </tbody>
