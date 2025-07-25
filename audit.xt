@@ -1,0 +1,265 @@
+ccessibility
+Select element must have an accessible name: Element has no title attribute
+<select name="lang" id="langSelect" style="padding:4px 12px;border-radius:8px;border:1.5px solid #00BFAE;font-size:1em;">
+Open in ElementsSources
+Request
+https://webuytn.infy.uk/index.php
+Further Reading
+Learn more about this axe rule at Deque University
+Learn why this is important and how to fix it on webhint.io
+Compatibility
+'content-type' header charset value should be 'utf-8'.
+Content-Type: text/css
+Open in
+Network
+Request
+https://webuytn.infy.uk/beta333.css
+Further Reading
+Learn why this is important and how to fix it on webhint.io
+Content-Type: application/javascript
+Open in
+Network
+Request
+https://webuytn.infy.uk/main.js
+Further Reading
+Learn why this is important and how to fix it on webhint.io
+Performance
+A 'cache-control' header is missing or empty.
+Request
+https://www.google-analytics.com/g/collect?v=2&tid=G-PVP8CCFQPL&gtm=45je57n0v9225635780za200zd9225635780&_p=1753458695899&gcd=13l3l3l3l1l1&npa=0&dma=0&tag_exp=101509157~103116026~103200004~103233427~104630776~104630778~104684208~104684211~104948813&cid=1649021967.1753213661&ul=fr&sr=1536x864&uaa=x86&uab=64&uafvl=Not)A%253BBrand%3B8.0.0.0%7CChromium%3B138.0.7204.158%7CMicrosoft%2520Edge%3B138.0.3351.95&uamb=0&uam=&uap=Windows&uapv=14.0.0&uaw=0&are=1&frm=0&pscdl=noapi&_eu=AAAAAAQ&_s=2&sid=1753457908&sct=5&seg=1&dl=https%3A%2F%2Fwebuytn.infy.uk%2Findex.php&dr=https%3A%2F%2Fwebuytn.infy.uk%2Fcheckout.php&dt=WeBuy%20-%20%D9%86%D8%AC%D9%88%D9%85%20%D8%AA%D9%88%D9%86%D8%B3&en=user_engagement&_et=9180&tfd=28007
+Further Reading
+Learn why this is important and how to fix it on webhint.io
+A 'cache-control' header contains directives which are not recommended: 'must-revalidate'
+Cache-Control: max-age=2592000, public, proxy-revalidate, must-revalidate
+Open in
+Network
+Request
+https://webuytn.infy.uk/beta333.css
+Further Reading
+Learn why this is important and how to fix it on webhint.io
+Cache-Control: max-age=2592000, public, proxy-revalidate, must-revalidate
+Open in
+Network
+Request
+https://webuytn.infy.uk/main.js
+Further Reading
+Learn why this is important and how to fix it on webhint.io
+A 'cache-control' header contains directives which are not recommended: 'must-revalidate', 'no-store'
+Cache-Control: no-store, no-cache, must-revalidate
+Open in
+Network
+Request
+https://webuytn.infy.uk/index.php
+Further Reading
+Learn why this is important and how to fix it on webhint.io
+Cache-Control: no-cache, no-store, must-revalidate
+Open in
+Network
+Request
+https://www.google-analytics.com/g/collect?v=2&tid=G-PVP8CCFQPL&gtm=45je57n0v9225635780za200zd9225635780&_p=1753458723341&gcd=13l3l3l3l1l1&npa=0&dma=0&tag_exp=101509157~103116026~103200004~103233427~104630776~104630778~104684208~104684211~104948813&cid=1649021967.1753213661&ul=fr&sr=1536x864&uaa=x86&uab=64&uafvl=Not)A%253BBrand%3B8.0.0.0%7CChromium%3B138.0.7204.158%7CMicrosoft%2520Edge%3B138.0.3351.95&uamb=0&uam=&uap=Windows&uapv=14.0.0&uaw=0&are=1&frm=0&pscdl=noapi&_eu=AAAAAAQ&_s=1&sid=1753457908&sct=5&seg=1&dl=https%3A%2F%2Fwebuytn.infy.uk%2Findex.php&dr=https%3A%2F%2Fwebuytn.infy.uk%2Fcheckout.php&dt=WeBuy%20-%20%D9%86%D8%AC%D9%88%D9%85%20%D8%AA%D9%88%D9%86%D8%B3&en=page_view&_ee=1&tfd=5690
+Further Reading
+Learn why this is important and how to fix it on webhint.io
+Resource should use cache busting but URL does not match configured patterns.
+Request
+https://fonts.googleapis.com/css2?family=Amiri&display=swap
+Further Reading
+Learn why this is important and how to fix it on webhint.io
+Request
+https://webuytn.infy.uk/cart-icon.svg
+Further Reading
+Learn why this is important and how to fix it on webhint.io
+Request
+https://webuytn.infy.uk/webuy.jpg
+Further Reading
+Learn why this is important and how to fix it on webhint.io
+Request
+https://webuytn.infy.uk/favicon.ico
+Further Reading
+Learn why this is important and how to fix it on webhint.io
+Request
+https://webuytn.infy.uk/webuy-logo-transparent.jpg
+Further Reading
+Learn why this is important and how to fix it on webhint.io
+Response should not include unneeded headers: x-xss-protection
+Request
+https://fonts.googleapis.com/css2?family=Amiri&display=swap
+Further Reading
+Learn why this is important and how to fix it on webhint.io
+Request
+https://fonts.gstatic.com/s/amiri/v27/J7aRnpd8CGxBHpUrtLMA7w.woff2
+Further Reading
+Learn why this is important and how to fix it on webhint.io
+Request
+https://fonts.gstatic.com/s/amiri/v27/J7aRnpd8CGxBHpUutLM.woff2
+Further Reading
+Learn why this is important and how to fix it on webhint.io
+Request
+https://www.googletagmanager.com/gtag/js?id=G-PVP8CCFQPL
+Further Reading
+Learn why this is important and how to fix it on webhint.io
+Security
+Response should include 'x-content-type-options' header.
+Request
+https://www.google-analytics.com/g/collect?v=2&tid=G-PVP8CCFQPL&gtm=45je57n0v9225635780za200zd9225635780&_p=1753458695899&gcd=13l3l3l3l1l1&npa=0&dma=0&tag_exp=101509157~103116026~103200004~103233427~104630776~104630778~104684208~104684211~104948813&cid=1649021967.1753213661&ul=fr&sr=1536x864&uaa=x86&uab=64&uafvl=Not)A%253BBrand%3B8.0.0.0%7CChromium%3B138.0.7204.158%7CMicrosoft%2520Edge%3B138.0.3351.95&uamb=0&uam=&uap=Windows&uapv=14.0.0&uaw=0&are=1&frm=0&pscdl=noapi&_eu=AAAAAAQ&_s=2&sid=1753457908&sct=5&seg=1&dl=https%3A%2F%2Fwebuytn.infy.uk%2Findex.php&dr=https%3A%2F%2Fwebuytn.infy.uk%2Fcheckout.php&dt=WeBuy%20-%20%D9%86%D8%AC%D9%88%D9%85%20%D8%AA%D9%88%D9%86%D8%B3&en=user_engagement&_et=9180&tfd=28007
+Further Reading
+Learn why this is important and how to fix it on webhint.io
+Request
+https://webuytn.infy.uk/beta333.css
+Further Reading
+Learn why this is important and how to fix it on webhint.io
+Request
+https://webuytn.infy.uk/uploads/caticon_68827182dc7ea0.28029968.png
+Further Reading
+Learn why this is important and how to fix it on webhint.io
+Request
+https://webuytn.infy.uk/uploads/caticon_6882719fa00d48.93244229.png
+Further Reading
+Learn why this is important and how to fix it on webhint.io
+Request
+https://webuytn.infy.uk/uploads/caticon_688271b89edb08.31116373.png
+Further Reading
+Learn why this is important and how to fix it on webhint.io
+Request
+https://webuytn.infy.uk/uploads/caticon_688271cee3b3e6.69485172.png
+Further Reading
+Learn why this is important and how to fix it on webhint.io
+Request
+https://webuytn.infy.uk/uploads/caticon_688272086e2505.91997314.png
+Further Reading
+Learn why this is important and how to fix it on webhint.io
+Request
+https://webuytn.infy.uk/uploads/caticon_68827243e5e9b9.59741710.png
+Further Reading
+Learn why this is important and how to fix it on webhint.io
+Request
+https://webuytn.infy.uk/uploads/caticon_6882729fb0a8c7.70833152.png
+Further Reading
+Learn why this is important and how to fix it on webhint.io
+Request
+https://webuytn.infy.uk/uploads/caticon_688272cda1a885.37003007.png
+Further Reading
+Learn why this is important and how to fix it on webhint.io
+The 'Expires' header should not be used, 'Cache-Control' should be preferred.
+expires: sun, 24 aug 2025 15:51:36 gmt
+Open in
+Network
+Request
+https://webuytn.infy.uk/beta333.css
+Further Reading
+Learn why this is important and how to fix it on webhint.io
+expires: fri, 25 jul 2025 15:51:36 gmt
+Open in
+Network
+Request
+https://fonts.googleapis.com/css2?family=Amiri&display=swap
+Further Reading
+Learn why this is important and how to fix it on webhint.io
+expires: sun, 24 aug 2025 15:51:36 gmt
+Open in
+Network
+Request
+https://webuytn.infy.uk/uploads/caticon_68827182dc7ea0.28029968.png
+Further Reading
+Learn why this is important and how to fix it on webhint.io
+expires: sun, 24 aug 2025 15:51:36 gmt
+Open in
+Network
+Request
+https://webuytn.infy.uk/uploads/caticon_6882719fa00d48.93244229.png
+Further Reading
+Learn why this is important and how to fix it on webhint.io
+expires: sun, 24 aug 2025 15:51:36 gmt
+Open in
+Network
+Request
+https://webuytn.infy.uk/uploads/caticon_688271b89edb08.31116373.png
+Further Reading
+Learn why this is important and how to fix it on webhint.io
+The 'Pragma' header should not be used, it is deprecated and is a request header only.
+pragma: no-cache
+Open in
+Network
+Request
+https://webuytn.infy.uk/index.php
+Further Reading
+Learn why this is important and how to fix it on webhint.io
+pragma: no-cache
+Open in
+Network
+Request
+https://www.google-analytics.com/g/collect?v=2&tid=G-PVP8CCFQPL&gtm=45je57n0v9225635780za200zd9225635780&_p=1753458723341&gcd=13l3l3l3l1l1&npa=0&dma=0&tag_exp=101509157~103116026~103200004~103233427~104630776~104630778~104684208~104684211~104948813&cid=1649021967.1753213661&ul=fr&sr=1536x864&uaa=x86&uab=64&uafvl=Not)A%253BBrand%3B8.0.0.0%7CChromium%3B138.0.7204.158%7CMicrosoft%2520Edge%3B138.0.3351.95&uamb=0&uam=&uap=Windows&uapv=14.0.0&uaw=0&are=1&frm=0&pscdl=noapi&_eu=AAAAAAQ&_s=1&sid=1753457908&sct=5&seg=1&dl=https%3A%2F%2Fwebuytn.infy.uk%2Findex.php&dr=https%3A%2F%2Fwebuytn.infy.uk%2Fcheckout.php&dt=WeBuy%20-%20%D9%86%D8%AC%D9%88%D9%85%20%D8%AA%D9%88%D9%86%D8%B3&en=page_view&_ee=1&tfd=5690
+Further Reading
+Learn why this is important and how to fix it on webhint.io
+The 'X-Frame-Options' header should not be used. A similar effect, with more consistent support and stronger checks, can be achieved with the 'Content-Security-Policy' header and 'frame-ancestors' directive.
+x-frame-options: sameorigin
+Open in
+Network
+Request
+https://fonts.googleapis.com/css2?family=Amiri&display=swap
+Further Reading
+Learn why this is important and how to fix it on webhint.io
+Other
+'backdrop-filter' should be listed after '-webkit-backdrop-filter'.
+header {
+    background: rgba(26,35,126,0.75);
+    backdrop-filter: blur(12px) saturate(160%);
+    -webkit-backdrop-filter: blur(12px) saturate(160%);
+    color: #fff;
+    /* Remove fixed height */
+    min-height: 110px;
+    height: auto;
+    display: block;
+    align-items: stretch;
+    justify-content: flex-start;
+    text-align: center;
+    box-shadow: 0 8px 32px rgba(26,35,126,0.12), 0 2px 8px rgba(0,0,0,0.08);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    border-bottom: 1.5px solid rgba(255,255,255,0.18);
+    background-image: linear-gradient(120deg, rgba(26,35,126,0.85) 60%, rgba(0,191,174,0.18) 100%);
+    margin-top: 0;
+    border-radius: 0 0 24px 24px;
+    box-shadow: 0 8px 32px rgba(26,35,126,0.18), 0 2px 8px rgba(0,0,0,0.10);
+    padding-bottom: 0;
+}
+Open in Sources
+Request
+https://webuytn.infy.uk/beta333.css
+Further Reading
+Learn why this is important and how to fix it on webhint.io
+header {
+    background: rgba(26,35,126,0.75);
+    backdrop-filter: blur(12px) saturate(160%);
+    -webkit-backdrop-filter: blur(12px) saturate(160%);
+    color: #fff;
+    /* Remove fixed height */
+    min-height: 110px;
+    height: auto;
+    display: block;
+    align-items: stretch;
+    justify-content: flex-start;
+    text-align: center;
+    box-shadow: 0 8px 32px rgba(26,35,126,0.12), 0 2px 8px rgba(0,0,0,0.08);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    border-bottom: 1.5px solid rgba(255,255,255,0.18);
+    background-image: linear-gradient(120deg, rgba(26,35,126,0.85) 60%, rgba(0,191,174,0.18) 100%);
+    margin-top: 0;
+    border-radius: 0 0 24px 24px;
+    box-shadow: 0 8px 32px rgba(26,35,126,0.18), 0 2px 8px rgba(0,0,0,0.10);
+    padding-bottom: 0;
+}
+Open in Sources
+Request
+https://webuytn.infy.uk/beta333.css
+Further Reading
+Learn why this is important and how to fix it on webhint.io
+An element doesn't have an autocomplete attribute
+A form field has an id or name attribute that the browser's autofill recognizes. However, it doesn't have an autocomplete attribute assigned. This might prevent the browser from correctly autofilling the form.
+
+To fix this issue, provide an autocomplete attribute.
+
+2 resources
+Learn more: HTML attribute: autocomplete
