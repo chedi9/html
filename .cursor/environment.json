@@ -1,4 +1,3 @@
 {
-  "agentCanUpdateSnapshot": true,
-  "install": "apt-get update && apt-get install -y php"
+  "agentCanUpdateSnapshot": true
 }
