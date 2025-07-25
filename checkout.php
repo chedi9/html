@@ -1,4 +1,9 @@
 <?php
+// Security and compatibility headers
+header('Content-Type: text/html; charset=utf-8');
+header('Cache-Control: public, max-age=3600');
+header('X-Content-Type-Options: nosniff');
+header("Content-Security-Policy: frame-ancestors 'self'");
 if (session_status() === PHP_SESSION_NONE) session_start();
 require 'db.php';
 if (!isset($_SESSION['cart']) || empty($_SESSION['cart'])) {
@@ -128,7 +133,7 @@ if (isset($_SESSION['user_id'])) {
             </div>
             <div class="form-group">
                 <label for="payment">طريقة الدفع:</label>
-                <select id="payment" name="payment" required>
+                <select id="payment" name="payment" required autocomplete="off">
                     <option value="">اختر طريقة الدفع</option>
                     <option value="card">بطاقة بنكية</option>
                     <option value="d17">D17</option>
@@ -137,7 +142,7 @@ if (isset($_SESSION['user_id'])) {
             </div>
             <div class="form-group">
                 <label for="shipping">طريقة الشحن:</label>
-                <select id="shipping" name="shipping" required>
+                <select id="shipping" name="shipping" required autocomplete="off">
                     <option value="">اختر طريقة الشحن</option>
                     <option value="first">First Delivery</option>
                 </select>

@@ -1,4 +1,9 @@
 <?php
+// Security and compatibility headers
+header('Content-Type: text/html; charset=utf-8');
+header('Cache-Control: public, max-age=3600');
+header('X-Content-Type-Options: nosniff');
+header("Content-Security-Policy: frame-ancestors 'self'");
 session_start();
 if (!isset($_SESSION['user_id'])) {
     header('Location: login.php');
@@ -128,11 +133,11 @@ $orders = $orders->fetchAll();
             <h3><?= __('address_and_phone') ?></h3>
             <form method="post" action="update_address.php" class="modern-form">
                 <div class="form-group">
-                    <input type="text" id="address" name="address" value="<?php echo htmlspecialchars($user['address'] ?? ''); ?>" placeholder="<?= __('address_placeholder') ?>">
+                    <input type="text" id="address" name="address" value="<?php echo htmlspecialchars($user['address'] ?? ''); ?>" placeholder="<?= __('address_placeholder') ?>" autocomplete="address">
                     <label for="address"><?= __('address') ?>:</label>
                 </div>
                 <div class="form-group">
-                    <input type="text" id="phone" name="phone" value="<?php echo htmlspecialchars($user['phone'] ?? ''); ?>" placeholder="<?= __('phone_placeholder') ?>">
+                    <input type="text" id="phone" name="phone" value="<?php echo htmlspecialchars($user['phone'] ?? ''); ?>" placeholder="<?= __('phone_placeholder') ?>" autocomplete="tel">
                     <label for="phone"><?= __('phone_number') ?>:</label>
                 </div>
                 <button type="submit" class="save-btn"><?= __('save_changes') ?></button>
@@ -145,7 +150,7 @@ $orders = $orders->fetchAll();
             <?php endif; ?>
             <form method="post" action="update_credentials.php" class="modern-form">
                 <div class="form-group">
-                    <input type="email" id="email" name="email" value="<?php echo htmlspecialchars($user['email']); ?>" placeholder="<?= __('email_placeholder') ?>">
+                    <input type="email" id="email" name="email" value="<?php echo htmlspecialchars($user['email']); ?>" placeholder="<?= __('email_placeholder') ?>" autocomplete="email">
                     <label for="email"><?= __('email') ?>:</label>
                 </div>
                 <button type="submit" class="save-btn"><?= __('update_email') ?></button>
@@ -153,15 +158,15 @@ $orders = $orders->fetchAll();
             <hr>
             <form method="post" action="change_password.php" class="modern-form">
                 <div class="form-group">
-                    <input type="password" id="current_password" name="current_password" placeholder="<?= __('current_password_placeholder') ?>">
+                    <input type="password" id="current_password" name="current_password" placeholder="<?= __('current_password_placeholder') ?>" autocomplete="current-password">
                     <label for="current_password"><?= __('current_password') ?>:</label>
                 </div>
                 <div class="form-group">
-                    <input type="password" id="new_password" name="new_password" placeholder="<?= __('new_password_placeholder') ?>">
+                    <input type="password" id="new_password" name="new_password" placeholder="<?= __('new_password_placeholder') ?>" autocomplete="new-password">
                     <label for="new_password"><?= __('new_password') ?>:</label>
                 </div>
                 <div class="form-group">
-                    <input type="password" id="confirm_password" name="confirm_password" placeholder="<?= __('confirm_password_placeholder') ?>">
+                    <input type="password" id="confirm_password" name="confirm_password" placeholder="<?= __('confirm_password_placeholder') ?>" autocomplete="new-password">
                     <label for="confirm_password"><?= __('confirm_new_password') ?>:</label>
                 </div>
                 <button type="submit" class="save-btn"><?= __('change_password') ?></button>

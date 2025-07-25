@@ -1,4 +1,10 @@
 <?php
+// Security and compatibility headers
+header('Content-Type: text/html; charset=utf-8');
+header('Cache-Control: public, max-age=3600');
+header('X-Content-Type-Options: nosniff');
+header("Content-Security-Policy: frame-ancestors 'self'");
+require '../admin/check_admin.php';
 if (session_status() === PHP_SESSION_NONE) session_start();
 if (!isset($_SESSION['is_mobile'])) {
     $is_mobile = preg_match('/android|iphone|ipad|ipod|blackberry|windows phone|opera mini|mobile/i', $_SERVER['HTTP_USER_AGENT']);
@@ -123,8 +129,8 @@ $admins = $pdo->query('SELECT * FROM admins ORDER BY created_at DESC')->fetchAll
         <form class="add-form" method="post">
             <strong>إضافة مشرف جديد:</strong><br>
             <input type="text" name="username" placeholder="اسم المستخدم" required>
-            <input type="email" name="email" placeholder="البريد الإلكتروني" required>
-            <input type="password" name="password" placeholder="كلمة المرور" required>
+            <input type="email" name="email" placeholder="البريد الإلكتروني" required autocomplete="email">
+            <input type="password" name="password" placeholder="كلمة المرور" required autocomplete="new-password">
             <select name="role">
                 <option value="admin">مشرف</option>
                 <option value="moderator">مراقب</option>
@@ -136,8 +142,8 @@ $admins = $pdo->query('SELECT * FROM admins ORDER BY created_at DESC')->fetchAll
         <form class="add-form" method="post" style="opacity:0.5;pointer-events:none;">
             <strong>إضافة مشرف جديد:</strong><br>
             <input type="text" name="username" placeholder="اسم المستخدم" required disabled>
-            <input type="email" name="email" placeholder="البريد الإلكتروني" required disabled>
-            <input type="password" name="password" placeholder="كلمة المرور" required disabled>
+            <input type="email" name="email" placeholder="البريد الإلكتروني" required disabled autocomplete="email">
+            <input type="password" name="password" placeholder="كلمة المرور" required disabled autocomplete="new-password">
             <select name="role" disabled>
                 <option value="admin">مشرف</option>
                 <option value="moderator">مراقب</option>
@@ -166,7 +172,7 @@ $admins = $pdo->query('SELECT * FROM admins ORDER BY created_at DESC')->fetchAll
                                 <?php endforeach; ?>
                             </select>
                         </td>
-                        <td><input type="email" name="email" value="<?php echo htmlspecialchars($admin['email']); ?>" required <?php if (!$permissions[$role]['manage_admins']) echo 'disabled style="opacity:0.5;"'; ?> ></td>
+                        <td><input type="email" name="email" value="<?php echo htmlspecialchars($admin['email']); ?>" required <?php if (!$permissions[$role]['manage_admins']) echo 'disabled style="opacity:0.5;"'; ?> autocomplete="email"></td>
                         <td>
                             <select name="role" <?php if (!$is_superadmin) echo 'disabled'; ?> <?php if (!$permissions[$role]['manage_admins']) echo 'style="opacity:0.5;"'; ?>>
                                 <option value="admin" <?php if ($admin['role']==='admin') echo 'selected'; ?>>مشرف</option>
@@ -176,7 +182,7 @@ $admins = $pdo->query('SELECT * FROM admins ORDER BY created_at DESC')->fetchAll
                         </td>
                         <td>
                             <input type="hidden" name="id" value="<?php echo $admin['id']; ?>">
-                            <input type="password" name="password" placeholder="تغيير كلمة المرور (اختياري)" <?php if (!$permissions[$role]['manage_admins']) echo 'disabled style="opacity:0.5;"'; ?> >
+                            <input type="password" name="password" placeholder="تغيير كلمة المرور (اختياري)" <?php if (!$permissions[$role]['manage_admins']) echo 'disabled style="opacity:0.5;"'; ?> autocomplete="new-password">
                             <button type="submit" name="edit_admin" class="action-btn edit-btn" <?php if (!$permissions[$role]['manage_admins']) echo 'disabled style="opacity:0.5;cursor:not-allowed;"'; ?>>تحديث</button>
                             <?php if ($is_superadmin && $admin['id'] != $_SESSION['admin_id']): ?>
                                 <button type="submit" name="delete_admin" class="action-btn" onclick="return confirm('هل أنت متأكد من حذف هذا المشرف؟');" <?php if (!$permissions[$role]['manage_admins']) echo 'disabled style="opacity:0.5;cursor:not-allowed;"'; ?>>حذف</button>

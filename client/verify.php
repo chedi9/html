@@ -1,4 +1,9 @@
 <?php
+// Security and compatibility headers
+header('Content-Type: text/html; charset=utf-8');
+header('Cache-Control: public, max-age=3600');
+header('X-Content-Type-Options: nosniff');
+header("Content-Security-Policy: frame-ancestors 'self'");
 session_start();
 require '../lang.php';
 require '../db.php';
@@ -81,7 +86,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <?php else: ?>
         <form method="post" autocomplete="off">
             <label for="code"><?= __('enter_verification_code') ?>:</label>
-            <input type="text" id="code" name="code" required pattern="[0-9]{6}" maxlength="6" autofocus>
+            <input type="text" id="code" name="code" required pattern="[0-9]{6}" maxlength="6" autofocus autocomplete="one-time-code">
             <button type="submit"><?= __('verify') ?></button>
         </form>
         <div class="resend-link">

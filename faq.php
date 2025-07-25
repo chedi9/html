@@ -1,4 +1,10 @@
 <?php
+// Security and compatibility headers
+header('Content-Type: text/html; charset=utf-8');
+header('Cache-Control: public, max-age=3600');
+header('X-Content-Type-Options: nosniff');
+header("Content-Security-Policy: frame-ancestors 'self'");
+require 'db.php';
 // FAQ & Help Center Page
 if (session_status() === PHP_SESSION_NONE) session_start();
 if (!isset($_SESSION['is_mobile'])) {
@@ -54,7 +60,7 @@ if (!isset($_SESSION['is_mobile'])) {
                 </div>
                 <div class="form-group">
                     <label for="email">البريد الإلكتروني:</label>
-                    <input type="email" id="email" name="email" required>
+                    <input type="email" id="email" name="email" required autocomplete="email">
                 </div>
                 <div class="form-group">
                     <label for="message">سؤالك أو مشكلتك:</label>
