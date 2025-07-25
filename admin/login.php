@@ -1,6 +1,10 @@
 <?php
-// Start session
-if (session_status() === PHP_SESSION_NONE) session_start();
+// Security and compatibility headers
+header('Content-Type: text/html; charset=utf-8');
+header('Cache-Control: public, max-age=3600');
+header('X-Content-Type-Options: nosniff');
+header("Content-Security-Policy: frame-ancestors 'self'");
+session_start();
 
 // Redirect to dashboard if already logged in
 if (isset($_SESSION['admin_id'])) {
@@ -55,7 +59,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <label for="username">اسم المستخدم:</label>
             <input type="text" id="username" name="username" required autofocus>
             <label for="password">كلمة المرور:</label>
-            <input type="password" id="password" name="password" required>
+            <input type="password" id="password" name="password" required autocomplete="current-password">
             <button type="submit">دخول</button>
         </form>
     </div>
