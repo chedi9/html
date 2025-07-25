@@ -104,7 +104,7 @@ if (!empty($_SESSION['viewed_products'])) {
                         <?php endif; ?>
                     </div>
                 </div>
-                <button class="dark-mode-toggle" id="darkModeToggle" title="الوضع الليلي">🌙</button>
+                <button class="dark-mode-toggle" id="darkModeToggle" title="<?= __('dark_mode_toggle') ?>">🌙</button>
                 <!-- Cart Dropdown -->
                 <div class="cart-dropdown-wrapper" data-cart-dropdown>
                     <button class="cart-dropdown-toggle" aria-label="Cart">
@@ -125,16 +125,16 @@ if (!empty($_SESSION['viewed_products'])) {
                                 $total += $subtotal;
                             ?>
                                 <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
-                                    <img src="uploads/<?php echo htmlspecialchars($item['image']); ?>" alt="صورة المنتج" style="width:38px;height:38px;object-fit:cover;border-radius:6px;">
+                                    <img src="uploads/<?php echo htmlspecialchars($item['image']); ?>" alt="<?= __('product_image') ?>" style="width:38px;height:38px;object-fit:cover;border-radius:6px;">
                                     <span style="flex:1;"> <?php echo htmlspecialchars($item['name']); ?> (<?php echo $qty; ?>) </span>
-                                    <span style="color:var(--secondary-color);font-weight:bold;"> <?php echo $subtotal; ?> د.ت </span>
+                                                                          <span style="color:var(--secondary-color);font-weight:bold;"> <?php echo $subtotal; ?> <?= __('currency') ?> </span>
                                 </div>
                             <?php endwhile; ?>
                             <hr>
-                            <div style="text-align:left;font-weight:bold;">الإجمالي: <?php echo $total; ?> د.ت</div>
-                            <a href="cart.php" class="checkout-btn" style="width:100%;margin-top:10px;">عرض السلة</a>
-                        <?php else: ?>
-                            <div style="text-align:center;color:#888;">سلة التسوق فارغة.</div>
+                                                          <div style="text-align:left;font-weight:bold;"><?= __('total') ?>: <?php echo $total; ?> <?= __('currency') ?></div>
+                                                          <a href="cart.php" class="checkout-btn" style="width:100%;margin-top:10px;"><?= __('view_cart') ?></a>
+                          <?php else: ?>
+                              <div style="text-align:center;color:#888;"><?= __('cart_empty') ?></div>
                         <?php endif; ?>
                     </div>
                 </div>
@@ -177,7 +177,7 @@ if (!empty($_SESSION['viewed_products'])) {
                 <form method="get" id="langForm" style="display:inline;">
                     <label for="langSelect" class="sr-only" style="position:absolute;left:-9999px;">Language</label>
                     <select name="lang" id="langSelect" title="Language" style="padding:4px 12px;border-radius:8px;border:1.5px solid #00BFAE;font-size:1em;">
-                        <option value="ar" <?php if(($_GET['lang'] ?? $_SESSION['lang'] ?? 'ar')=='ar') echo 'selected'; ?>>العربية</option>
+                        <option value="ar" <?php if(($_GET['lang'] ?? $_SESSION['lang'] ?? 'ar')=='ar') echo 'selected'; ?>><?= __('arabic_language') ?></option>
                         <option value="fr" <?php if(($_GET['lang'] ?? $_SESSION['lang'] ?? 'ar')=='fr') echo 'selected'; ?>>Français</option>
                         <option value="en" <?php if(($_GET['lang'] ?? $_SESSION['lang'] ?? 'ar')=='en') echo 'selected'; ?>>English</option>
                     </select>
@@ -306,7 +306,7 @@ if (!empty($_SESSION['viewed_products'])) {
                     <?php if ($i < 3): ?>
                         <span class="product-badge new"><?= __('new') ?></span>
                     <?php endif; ?>
-                    <button class="wishlist-btn" data-product-id="<?php echo $product['id']; ?>" title="أضف إلى المفضلة" style="position:absolute;top:12px;left:12px;z-index:3;background:none;border:none;cursor:pointer;outline:none;">
+                    <button class="wishlist-btn" data-product-id="<?php echo $product['id']; ?>" title="<?= __('add_to_favorites') ?>" style="position:absolute;top:12px;left:12px;z-index:3;background:none;border:none;cursor:pointer;outline:none;">
                             <?php if (!empty($_SESSION['wishlist']) && in_array($product['id'], $_SESSION['wishlist'])): ?>
                                 <span style="font-size:1.5em;color:#e74c3c;">&#10084;</span>
                             <?php else: ?>

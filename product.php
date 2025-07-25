@@ -58,7 +58,7 @@ $product_images = $stmt_imgs->fetchAll();
 <html lang="ar">
 <head>
     <meta charset="UTF-8">
-    <title><?php echo htmlspecialchars($product['name_' . $lang] ?? $product['name']); ?> - تفاصيل المنتج</title>
+    <title><?php echo htmlspecialchars($product['name_' . $lang] ?? $product['name']); ?> - <?= __('product_details') ?></title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="beta333.css">
     <?php if (!empty($_SESSION['is_mobile'])): ?>
@@ -139,13 +139,13 @@ $product_images = $stmt_imgs->fetchAll();
             <div class="product-gallery">
                 <?php if ($product_images && count($product_images) > 0): ?>
                     <div class="gallery-main-frame" style="width:260px;height:260px;overflow:hidden;position:relative;">
-                        <img id="mainProductImg" src="uploads/<?php echo htmlspecialchars($product_images[0]['image_path']); ?>" alt="صورة المنتج" style="width:260px;height:260px;object-fit:cover;border-radius:10px;transition:opacity 0.35s;">
+                        <img id="mainProductImg" src="uploads/<?php echo htmlspecialchars($product_images[0]['image_path']); ?>" alt="<?= __('product_image') ?>" style="width:260px;height:260px;object-fit:cover;border-radius:10px;transition:opacity 0.35s;">
                         <button class="gallery-arrow left" id="galleryArrowLeft" style="position:absolute;top:50%;left:0;transform:translateY(-50%);z-index:2;background:rgba(255,255,255,0.7);border:none;border-radius:50%;width:36px;height:36px;font-size:1.5em;cursor:pointer;">&#8592;</button>
                         <button class="gallery-arrow right" id="galleryArrowRight" style="position:absolute;top:50%;right:0;transform:translateY(-50%);z-index:2;background:rgba(255,255,255,0.7);border:none;border-radius:50%;width:36px;height:36px;font-size:1.5em;cursor:pointer;">&#8594;</button>
                     </div>
                     <div class="gallery-thumbs" id="galleryThumbs" style="display:flex;gap:8px;margin-top:10px;justify-content:center;">
                         <?php foreach ($product_images as $i => $img): ?>
-                            <img src="uploads/<?php echo htmlspecialchars($img['image_path']); ?>" alt="صورة المنتج" class="gallery-thumb" data-idx="<?php echo $i; ?>" style="width:48px;height:48px;object-fit:cover;border-radius:6px;border:2px solid <?php echo $i===0?'#FFD600':'#eee'; ?>;cursor:pointer;transition:border 0.2s;">
+                            <img src="uploads/<?php echo htmlspecialchars($img['image_path']); ?>" alt="<?= __('product_image') ?>" class="gallery-thumb" data-idx="<?php echo $i; ?>" style="width:48px;height:48px;object-fit:cover;border-radius:6px;border:2px solid <?php echo $i===0?'#FFD600':'#eee'; ?>;cursor:pointer;transition:border 0.2s;">
                         <?php endforeach; ?>
                     </div>
                     <script>
@@ -202,12 +202,12 @@ $product_images = $stmt_imgs->fetchAll();
                     })();
                     </script>
                 <?php else: ?>
-                <img src="uploads/<?php echo htmlspecialchars($product['image']); ?>" alt="صورة المنتج" class="product-img main-img" id="mainProductImg" loading="lazy">
+                <img src="uploads/<?php echo htmlspecialchars($product['image']); ?>" alt="<?= __('product_image') ?>" class="product-img main-img" id="mainProductImg" loading="lazy">
                 <?php endif; ?>
             </div>
             <div class="product-info">
                 <h2><?php echo htmlspecialchars($product['name_' . $lang] ?? $product['name']); ?></h2>
-                <div class="price">السعر: <?php echo htmlspecialchars($product['price']); ?> د.ت</div>
+                <div class="price"><?= __('price') ?>: <?php echo htmlspecialchars($product['price']); ?> <?= __('currency') ?></div>
                 <?php if ($product['stock'] > 0): ?>
                     <div class="stock"><?= __('in_stock') ?>: <?php echo htmlspecialchars($product['stock']); ?></div>
                 <?php else: ?>
@@ -226,7 +226,7 @@ $product_images = $stmt_imgs->fetchAll();
         <div class="seller-story" style="margin:32px 0 0 0; padding:24px; background:#f4f6fb; border-radius:14px; box-shadow:0 2px 8px #0001;">
             <h3 style="color:var(--primary-color);margin-bottom:10px;"><?= __('about_seller') ?></h3>
             <?php if (!empty($product['seller_photo'])): ?>
-                <img src="uploads/<?php echo htmlspecialchars($product['seller_photo']); ?>" alt="صورة البائع" style="width:80px;height:80px;border-radius:50%;object-fit:cover;margin-bottom:10px;">
+                <img src="uploads/<?php echo htmlspecialchars($product['seller_photo']); ?>" alt="<?= __('seller_photo') ?>" style="width:80px;height:80px;border-radius:50%;object-fit:cover;margin-bottom:10px;">
             <?php endif; ?>
             <?php if (!empty($product['seller_name'])): ?>
                 <div class="seller-name" style="font-weight:bold;font-size:1.1em;margin-bottom:6px;"> <?php echo htmlspecialchars($product['seller_name']); ?> </div>

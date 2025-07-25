@@ -179,4 +179,13 @@ return [
     'current_category_image' => 'صورة التصنيف الحالية',
     'current_category_icon' => 'أيقونة التصنيف الحالية',
     'arabic_language' => 'العربية',
+    'sort_by' => 'ترتيب حسب',
+    'apply_filters' => 'تطبيق',
+    'stock' => 'المخزون',
+    'update_quantities' => 'تحديث الكميات',
+    'complete_purchase' => 'إتمام الشراء',
+    'cart_empty' => 'سلة التسوق فارغة',
+    'continue_shopping' => 'العودة للتسوق',
+    'view_cart' => 'عرض السلة',
+    'seller_photo' => 'صورة البائع',
 ];

@@ -179,4 +179,13 @@ return [
     'current_category_image' => 'Image actuelle de la catégorie',
     'current_category_icon' => 'Icône actuelle de la catégorie',
     'arabic_language' => 'Arabe',
+    'sort_by' => 'Trier par',
+    'apply_filters' => 'Appliquer',
+    'stock' => 'Stock',
+    'update_quantities' => 'Mettre à jour les quantités',
+    'complete_purchase' => 'Finaliser l\'achat',
+    'cart_empty' => 'Le panier est vide',
+    'continue_shopping' => 'Continuer les achats',
+    'view_cart' => 'Voir le panier',
+    'seller_photo' => 'Photo du vendeur',
 ]; 

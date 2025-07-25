@@ -179,4 +179,13 @@ return [
     'current_category_image' => 'Current Category Image',
     'current_category_icon' => 'Current Category Icon',
     'arabic_language' => 'Arabic',
+    'sort_by' => 'Sort by',
+    'apply_filters' => 'Apply',
+    'stock' => 'Stock',
+    'update_quantities' => 'Update Quantities',
+    'complete_purchase' => 'Complete Purchase',
+    'cart_empty' => 'Shopping cart is empty',
+    'continue_shopping' => 'Continue Shopping',
+    'view_cart' => 'View Cart',
+    'seller_photo' => 'Seller Photo',
 ]; 

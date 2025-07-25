@@ -82,7 +82,7 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == '1') {
                 if ($r) echo " <span style='color:#888;font-size:0.95em;'>($r[avg])</span>";
                 ?>
             </div>
-            <div class="price"><?php echo htmlspecialchars($product['price']); ?> د.ت</div>
+            <div class="price"><?php echo htmlspecialchars($product['price']); ?> <?= __('currency') ?></div>
             <?php if ($product['stock'] > 0): ?>
                 <div class="stock"><?= __('stock') ?>: <?php echo htmlspecialchars($product['stock']); ?></div>
                 <form action="add_to_cart.php" method="get" class="add-to-cart-form">
@@ -149,7 +149,7 @@ $categories = $pdo->query("SELECT * FROM categories ORDER BY id ASC")->fetchAll(
   <form action="search.php" method="get" class="central-search-bar" style="display:flex;align-items:center;gap:0;background:#fff;border-radius:14px;box-shadow:0 2px 8px #00BFAE11;padding:0 0 0 0;">
     <input type="text" id="liveSearchInput" name="name" placeholder="<?= __('search_placeholder') ?>" autocomplete="off" style="flex:1;padding:14px 18px;border:none;border-radius:14px 0 0 14px;font-size:1.13em;outline:none;" value="<?php echo htmlspecialchars($name); ?>">
     <button type="submit" style="background:var(--primary-color);color:#fff;border:none;border-radius:0 14px 14px 0;padding:0 22px;font-size:1.2em;cursor:pointer;">🔍</button>
-    <button type="button" id="toggleFilters" style="background:none;border:none;font-size:1.3em;padding:0 12px;cursor:pointer;" title="تصفية">🧰</button>
+            <button type="button" id="toggleFilters" style="background:none;border:none;font-size:1.3em;padding:0 12px;cursor:pointer;" title="<?= __('filter_toggle') ?>">🧰</button>
   </form>
 </div>
 <div id="filtersPanel" style="display:none;max-width:480px;margin:0 auto 24px auto;background:#fff;border-radius:14px;box-shadow:0 2px 8px #00BFAE11;padding:18px 18px 8px 18px;">
@@ -161,15 +161,15 @@ $categories = $pdo->query("SELECT * FROM categories ORDER BY id ASC")->fetchAll(
         <option value="<?= $cat['id'] ?>" <?php if ($category_id == $cat['id']) echo 'selected'; ?>><?= htmlspecialchars($cat_name) ?></option>
       <?php endforeach; ?>
     </select>
-    <input type="number" name="min_price" placeholder="السعر الأدنى" min="0" value="<?php echo htmlspecialchars($min_price); ?>" style="padding:10px;border-radius:8px;border:1.5px solid #eee;max-width:110px;">
-    <input type="number" name="max_price" placeholder="السعر الأعلى" min="0" value="<?php echo htmlspecialchars($max_price); ?>" style="padding:10px;border-radius:8px;border:1.5px solid #eee;max-width:110px;">
+            <input type="number" name="min_price" placeholder="<?= __('min_price_placeholder') ?>" min="0" value="<?php echo htmlspecialchars($min_price); ?>" style="padding:10px;border-radius:8px;border:1.5px solid #eee;max-width:110px;">
+        <input type="number" name="max_price" placeholder="<?= __('max_price_placeholder') ?>" min="0" value="<?php echo htmlspecialchars($max_price); ?>" style="padding:10px;border-radius:8px;border:1.5px solid #eee;max-width:110px;">
     <select name="sort" style="padding:10px;border-radius:8px;border:1.5px solid #eee;min-width:120px;">
-      <option value="">ترتيب حسب...</option>
-      <option value="price_asc" <?php if (isset($_GET['sort']) && $_GET['sort']==='price_asc') echo 'selected'; ?>>الأقل سعراً</option>
-      <option value="price_desc" <?php if (isset($_GET['sort']) && $_GET['sort']==='price_desc') echo 'selected'; ?>>الأعلى سعراً</option>
-      <option value="newest" <?php if (isset($_GET['sort']) && $_GET['sort']==='newest') echo 'selected'; ?>>الأحدث</option>
+              <option value=""><?= __('sort_by') ?>...</option>
+        <option value="price_asc" <?php if (isset($_GET['sort']) && $_GET['sort']==='price_asc') echo 'selected'; ?>><?= __('lowest_price') ?></option>
+        <option value="price_desc" <?php if (isset($_GET['sort']) && $_GET['sort']==='price_desc') echo 'selected'; ?>><?= __('highest_price') ?></option>
+        <option value="newest" <?php if (isset($_GET['sort']) && $_GET['sort']==='newest') echo 'selected'; ?>><?= __('newest_first') ?></option>
     </select>
-    <button type="submit" style="background:var(--primary-color);color:#fff;border:none;border-radius:8px;padding:10px 24px;font-size:1em;">تطبيق</button>
+          <button type="submit" style="background:var(--primary-color);color:#fff;border:none;border-radius:8px;padding:10px 24px;font-size:1em;"><?= __('apply_filters') ?></button>
     <button type="button" id="closeFilters" style="background:none;border:none;font-size:1.2em;padding:0 10px;cursor:pointer;">✖</button>
   </form>
 </div>
@@ -202,7 +202,7 @@ document.getElementById('closeFilters').onclick = function() {
                     if ($r) echo " <span style='color:#888;font-size:0.95em;'>($r[avg])</span>";
                     ?>
                 </div>
-                <div class="price"><?php echo htmlspecialchars($product['price']); ?> د.ت</div>
+                <div class="price"><?php echo htmlspecialchars($product['price']); ?> <?= __('currency') ?></div>
                 <?php if ($product['stock'] > 0): ?>
                     <div class="stock"><?= __('stock') ?>: <?php echo htmlspecialchars($product['stock']); ?></div>
                     <form action="add_to_cart.php" method="get" class="add-to-cart-form">

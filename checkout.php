@@ -125,11 +125,11 @@ if (isset($_SESSION['user_id'])) {
             </div>
             <div class="form-group">
                 <label for="phone">رقم الهاتف:</label>
-                <input type="tel" name="phone" id="phone" required autocomplete="tel" placeholder=" " pattern="^(2|5|9|4)[0-9]{7}$" inputmode="numeric" maxlength="8" title="رقم هاتف تونسي صحيح (8 أرقام يبدأ بـ 2 أو 5 أو 9 أو 4)" oninput="this.value=this.value.replace(/[^0-9]/g,'');">
+                <input type="tel" name="phone" id="phone" required autocomplete="tel" placeholder=" " pattern="^(2|5|9|4)[0-9]{7}$" inputmode="numeric" maxlength="8" title="<?= __('valid_tunisian_phone') ?>" oninput="this.value=this.value.replace(/[^0-9]/g,'');">
             </div>
             <div class="form-group">
                 <label for="email">البريد الإلكتروني:</label>
-                <input type="email" name="email" id="email" required autocomplete="email" placeholder=" " value="<?php echo htmlspecialchars($user['email'] ?? ''); ?>" pattern="^[^@\s]+@[^@\s]+\.[^@\s]+$" title="يرجى إدخال بريد إلكتروني صحيح">
+                <input type="email" name="email" id="email" required autocomplete="email" placeholder=" " value="<?php echo htmlspecialchars($user['email'] ?? ''); ?>" pattern="^[^@\s]+@[^@\s]+\.[^@\s]+$" title="<?= __('enter_valid_email') ?>">
             </div>
             <div class="form-group">
                 <label for="payment">طريقة الدفع:</label>

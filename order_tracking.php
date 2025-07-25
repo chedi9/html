@@ -68,7 +68,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div class="order-block">
             <div>رقم الطلب: <?php echo $order['id']; ?></div>
             <div class="order-status">الحالة: <?php echo htmlspecialchars($order['status']); ?></div>
-            <div>الإجمالي: <?php echo $order['total']; ?> د.ت</div>
+            <div><?= __('total') ?>: <?php echo $order['total']; ?> <?= __('currency') ?></div>
             <div>تاريخ الطلب: <?php echo $order['created_at']; ?></div>
         </div>
         <?php endif; ?>

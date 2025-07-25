@@ -41,13 +41,13 @@ if (!isset($_SESSION['is_mobile'])) {
         <h2>الأسئلة الشائعة & مركز المساعدة</h2>
         <div class="faq-list">
             <div class="faq-q">كيف يمكنني إنشاء حساب جديد؟</div>
-            <div class="faq-a">اضغط على "تسجيل" في أعلى الصفحة واملأ البيانات المطلوبة.</div>
+            <div class="faq-a"><?= __('register_instruction') ?></div>
             <div class="faq-q">كيف أضيف منتجًا إلى السلة؟</div>
             <div class="faq-a">اضغط على زر "أضف إلى السلة" بجانب المنتج الذي ترغب في شرائه.</div>
             <div class="faq-q">ما هي طرق الدفع المتاحة؟</div>
             <div class="faq-a">يمكنك الدفع عبر البطاقة البنكية، D17، أو الدفع عند الاستلام.</div>
             <div class="faq-q">كيف أتتبع طلبي؟</div>
-            <div class="faq-a">استخدم صفحة "تتبع الطلب" وأدخل رقم الطلب والبريد الإلكتروني.</div>
+            <div class="faq-a"><?= __('track_order_instruction') ?></div>
             <div class="faq-q">كيف أتواصل مع الدعم؟</div>
             <div class="faq-a">يمكنك استخدام النموذج أدناه أو مراسلتنا على البريد الإلكتروني: <a href="mailto:webuytn0@gmail.com">webuytn0@gmail.com</a></div>
         </div>
