@@ -62,6 +62,8 @@ $orders = $orders->fetchAll();
             <button type="button" class="account-tab" id="viewed-tab" onclick="showTab('viewed')"><?= __('viewed_products') ?></button>
             <button type="button" class="account-tab" id="address-tab" onclick="showTab('address')"><?= __('address_and_phone') ?></button>
             <button type="button" class="account-tab" id="credentials-tab" onclick="showTab('credentials')"><?= __('change_email_password') ?></button>
+        <a href="addresses.php" class="account-tab" style="text-decoration: none; text-align: center;"><?= __('manage_addresses') ?></a>
+        <a href="notifications.php" class="account-tab" style="text-decoration: none; text-align: center;"><?= __('notifications') ?></a>
         </div>
         <div class="tab-content" id="orders-content">
             <h3><?= __('order_history') ?></h3>

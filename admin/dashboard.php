@@ -45,6 +45,7 @@ if (!isset($_SESSION['admin_id'])) {
             <a href="categories.php">إدارة التصنيفات</a>
             <a href="admins.php">إدارة المشرفين</a>
             <a href="activity.php">سجل الأنشطة</a>
+            <a href="coupons.php">إدارة الكوبونات</a>
         </nav>
         <p style="text-align:center;">مرحبًا بك في لوحة التحكم. اختر إجراء من الأعلى.</p>
     </div>

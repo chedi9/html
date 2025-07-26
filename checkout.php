@@ -29,15 +29,42 @@ while ($row = $stmt->fetch()) {
 // Handle order submission
 $success = false;
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $user_id = $_SESSION['user_id'] ?? null;
     $name = trim($_POST['name']);
     $address = trim($_POST['address']);
     $phone = trim($_POST['phone']);
     $email = trim($_POST['email']);
-    $payment = $_POST['payment'];
-    $shipping = $_POST['shipping'];
-    $user_id = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : null;
-    $stmt = $pdo->prepare('INSERT INTO orders (user_id, name, address, phone, email, payment_method, shipping_method, total) VALUES (?, ?, ?, ?, ?, ?, ?, ?)');
-    $stmt->execute([$user_id, $name, $address, $phone, $email, $payment, $shipping, $total]);
+    $payment = trim($_POST['payment']);
+    $shipping = trim($_POST['shipping']);
+    $promo_code = trim($_POST['promo_code'] ?? '');
+    
+    // Calculate total with promo code discount
+    $discount_amount = 0;
+    $promo_valid = false;
+    if (!empty($promo_code)) {
+        $stmt = $pdo->prepare('SELECT * FROM coupons WHERE code = ? AND is_active = 1 AND valid_from <= NOW() AND valid_until >= NOW() AND (max_uses IS NULL OR used_count < max_uses)');
+        $stmt->execute([$promo_code]);
+        $coupon = $stmt->fetch();
+        
+        if ($coupon && $total >= ($coupon['min_order_amount'] ?? 0)) {
+            $promo_valid = true;
+            if ($coupon['type'] === 'percentage') {
+                $discount_amount = $total * ($coupon['value'] / 100);
+            } else {
+                $discount_amount = min($coupon['value'], $total);
+            }
+            $total = max(0, $total - $discount_amount);
+        }
+    }
+    
+    $stmt = $pdo->prepare('INSERT INTO orders (user_id, name, address, phone, email, payment_method, shipping_method, total, promo_code, discount_amount) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
+    $stmt->execute([$user_id, $name, $address, $phone, $email, $payment, $shipping, $total, $promo_code, $discount_amount]);
+    
+    if ($promo_valid) {
+        $stmt = $pdo->prepare('UPDATE coupons SET used_count = used_count + 1 WHERE code = ?');
+        $stmt->execute([$promo_code]);
+    }
+    
     $order_id = $pdo->lastInsertId();
     foreach ($cart_items as $item) {
         $prod_name = $item['name_' . $lang] ?? $item['name'];
@@ -147,6 +174,10 @@ if (isset($_SESSION['user_id'])) {
                     <option value="first">First Delivery</option>
                 </select>
             </div>
+                         <div class="form-group">
+                 <label for="promo_code"><?= __('promo_code_optional') ?>:</label>
+                 <input type="text" name="promo_code" id="promo_code" autocomplete="off" placeholder="<?= __('enter_promo_code') ?>">
+             </div>
             <button type="submit" class="checkout-btn">تأكيد الطلب</button>
         </form>
         <?php endif; ?>
