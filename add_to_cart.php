@@ -4,15 +4,25 @@ if (!isset($_SESSION['cart'])) {
     $_SESSION['cart'] = [];
 }
 $id = isset($_GET['id']) ? intval($_GET['id']) : (isset($_POST['id']) ? intval($_POST['id']) : 0);
+$variant_key = isset($_GET['variant_key']) ? $_GET['variant_key'] : (isset($_POST['variant_key']) ? $_POST['variant_key'] : '');
+$cart_key = $id > 0 ? $id . ($variant_key ? '|' . $variant_key : '') : '';
+
+// Debug logging
+error_log("Add to cart - ID: $id, Variant: $variant_key, Cart Key: $cart_key");
+
 if ($id > 0) {
-    if (isset($_SESSION['cart'][$id])) {
-        $_SESSION['cart'][$id]++;
-    } else {
-        $_SESSION['cart'][$id] = 1;
+    if ($cart_key && isset($_SESSION['cart'][$cart_key])) {
+        $_SESSION['cart'][$cart_key]++;
+    } elseif ($cart_key) {
+        $_SESSION['cart'][$cart_key] = 1;
     }
     $_SESSION['flash_message'] = 'تمت إضافة المنتج إلى السلة!';
 }
+
 $cart_count = array_sum($_SESSION['cart']);
+error_log("Cart contents: " . print_r($_SESSION['cart'], true));
+error_log("Cart count: $cart_count");
+
 // If AJAX request, return JSON
 if (
     (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest') ||

@@ -28,6 +28,51 @@ if (!$product) {
     header('Location: products.php');
     exit();
 }
+// Fetch all images for this product
+$stmt_imgs = $pdo->prepare('SELECT * FROM product_images WHERE product_id = ? ORDER BY is_main DESC, sort_order ASC, id ASC');
+$stmt_imgs->execute([$id]);
+$product_images = $stmt_imgs->fetchAll();
+// Handle delete image
+if (isset($_GET['delete_img'])) {
+    $img_id = intval($_GET['delete_img']);
+    $stmt = $pdo->prepare('SELECT * FROM product_images WHERE id = ? AND product_id = ?');
+    $stmt->execute([$img_id, $id]);
+    $img = $stmt->fetch();
+    if ($img) {
+        // Remove file
+        @unlink('../uploads/' . $img['image_path']);
+        // Delete from DB
+        $pdo->prepare('DELETE FROM product_images WHERE id = ?')->execute([$img_id]);
+        // If deleted image was main, set another as main
+        if ($img['is_main']) {
+            $stmt2 = $pdo->prepare('SELECT id, image_path FROM product_images WHERE product_id = ? ORDER BY id ASC LIMIT 1');
+            $stmt2->execute([$id]);
+            $new_main = $stmt2->fetch();
+            if ($new_main) {
+                $pdo->prepare('UPDATE product_images SET is_main = 1 WHERE id = ?')->execute([$new_main['id']]);
+                $pdo->prepare('UPDATE products SET image = ? WHERE id = ?')->execute([$new_main['image_path'], $id]);
+            } else {
+                $pdo->prepare('UPDATE products SET image = NULL WHERE id = ?')->execute([$id]);
+            }
+        }
+    }
+    header('Location: edit_product.php?id=' . $id);
+    exit();
+}
+// Handle set main image
+if (isset($_GET['set_main'])) {
+    $img_id = intval($_GET['set_main']);
+    $stmt = $pdo->prepare('SELECT * FROM product_images WHERE id = ? AND product_id = ?');
+    $stmt->execute([$img_id, $id]);
+    $img = $stmt->fetch();
+    if ($img) {
+        $pdo->prepare('UPDATE product_images SET is_main = 0 WHERE product_id = ?')->execute([$id]);
+        $pdo->prepare('UPDATE product_images SET is_main = 1 WHERE id = ?')->execute([$img_id]);
+        $pdo->prepare('UPDATE products SET image = ? WHERE id = ?')->execute([$img['image_path'], $id]);
+    }
+    header('Location: edit_product.php?id=' . $id);
+    exit();
+}
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $name = trim($_POST['name']);
     $description = trim($_POST['description']);
@@ -36,12 +81,81 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $category_id = intval($_POST['category_id']);
     $seller_id = isset($_POST['seller_id']) ? intval($_POST['seller_id']) : null;
     $image = $product['image'];
-    // Handle image upload
+    // Handle single image upload (legacy)
     if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
         $ext = pathinfo($_FILES['image']['name'], PATHINFO_EXTENSION);
         $image = uniqid('prod_', true) . '.' . $ext;
         move_uploaded_file($_FILES['image']['tmp_name'], '../uploads/' . $image);
+        // Insert as new main image
+        $pdo->prepare('UPDATE product_images SET is_main = 0 WHERE product_id = ?')->execute([$id]);
+        $pdo->prepare('INSERT INTO product_images (product_id, image_path, is_main, sort_order) VALUES (?, ?, 1, ? )')->execute([$id, $image, count($product_images)]);
+        $pdo->prepare('UPDATE products SET image = ? WHERE id = ?')->execute([$image, $id]);
     }
+    // Handle multiple new images
+    if (isset($_FILES['images']) && count($_FILES['images']['name']) > 0) {
+        $current_count = count($product_images);
+        $files = $_FILES['images'];
+        $max = min(10 - $current_count, count($files['name']));
+        for ($i = 0; $i < $max; $i++) {
+            if ($files['error'][$i] === UPLOAD_ERR_OK) {
+                $ext = pathinfo($files['name'][$i], PATHINFO_EXTENSION);
+                $img_name = uniqid('prodimg_', true) . '.' . $ext;
+                move_uploaded_file($files['tmp_name'][$i], '../uploads/' . $img_name);
+                $pdo->prepare('INSERT INTO product_images (product_id, image_path, is_main, sort_order) VALUES (?, ?, 0, ? )')->execute([$id, $img_name, $current_count + $i]);
+            }
+        }
+    }
+    // --- Save product variants ---
+    // Delete old variants for this product
+    $pdo->prepare('DELETE FROM product_variant_combinations WHERE product_id = ?')->execute([$id]);
+    $pdo->prepare('DELETE FROM product_variant_values WHERE option_id IN (SELECT id FROM product_variant_options WHERE product_id = ?)')->execute([$id]);
+    $pdo->prepare('DELETE FROM product_variant_options WHERE product_id = ?')->execute([$id]);
+    if (!empty($_POST['variant_combo_count']) && intval($_POST['variant_combo_count']) > 0) {
+        $variantOptions = [];
+        foreach ($_POST as $k => $v) {
+            if (strpos($k, 'variant_option_') === 0) {
+                $idx = intval(substr($k, 14));
+                $variantOptions[$idx] = ['name' => trim($v), 'values' => []];
+            }
+        }
+        foreach ($_POST as $k => $v) {
+            if (strpos($k, 'variant_values_') === 0) {
+                $idx = intval(substr($k, 14));
+                if (isset($variantOptions[$idx])) {
+                    $variantOptions[$idx]['values'] = array_map('trim', explode(',', $v));
+                }
+            }
+        }
+        // Insert options and values
+        $optionIdMap = [];
+        foreach ($variantOptions as $optIdx => $opt) {
+            if (!$opt['name']) continue;
+            $stmtOpt = $pdo->prepare('INSERT INTO product_variant_options (product_id, option_name, sort_order) VALUES (?, ?, ?)');
+            $stmtOpt->execute([$id, $opt['name'], $optIdx]);
+            $option_id = $pdo->lastInsertId();
+            $optionIdMap[$optIdx] = $option_id;
+            foreach ($opt['values'] as $valIdx => $val) {
+                if (!$val) continue;
+                $stmtVal = $pdo->prepare('INSERT INTO product_variant_values (option_id, value, sort_order) VALUES (?, ?, ?)');
+                $stmtVal->execute([$option_id, $val, $valIdx]);
+            }
+        }
+        // Insert combinations
+        $comboCount = intval($_POST['variant_combo_count']);
+        for ($i = 0; $i < $comboCount; $i++) {
+            $comboParts = [];
+            foreach ($variantOptions as $optIdx => $opt) {
+                $val = $_POST["combo_{$i}_opt_{$optIdx}"] ?? '';
+                $comboParts[] = $opt['name'] . ':' . $val;
+            }
+            $combKey = implode(';', $comboParts);
+            $stock = isset($_POST["combo_{$i}_stock"]) ? intval($_POST["combo_{$i}_stock"]) : 0;
+            $price = isset($_POST["combo_{$i}_price"]) ? floatval($_POST["combo_{$i}_price"]) : null;
+            $stmtCombo = $pdo->prepare('INSERT INTO product_variant_combinations (product_id, combination_key, stock, price, sort_order) VALUES (?, ?, ?, ?, ?)');
+            $stmtCombo->execute([$id, $combKey, $stock, $price, $i]);
+        }
+    }
+    // --- End product variants ---
     $stmt = $pdo->prepare('UPDATE products SET name=?, description=?, price=?, image=?, stock=?, category_id=?, seller_id=? WHERE id=?');
     $stmt->execute([$name, $description, $price, $image, $stock, $category_id, $seller_id, $id]);
     // Log activity
@@ -100,14 +214,101 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <option value="<?php echo $user['id']; ?>" <?php if ($product['seller_id'] == $user['id']) echo 'selected'; ?>><?php echo htmlspecialchars($user['name']); ?></option>
                 <?php endforeach; ?>
             </select>
-            <label for="image">صورة المنتج (اختياري):</label>
-            <?php if ($product['image']): ?>
-                <img src="../uploads/<?php echo htmlspecialchars($product['image']); ?>" alt="صورة المنتج الحالية" class="current-img">
-            <?php endif; ?>
-            <input type="file" id="image" name="image" accept="image/*">
+            <label>صور المنتج الحالية:</label>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <?php foreach ($product_images as $img): ?>
+            <div style="position:relative;display:inline-block;">
+                <img src="../uploads/<?php echo htmlspecialchars($img['image_path']); ?>" style="width:80px;height:80px;object-fit:cover;border-radius:6px;border:2px solid <?php echo $img['is_main']?'#FFD600':'#ccc'; ?>;">
+                <?php if (!$img['is_main']): ?>
+                    <a href="edit_product.php?id=<?php echo $id; ?>&set_main=<?php echo $img['id']; ?>" title="تعيين كصورة رئيسية" style="position:absolute;top:2px;right:2px;background:#FFD600;color:#333;padding:2px 6px;border-radius:4px;font-size:0.9em;text-decoration:none;">رئيسية</a>
+                <?php else: ?>
+                    <span style="position:absolute;top:2px;right:2px;background:#FFD600;color:#333;padding:2px 6px;border-radius:4px;font-size:0.9em;">رئيسية</span>
+                <?php endif; ?>
+                <a href="edit_product.php?id=<?php echo $id; ?>&delete_img=<?php echo $img['id']; ?>" onclick="return confirm('حذف هذه الصورة؟');" style="position:absolute;bottom:2px;right:2px;background:#c00;color:#fff;padding:2px 6px;border-radius:4px;font-size:0.9em;text-decoration:none;">حذف</a>
+            </div>
+        <?php endforeach; ?>
+    </div>
+    <label for="images">إضافة صور جديدة (حتى 10 صور):</label>
+    <input type="file" id="images" name="images[]" accept="image/*" multiple>
+    <small>أول صورة رئيسية، يمكنك تعيين صورة رئيسية بعد الحفظ.</small>
+    <label>Product Variants (optional):</label>
+    <div id="variantOptionsContainer"></div>
+    <button type="button" id="addVariantOptionBtn" style="margin-bottom:10px;background:#FFD600;color:#1A237E;">+ Add Option (e.g., Size, Color)</button>
+    <div id="variantCombinationsContainer" style="margin-top:18px;"></div>
             <button type="submit">حفظ التعديلات</button>
         </form>
         <a href="products.php" class="back-btn">العودة لإدارة المنتجات</a>
     </div>
+<script>
+// --- Product Variants UI ---
+const variantOptionsContainer = document.getElementById('variantOptionsContainer');
+const addVariantOptionBtn = document.getElementById('addVariantOptionBtn');
+const variantCombinationsContainer = document.getElementById('variantCombinationsContainer');
+let variantOptions = [];
+function renderVariantOptions() {
+    variantOptionsContainer.innerHTML = '';
+    variantOptions.forEach((opt, idx) => {
+        const div = document.createElement('div');
+        div.style.marginBottom = '8px';
+        div.innerHTML = `<input type="text" name="variant_option_${idx}" value="${opt.name}" placeholder="Option name (e.g., Size)" style="width:120px;"> ` +
+            `<input type="text" name="variant_values_${idx}" value="${opt.values.join(',')}" placeholder="Values (comma separated, e.g., S,M,L)" style="width:220px;"> ` +
+            `<button type="button" onclick="removeVariantOption(${idx})" style="background:#c00;color:#fff;border:none;border-radius:4px;padding:2px 8px;">Remove</button>`;
+        variantOptionsContainer.appendChild(div);
+    });
+    renderVariantCombinations();
+}
+window.removeVariantOption = function(idx) {
+    variantOptions.splice(idx, 1);
+    renderVariantOptions();
+}
+addVariantOptionBtn.onclick = function() {
+    variantOptions.push({name:'', values:[]});
+    renderVariantOptions();
+}
+function renderVariantCombinations() {
+    variantCombinationsContainer.innerHTML = '';
+    if (variantOptions.length === 0 || variantOptions.some(opt=>!opt.name||!opt.values.length)) return;
+    // Build all combinations
+    const valueArrays = variantOptions.map(opt => opt.values);
+    function cartesian(arr) {
+        return arr.reduce((a,b)=>a.flatMap(d=>b.map(e=>[...d,e])), [[]]);
+    }
+    const combos = cartesian(valueArrays);
+    // Table
+    const table = document.createElement('table');
+    table.style.width = '100%';
+    table.style.marginTop = '10px';
+    table.innerHTML = '<tr>' + variantOptions.map(opt=>`<th>${opt.name}</th>`).join('') + '<th>Stock</th><th>Price</th></tr>';
+    combos.forEach((combo, i) => {
+        const tr = document.createElement('tr');
+        combo.forEach((val, j) => {
+            tr.innerHTML += `<td><input type="hidden" name="combo_${i}_opt_${j}" value="${val}">${val}</td>`;
+        });
+        tr.innerHTML += `<td><input type="number" name="combo_${i}_stock" min="0" value="0" style="width:60px;"></td>`;
+        tr.innerHTML += `<td><input type="number" name="combo_${i}_price" step="0.01" min="0" style="width:80px;"></td>`;
+        table.appendChild(tr);
+    });
+    variantCombinationsContainer.appendChild(table);
+    // Save combo count
+    const input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = 'variant_combo_count';
+    input.value = combos.length;
+    variantCombinationsContainer.appendChild(input);
+}
+// Parse values on blur
+variantOptionsContainer.addEventListener('blur', function(e) {
+    if (e.target.name && e.target.name.startsWith('variant_values_')) {
+        const idx = parseInt(e.target.name.split('_')[2]);
+        variantOptions[idx].values = e.target.value.split(',').map(v=>v.trim()).filter(Boolean);
+        renderVariantCombinations();
+    }
+    if (e.target.name && e.target.name.startsWith('variant_option_')) {
+        const idx = parseInt(e.target.name.split('_')[2]);
+        variantOptions[idx].name = e.target.value.trim();
+        renderVariantCombinations();
+    }
+}, true);
+</script>
 </body>
 </html> 

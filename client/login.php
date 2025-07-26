@@ -24,7 +24,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $error = __('email_not_verified');
         } else {
             $_SESSION['user_id'] = $user['id'];
-            header('Location: ../index.php');
+            
+            // Redirect to checkout if that's where they came from
+            if (isset($_SESSION['redirect_after_login'])) {
+                $redirect_url = $_SESSION['redirect_after_login'];
+                unset($_SESSION['redirect_after_login']);
+                header('Location: ../' . $redirect_url);
+            } else {
+                header('Location: ../index.php');
+            }
             exit();
         }
     } else {
@@ -54,6 +62,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <body>
     <?php include '../header.php'; ?>
     <div class="login-container">
+        <?php if (isset($_GET['message']) && $_GET['message'] === 'login_required_cod'): ?>
+            <div style="background: #fff3cd; border: 1px solid #ffeaa7; color: #856404; padding: 15px; border-radius: 8px; margin-bottom: 20px; text-align: center;">
+                <strong>⚠️ Login Required for Cash on Delivery</strong><br>
+                For security reasons, cash on delivery orders require account registration to prevent fraud.
+                <br>Please login or create an account to continue.
+            </div>
+        <?php endif; ?>
+        
         <h2><?= __('login') ?></h2>
         <?php if ($error): ?>
             <div class="error"><?php echo $error; ?></div>

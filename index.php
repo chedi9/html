@@ -6,7 +6,8 @@ header('X-Content-Type-Options: nosniff');
 header("Content-Security-Policy: frame-ancestors 'self'");
 require 'db.php';
 require 'lang.php';
-$products = $pdo->query("SELECT * FROM products ORDER BY created_at DESC LIMIT 8")->fetchAll();
+// Update product query:
+$products = $pdo->query("SELECT p.*, s.is_disabled FROM products p LEFT JOIN sellers s ON p.seller_id = s.id WHERE p.approved = 1 ORDER BY s.is_disabled DESC, p.created_at DESC LIMIT 8")->fetchAll();
 // Fetch average ratings for all products
 $ratings = [];
 $stmt = $pdo->query("SELECT product_id, AVG(rating) as avg_rating, COUNT(*) as review_count FROM reviews GROUP BY product_id");
@@ -27,7 +28,7 @@ $recently_viewed = [];
 if (!empty($_SESSION['viewed_products'])) {
     $ids = array_reverse($_SESSION['viewed_products']);
     $placeholders = implode(',', array_fill(0, count($ids), '?'));
-    $stmt = $pdo->prepare("SELECT * FROM products WHERE id IN ($placeholders)");
+    $stmt = $pdo->prepare("SELECT p.*, s.is_disabled FROM products p LEFT JOIN sellers s ON p.seller_id = s.id WHERE p.id IN ($placeholders)");
     $stmt->execute($ids);
     // Keep order as in $ids
     $all = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -87,6 +88,59 @@ if (!empty($_SESSION['viewed_products'])) {
                 <span class="logo-text" style="font-size:1.5em;font-weight:bold;color:#FFD600;margin-right:12px;letter-spacing:1.5px;text-shadow:0 2px 8px rgba(0,191,174,0.10);">WeBuy نجوم تونس</span>
             </div>
             <div class="header-actions-group">
+                <!-- Cart Dropdown -->
+                <div class="cart-dropdown-wrapper" data-cart-dropdown>
+                    <button class="cart-dropdown-toggle" aria-label="Cart">
+                        <img src="cart-icon.svg" alt="Cart">
+                        <span class="cart-count"><?php echo isset($_SESSION['cart']) ? array_sum($_SESSION['cart']) : 0; ?></span>
+                    </button>
+                    <div id="mini-cart" class="cart-dropdown-menu">
+                        <strong>سلة التسوق</strong>
+                        <hr>
+                        <?php if (isset($_SESSION['cart']) && $_SESSION['cart']): ?>
+                            <?php
+                            $cart_keys = array_keys($_SESSION['cart']);
+                            $ids = array_map(function($k){ return explode('|', $k)[0]; }, $cart_keys);
+                            $ids_str = implode(',', array_map('intval', $ids));
+                            $stmt = $pdo->query("SELECT * FROM products WHERE id IN ($ids_str)");
+                            $products_map = [];
+                            while ($row = $stmt->fetch()) {
+                                $products_map[$row['id']] = $row;
+                            }
+                            $total = 0;
+                            foreach ($cart_keys as $cart_key):
+                                $parts = explode('|', $cart_key, 2);
+                                $pid = intval($parts[0]);
+                                $variant = isset($parts[1]) ? $parts[1] : '';
+                                if (!isset($products_map[$pid])) {
+                                    // Remove the missing product from cart
+                                    unset($_SESSION['cart'][$cart_key]);
+                                    continue;
+                                }
+                                $item = $products_map[$pid];
+                                $qty = $_SESSION['cart'][$cart_key];
+                                $subtotal = $qty * $item['price'];
+                                $total += $subtotal;
+                            ?>
+                                <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+                                    <img src="uploads/<?php echo htmlspecialchars($item['image']); ?>" alt="<?= __('product_image') ?>" style="width:38px;height:38px;object-fit:cover;border-radius:6px;">
+                                    <span style="flex:1;"> <?php echo htmlspecialchars($item['name']); ?>
+                                    <?php if (!empty($variant)): ?>
+                                        <div style="font-size:0.8em;color:#1A237E;">(<?php echo htmlspecialchars($variant); ?>)</div>
+                                    <?php endif; ?>
+                                    (<?php echo $qty; ?>) </span>
+                                                                          <span style="color:var(--secondary-color);font-weight:bold;"> <?php echo $subtotal; ?> <?= __('currency') ?> </span>
+                                </div>
+                            <?php endforeach; ?>
+                            <hr>
+                                                          <div style="text-align:left;font-weight:bold;"><?= __('total') ?>: <?php echo $total; ?> <?= __('currency') ?></div>
+                                                          <a href="cart.php" class="checkout-btn" style="width:100%;margin-top:10px;"><?= __('view_cart') ?></a>
+                          <?php else: ?>
+                              <div style="text-align:center;color:#888;"><?= __('cart_empty') ?></div>
+                        <?php endif; ?>
+                    </div>
+                </div>
+                <button class="dark-mode-toggle" id="darkModeToggle" title="<?= __('dark_mode_toggle') ?>">🌙</button>
                 <!-- User Dropdown -->
                 <div class="user-dropdown-wrapper">
                     <button class="user-dropdown-toggle" aria-label="User Menu">
@@ -101,40 +155,6 @@ if (!empty($_SESSION['viewed_products'])) {
                         <?php else: ?>
                             <a href="client/login.php"><?= __('login') ?></a>
                             <a href="client/register.php"><?= __('register') ?></a>
-                        <?php endif; ?>
-                    </div>
-                </div>
-                <button class="dark-mode-toggle" id="darkModeToggle" title="<?= __('dark_mode_toggle') ?>">🌙</button>
-                <!-- Cart Dropdown -->
-                <div class="cart-dropdown-wrapper" data-cart-dropdown>
-                    <button class="cart-dropdown-toggle" aria-label="Cart">
-                        <img src="cart-icon.svg" alt="Cart">
-                        <span class="cart-count"><?php echo isset($_SESSION['cart']) ? array_sum($_SESSION['cart']) : 0; ?></span>
-                    </button>
-                    <div id="mini-cart" class="cart-dropdown-menu">
-                        <strong>سلة التسوق</strong>
-                        <hr>
-                        <?php if (isset($_SESSION['cart']) && $_SESSION['cart']): ?>
-                            <?php
-                            $ids = implode(',', array_map('intval', array_keys($_SESSION['cart'])));
-                            $stmt = $pdo->query("SELECT * FROM products WHERE id IN ($ids)");
-                            $total = 0;
-                            while ($item = $stmt->fetch()):
-                                $qty = $_SESSION['cart'][$item['id']];
-                                $subtotal = $qty * $item['price'];
-                                $total += $subtotal;
-                            ?>
-                                <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
-                                    <img src="uploads/<?php echo htmlspecialchars($item['image']); ?>" alt="<?= __('product_image') ?>" style="width:38px;height:38px;object-fit:cover;border-radius:6px;">
-                                    <span style="flex:1;"> <?php echo htmlspecialchars($item['name']); ?> (<?php echo $qty; ?>) </span>
-                                                                          <span style="color:var(--secondary-color);font-weight:bold;"> <?php echo $subtotal; ?> <?= __('currency') ?> </span>
-                                </div>
-                            <?php endwhile; ?>
-                            <hr>
-                                                          <div style="text-align:left;font-weight:bold;"><?= __('total') ?>: <?php echo $total; ?> <?= __('currency') ?></div>
-                                                          <a href="cart.php" class="checkout-btn" style="width:100%;margin-top:10px;"><?= __('view_cart') ?></a>
-                          <?php else: ?>
-                              <div style="text-align:center;color:#888;"><?= __('cart_empty') ?></div>
                         <?php endif; ?>
                     </div>
                 </div>
@@ -298,6 +318,67 @@ if (!empty($_SESSION['viewed_products'])) {
             <h2><?= __('welcome') ?></h2>
             <p><?= __('welcome_paragraph') ?></p>
         </section>
+        
+        <!-- Disabled Sellers Showcase Section -->
+        <?php
+        require_once 'priority_products_helper.php';
+        $priority_products = getPriorityProducts($pdo, 6);
+        
+        if (!empty($priority_products)):
+        ?>
+        <section id="disabled-sellers-showcase" class="container" style="background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%); padding: 30px; border-radius: 15px; margin: 30px auto; border: 2px solid #ffc107;">
+            <div style="text-align: center; margin-bottom: 30px;">
+                <h2 style="color: #856404; margin-bottom: 10px;">🌟 منتجات البائعين ذوي الإعاقة</h2>
+                <p style="color: #856404; font-size: 1.1em; margin: 0;">نساند وندعم البائعين ذوي الإعاقة في رحلتهم نحو النجاح</p>
+            </div>
+            
+            <div class="product-grid">
+                <?php foreach ($priority_products as $product): ?>
+                <div class="product-card" data-id="<?php echo $product['id']; ?>" data-name="<?php echo htmlspecialchars($product['name']); ?>" data-price="<?php echo htmlspecialchars($product['price']); ?>" data-image="uploads/<?php echo htmlspecialchars($product['image']); ?>" data-description="<?php echo htmlspecialchars($product['description']); ?>">
+                    <span class="product-badge" style="background: #FFD600; color: #1A237E; left: auto; right: 12px; top: 12px; position: absolute; z-index: 4; font-weight: bold;">
+                        🌟 بائع ذو إعاقة
+                    </span>
+                    <button class="wishlist-btn" data-product-id="<?php echo $product['id']; ?>" title="<?= __('add_to_favorites') ?>" style="position: absolute; top: 12px; left: 12px; z-index: 3; background: none; border: none; cursor: pointer; outline: none;">
+                        <?php if (!empty($_SESSION['wishlist']) && in_array($product['id'], $_SESSION['wishlist'])): ?>
+                            <span style="font-size: 1.5em; color: #e74c3c;">&#10084;</span>
+                        <?php else: ?>
+                            <span style="font-size: 1.5em; color: #bbb;">&#9825;</span>
+                        <?php endif; ?>
+                    </button>
+                    <a href="product.php?id=<?php echo $product['id']; ?>">
+                        <div class="product-img-wrap">
+                            <img src="uploads/<?php echo htmlspecialchars($product['image']); ?>" alt="<?php echo htmlspecialchars($product['name']); ?>">
+                        </div>
+                        <h3><?php echo htmlspecialchars($product['name']); ?></h3>
+                        <p><?php echo htmlspecialchars($product['description']); ?></p>
+                        <p class="price"><?php echo htmlspecialchars($product['price']); ?> <?= __('currency') ?></p>
+                        
+                        <!-- Disabled Seller Info -->
+                        <?php if (!empty($product['disabled_seller_name'])): ?>
+                        <div style="background: rgba(255, 193, 7, 0.1); padding: 10px; border-radius: 8px; margin-top: 10px; border-left: 3px solid #ffc107;">
+                            <p style="margin: 0; font-size: 0.9em; color: #856404;">
+                                <strong>البائع:</strong> <?php echo htmlspecialchars($product['disabled_seller_name']); ?><br>
+                                <strong>نوع الإعاقة:</strong> <?php echo htmlspecialchars($product['disability_type']); ?>
+                            </p>
+                        </div>
+                        <?php endif; ?>
+                    </a>
+                    <form action="add_to_cart.php" method="get" class="add-to-cart-form" style="margin-top: 10px;">
+                        <input type="hidden" name="id" value="<?php echo $product['id']; ?>">
+                        <button type="submit" class="add-cart-btn"><?= __('add_to_cart') ?></button>
+                    </form>
+                    <button class="quick-view-btn" type="button">👁️ <?= __('quick_view') ?></button>
+                </div>
+                <?php endforeach; ?>
+            </div>
+            
+            <div style="text-align: center; margin-top: 30px;">
+                <a href="search.php?priority=disabled_sellers" style="background: #ffc107; color: #1A237E; padding: 12px 30px; border-radius: 8px; text-decoration: none; font-weight: bold; display: inline-block;">
+                    عرض جميع منتجات البائعين ذوي الإعاقة
+                </a>
+            </div>
+        </section>
+        <?php endif; ?>
         <section id="showcase" class="container">
             <h2><?= __('showcase') ?></h2>
             <div class="product-grid">
@@ -305,6 +386,9 @@ if (!empty($_SESSION['viewed_products'])) {
                 <div class="product-card" data-id="<?php echo $product['id']; ?>" data-name="<?php echo htmlspecialchars($product['name']); ?>" data-price="<?php echo htmlspecialchars($product['price']); ?>" data-image="uploads/<?php echo htmlspecialchars($product['image']); ?>" data-description="<?php echo htmlspecialchars($product['description']); ?>">
                     <?php if ($i < 3): ?>
                         <span class="product-badge new"><?= __('new') ?></span>
+                    <?php endif; ?>
+                    <?php if (!empty($product['is_disabled'])): ?>
+                        <span class="product-badge" style="background:#FFD600;color:#1A237E;left:auto;right:12px;top:12px;position:absolute;z-index:4;">Disabled Seller</span>
                     <?php endif; ?>
                     <button class="wishlist-btn" data-product-id="<?php echo $product['id']; ?>" title="<?= __('add_to_favorites') ?>" style="position:absolute;top:12px;left:12px;z-index:3;background:none;border:none;cursor:pointer;outline:none;">
                             <?php if (!empty($_SESSION['wishlist']) && in_array($product['id'], $_SESSION['wishlist'])): ?>
@@ -337,6 +421,9 @@ if (!empty($_SESSION['viewed_products'])) {
         <?php foreach ($recently_viewed as $prod): ?>
             <?php $prod_name = $prod['name_' . $lang] ?? $prod['name']; ?>
             <div class="product-card">
+                <?php if (!empty($prod['is_disabled'])): ?>
+                    <span class="product-badge" style="background:#FFD600;color:#1A237E;left:auto;right:12px;top:12px;position:absolute;z-index:4;">Disabled Seller</span>
+                <?php endif; ?>
                 <a href="product.php?id=<?= $prod['id'] ?>">
                     <img src="uploads/<?= htmlspecialchars($prod['image']) ?>" alt="<?= htmlspecialchars($prod_name) ?>" style="width:100%;height:120px;object-fit:cover;border-radius:10px;">
                     <div class="product-name" style="font-weight:bold;font-size:1.08em;"> <?= htmlspecialchars($prod_name) ?> </div>

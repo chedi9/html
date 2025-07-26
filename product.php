@@ -19,7 +19,12 @@ if ($id) {
     // Limit to last 6
     $_SESSION['viewed_products'] = array_slice($_SESSION['viewed_products'], -6);
 }
-$stmt = $pdo->prepare('SELECT p.*, c.name AS category_name FROM products p LEFT JOIN categories c ON p.category_id = c.id WHERE p.id = ?');
+// Update product query to join sellers
+$stmt = $pdo->prepare('SELECT p.*, c.name AS category_name, s.store_name, s.store_description, s.store_logo
+    FROM products p
+    LEFT JOIN categories c ON p.category_id = c.id
+    LEFT JOIN sellers s ON p.seller_id = s.id
+    WHERE p.id = ?');
 $stmt->execute([$id]);
 $product = $stmt->fetch();
 if (!$product) {
@@ -53,6 +58,19 @@ foreach ($reviews as $rev) {
 $stmt_imgs = $pdo->prepare('SELECT * FROM product_images WHERE product_id = ? ORDER BY is_main DESC, sort_order ASC, id ASC');
 $stmt_imgs->execute([$product['id']]);
 $product_images = $stmt_imgs->fetchAll();
+// Fetch product variants
+$stmtOpt = $pdo->prepare('SELECT * FROM product_variant_options WHERE product_id = ? ORDER BY sort_order ASC, id ASC');
+$stmtOpt->execute([$product['id']]);
+$variant_options = $stmtOpt->fetchAll();
+$variant_values = [];
+foreach ($variant_options as $opt) {
+    $stmtVal = $pdo->prepare('SELECT * FROM product_variant_values WHERE option_id = ? ORDER BY sort_order ASC, id ASC');
+    $stmtVal->execute([$opt['id']]);
+    $variant_values[$opt['id']] = $stmtVal->fetchAll();
+}
+$stmtComb = $pdo->prepare('SELECT * FROM product_variant_combinations WHERE product_id = ? ORDER BY sort_order ASC, id ASC');
+$stmtComb->execute([$product['id']]);
+$variant_combinations = $stmtComb->fetchAll();
 ?>
 <!DOCTYPE html>
 <html lang="ar">
@@ -207,35 +225,137 @@ $product_images = $stmt_imgs->fetchAll();
             </div>
             <div class="product-info">
                 <h2><?php echo htmlspecialchars($product['name_' . $lang] ?? $product['name']); ?></h2>
-                <div class="price"><?= __('price') ?>: <?php echo htmlspecialchars($product['price']); ?> <?= __('currency') ?></div>
+                <div class="price" id="variantPrice"><?= __('price') ?>: <?php echo htmlspecialchars($product['price']); ?> <?= __('currency') ?></div>
                 <?php if ($product['stock'] > 0): ?>
-                    <div class="stock"><?= __('in_stock') ?>: <?php echo htmlspecialchars($product['stock']); ?></div>
+                    <div class="stock" id="variantStock"><?= __('in_stock') ?>: <?php echo htmlspecialchars($product['stock']); ?></div>
                 <?php else: ?>
-                    <div class="out-stock"><?= __('out_of_stock') ?></div>
+                    <div class="out-stock" id="variantStock"><?= __('out_of_stock') ?></div>
                 <?php endif; ?>
                 <?php if ($product['category_name']): ?>
                     <div class="category"><?= __('category') ?>: <?php echo htmlspecialchars($product['category_name_' . $lang] ?? $product['category_name']); ?></div>
                 <?php endif; ?>
-                <form action="add_to_cart.php" method="get" class="add-to-cart-form sticky-add-cart">
+                <?php if ($variant_options): ?>
+<form action="add_to_cart.php" method="get" class="add-to-cart-form sticky-add-cart" id="variantCartForm">
+    <input type="hidden" name="id" value="<?php echo $product['id']; ?>">
+    <input type="hidden" name="variant_key" id="variantKeyInput">
+    <div id="variantSelectors"></div>
+    <div id="variantSummary" style="margin:10px 0 10px 0;font-size:1.08em;color:#1A237E;"></div>
+    <button type="submit" class="add-cart-btn" id="addToCartBtn" disabled><?= __('add_to_cart') ?></button>
+</form>
+<script>
+const variantOptions = <?php echo json_encode(array_map(function($o){return $o['option_name'];}, $variant_options)); ?>;
+const variantValues = <?php echo json_encode(array_values($variant_values)); ?>;
+const variantCombinations = <?php echo json_encode($variant_combinations); ?>;
+const priceBase = <?php echo json_encode($product['price']); ?>;
+const priceEl = document.getElementById('variantPrice');
+const stockEl = document.getElementById('variantStock');
+const addToCartBtn = document.getElementById('addToCartBtn');
+const variantKeyInput = document.getElementById('variantKeyInput');
+const selectorsDiv = document.getElementById('variantSelectors');
+const summaryDiv = document.getElementById('variantSummary');
+let selected = Array(variantOptions.length).fill('');
+function renderSelectors() {
+    selectorsDiv.innerHTML = '';
+    variantOptions.forEach((opt, idx) => {
+        const div = document.createElement('div');
+        div.style.marginBottom = '10px';
+        div.innerHTML = `<label style='font-weight:bold;'>${opt}:</label> `;
+        variantValues[idx].forEach(valObj => {
+            const val = valObj.value;
+            // Check if this value is available in any valid combination with current selection
+            let possible = false;
+            for (let c of variantCombinations) {
+                let match = true;
+                for (let i=0; i<variantOptions.length; i++) {
+                    if (i === idx) {
+                        if (c.combination_key.indexOf(opt+':'+val) === -1) { match = false; break; }
+                    } else if (selected[i] && c.combination_key.indexOf(variantOptions[i]+':'+selected[i]) === -1) { match = false; break; }
+                }
+                if (match && c.stock > 0) { possible = true; break; }
+            }
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.textContent = val;
+            btn.style.marginRight = '8px';
+            btn.style.padding = '6px 18px';
+            btn.style.borderRadius = '18px';
+            btn.style.border = selected[idx] === val ? '2px solid #FFD600' : '1.5px solid #E3E7ED';
+            btn.style.background = selected[idx] === val ? '#FFD600' : (possible ? '#fafbfc' : '#eee');
+            btn.style.color = selected[idx] === val ? '#1A237E' : (possible ? '#1A237E' : '#aaa');
+            btn.style.cursor = possible ? 'pointer' : 'not-allowed';
+            btn.disabled = !possible;
+            btn.onclick = function() {
+                if (!possible) return;
+                selected[idx] = val;
+                renderSelectors();
+                updateVariant();
+            };
+            div.appendChild(btn);
+        });
+        selectorsDiv.appendChild(div);
+    });
+}
+function updateVariant() {
+    let keyParts = [];
+    let allSelected = true;
+    selected.forEach((val, idx) => {
+        if (!val) allSelected = false;
+        keyParts.push(variantOptions[idx] + ':' + val);
+    });
+    const key = keyParts.join(';');
+    let found = null;
+    for (let i=0; i<variantCombinations.length; i++) {
+        if (variantCombinations[i].combination_key === key) {
+            found = variantCombinations[i];
+            break;
+        }
+    }
+    if (allSelected && found) {
+        priceEl.innerHTML = '<?= __('price') ?>: ' + (found.price ? found.price : priceBase) + ' <?= __('currency') ?>';
+        stockEl.innerHTML = found.stock > 0 ? '<?= __('in_stock') ?>: ' + found.stock : '<?= __('out_of_stock') ?>';
+        addToCartBtn.disabled = found.stock <= 0;
+        variantKeyInput.value = key;
+        summaryDiv.innerHTML = '<?= __('selected') ?>: ' + key.replace(/;/g, ', ');
+    } else {
+        priceEl.innerHTML = '<?= __('price') ?>: ' + priceBase + ' <?= __('currency') ?>';
+        stockEl.innerHTML = '<?= __('in_stock') ?>: <?php echo htmlspecialchars($product['stock']); ?>';
+        addToCartBtn.disabled = true;
+        variantKeyInput.value = '';
+        summaryDiv.innerHTML = '';
+    }
+}
+renderSelectors();
+updateVariant();
+</script>
+<?php else: ?>
+<form action="add_to_cart.php" method="get" class="add-to-cart-form sticky-add-cart">
                     <input type="hidden" name="id" value="<?php echo $product['id']; ?>">
                     <button type="submit" class="add-cart-btn" <?php if ($product['stock'] <= 0) echo 'disabled'; ?>><?= __('add_to_cart') ?></button>
                 </form>
+                <?php endif; ?>
             </div>
         </div>
-        <?php if (!empty($product['seller_name']) || !empty($product['seller_story']) || !empty($product['seller_photo'])): ?>
-        <div class="seller-story" style="margin:32px 0 0 0; padding:24px; background:#f4f6fb; border-radius:14px; box-shadow:0 2px 8px #0001;">
-            <h3 style="color:var(--primary-color);margin-bottom:10px;"><?= __('about_seller') ?></h3>
-            <?php if (!empty($product['seller_photo'])): ?>
-                <img src="uploads/<?php echo htmlspecialchars($product['seller_photo']); ?>" alt="<?= __('seller_photo') ?>" style="width:80px;height:80px;border-radius:50%;object-fit:cover;margin-bottom:10px;">
-            <?php endif; ?>
-            <?php if (!empty($product['seller_name'])): ?>
-                <div class="seller-name" style="font-weight:bold;font-size:1.1em;margin-bottom:6px;"> <?php echo htmlspecialchars($product['seller_name']); ?> </div>
-            <?php endif; ?>
-            <?php if (!empty($product['seller_story'])): ?>
-                <div class="seller-story-text" style="color:#333;line-height:1.7;"> <?php echo nl2br(htmlspecialchars($product['seller_story'])); ?> </div>
-            <?php endif; ?>
-        </div>
+        <?php if (!empty($product['store_name'])): ?>
+<div class="seller-story" style="margin:32px 0 0 0; padding:24px; background:#f4f6fb; border-radius:14px; box-shadow:0 2px 8px #0001;">
+    <h3 style="color:var(--primary-color);margin-bottom:10px;">
+        <?= __('about_seller') ?>
+        <?php if (!empty($product['is_disabled'])): ?>
+            <span style="background:#FFD600;color:#1A237E;padding:4px 14px;border-radius:8px;font-size:0.85em;margin-left:10px;vertical-align:middle;">Disabled Seller</span>
         <?php endif; ?>
+    </h3>
+    <?php if (!empty($product['store_logo'])): ?>
+        <img src="uploads/<?php echo htmlspecialchars($product['store_logo']); ?>" alt="<?= __('seller_photo') ?>" style="width:80px;height:80px;border-radius:50%;object-fit:cover;margin-bottom:10px;">
+    <?php endif; ?>
+    <div class="seller-name" style="font-weight:bold;font-size:1.1em;margin-bottom:6px;"> <?php echo htmlspecialchars($product['store_name']); ?> </div>
+    <?php if (!empty($product['is_disabled']) && !empty($product['store_description'])): ?>
+        <div style="margin:16px 0 0 0;font-size:1.13em;color:#1A237E;background:#FFF8E1;padding:14px 18px;border-radius:10px;max-width:600px;margin-left:auto;margin-right:auto;box-shadow:0 2px 8px #FFD60022;">
+            <b>Seller Story:</b> <?php echo nl2br(htmlspecialchars($product['store_description'])); ?>
+        </div>
+    <?php elseif (!empty($product['store_description'])): ?>
+        <div class="seller-story-text" style="color:#333;line-height:1.7;"> <?php echo nl2br(htmlspecialchars($product['store_description'])); ?> </div>
+    <?php endif; ?>
+</div>
+<?php endif; ?>
         <div class="product-details-section" style="background:#fafafa;border-radius:14px;padding:36px 28px 32px 28px;margin-top:36px;box-shadow:0 2px 16px rgba(0,191,174,0.06);max-width:800px;margin-left:auto;margin-right:auto;">
     <h2 style="display:flex;align-items:center;gap:10px;font-size:1.5em;color:var(--primary-color);margin-bottom:18px;">
         <span style="font-size:1.2em;">📝</span> <?= __('description') ?>

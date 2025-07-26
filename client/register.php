@@ -17,6 +17,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $name = trim($_POST['name']);
     $email = trim($_POST['email']);
     $password = $_POST['password'];
+    $is_seller = isset($_POST['is_seller']) ? 1 : 0;
     // Password strength check
     if (strlen($password) < 8 || !preg_match('/[A-Za-z]/', $password) || !preg_match('/[0-9]/', $password)) {
         $error = __('weak_password');
@@ -34,7 +35,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'email' => $email,
                 'password_hash' => $hash,
                 'verification_code' => $verification_code,
-                'code_expires_at' => $code_expires_at
+                'code_expires_at' => $code_expires_at,
+                'is_seller' => $is_seller
             ];
             $mail_ok = send_verification_email($email, $verification_code);
             if (!$mail_ok) {
@@ -89,6 +91,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <input type="password" name="confirm_password" id="confirm_password" required autocomplete="new-password">
             <label for="phone"><?= __('phone') ?>:</label>
             <input type="tel" name="phone" id="phone" required autocomplete="tel">
+            <label><input type="checkbox" name="is_seller" value="1"> Register as Seller</label>
             <button type="submit"><?= __('register') ?></button>
         </form>
         <div class="login-link">

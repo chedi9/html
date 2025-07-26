@@ -3245,3 +3245,43 @@ body.dark-mode .product-details-section .out-stock {
   .promo-banner { min-height: 28px; font-size: 0.95em; }
 }
 
+.cart-dropdown-wrapper {
+  position: relative;
+  display: inline-block;
+}
+.cart-dropdown-menu {
+  position: absolute;
+  top: 120%;
+  right: 0;
+  left: auto;
+  min-width: 240px;
+  max-width: min(98vw, 340px);
+  width: auto;
+  background: #fff;
+  color: #1A237E;
+  border-radius: 14px;
+  box-shadow: 0 8px 32px rgba(26,35,126,0.18), 0 2px 8px rgba(0,191,174,0.10);
+  padding: 18px 18px 12px 18px;
+  z-index: 3000;
+  overflow-x: auto;
+  overflow-y: auto;
+  box-sizing: border-box;
+  border: 1.5px solid #E3E7ED;
+}
+/* RTL fix: align left in RTL */
+html[dir="rtl"] .cart-dropdown-menu {
+  left: 0;
+  right: auto;
+}
+@media (max-width: 600px) {
+  .cart-dropdown-menu {
+    left: 50%;
+    right: auto;
+    transform: translateX(-50%);
+    width: 98vw;
+    min-width: 0;
+    max-width: 98vw;
+    border-radius: 0 0 12px 12px;
+  }
+}
+

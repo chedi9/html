@@ -16,6 +16,13 @@ $user_id = $_SESSION['user_id'];
 $stmt = $pdo->prepare('SELECT * FROM users WHERE id = ?');
 $stmt->execute([$user_id]);
 $user = $stmt->fetch();
+// Fetch seller info if user is a seller
+$seller = null;
+if (!empty($user['is_seller'])) {
+    $stmt = $pdo->prepare('SELECT * FROM sellers WHERE user_id = ?');
+    $stmt->execute([$user_id]);
+    $seller = $stmt->fetch();
+}
 // Fetch order history
 $orders = $pdo->prepare('SELECT * FROM orders WHERE user_id = ? ORDER BY created_at DESC');
 $orders->execute([$user_id]);
@@ -62,6 +69,9 @@ $orders = $orders->fetchAll();
             <button type="button" class="account-tab" id="viewed-tab" onclick="showTab('viewed')"><?= __('viewed_products') ?></button>
             <button type="button" class="account-tab" id="address-tab" onclick="showTab('address')"><?= __('address_and_phone') ?></button>
             <button type="button" class="account-tab" id="credentials-tab" onclick="showTab('credentials')"><?= __('change_email_password') ?></button>
+            <?php if ($seller): ?>
+            <button type="button" class="account-tab" id="seller-tab" onclick="showTab('seller')">My Seller Dashboard</button>
+            <?php endif; ?>
         </div>
         <div class="tab-content" id="orders-content">
             <h3><?= __('order_history') ?></h3>
@@ -172,6 +182,14 @@ $orders = $orders->fetchAll();
                 <button type="submit" class="save-btn"><?= __('change_password') ?></button>
             </form>
         </div>
+        <?php if ($seller): ?>
+        <div class="tab-content" id="seller-content" style="display:none;">
+            <h3>Seller Dashboard</h3>
+            <p>Welcome, <b><?php echo htmlspecialchars($seller['store_name']); ?></b>!</p>
+            <a href="seller_dashboard.php" class="save-btn">Go to Seller Dashboard</a>
+            <a href="../store.php?seller_id=<?php echo $seller['id']; ?>" class="save-btn" style="background:#888;">View My Store</a>
+        </div>
+        <?php endif; ?>
     </div>
     <script src="../main.js"></script>
     <script>

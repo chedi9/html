@@ -10,6 +10,27 @@ if (!isset($_SESSION['cart']) || empty($_SESSION['cart'])) {
     header('Location: cart.php');
     exit();
 }
+
+// Check if user is logged in
+$is_logged_in = isset($_SESSION['user_id']);
+$guest_checkout_allowed = false;
+
+// Allow guest checkout only for online payments
+if (isset($_GET['payment_method']) && in_array($_GET['payment_method'], ['card', 'd17'])) {
+    $guest_checkout_allowed = true;
+}
+
+// Allow guest checkout if explicitly requested
+if (isset($_GET['guest']) && $_GET['guest'] == '1') {
+    $guest_checkout_allowed = true;
+}
+
+// Redirect to login if trying to use COD without being logged in
+if (!$is_logged_in && !$guest_checkout_allowed) {
+    $_SESSION['redirect_after_login'] = 'checkout.php';
+    header('Location: client/login.php?message=login_required_cod');
+    exit();
+}
 if (!isset($_SESSION['is_mobile'])) {
     $is_mobile = preg_match('/android|iphone|ipad|ipod|blackberry|windows phone|opera mini|mobile/i', $_SERVER['HTTP_USER_AGENT']);
     $_SESSION['is_mobile'] = $is_mobile ? true : false;
@@ -18,11 +39,23 @@ $lang = $_GET['lang'] ?? $_SESSION['lang'] ?? 'ar';
 // Fetch cart items
 $cart_items = [];
 $total = 0;
-$ids = implode(',', array_map('intval', array_keys($_SESSION['cart'])));
-$stmt = $pdo->query("SELECT * FROM products WHERE id IN ($ids)");
+$cart_keys = array_keys($_SESSION['cart']);
+$ids = array_map(function($k){ return explode('|', $k)[0]; }, $cart_keys);
+$ids_str = implode(',', array_map('intval', $ids));
+$stmt = $pdo->query("SELECT * FROM products WHERE id IN ($ids_str)");
+$products_map = [];
 while ($row = $stmt->fetch()) {
-    $row['qty'] = $_SESSION['cart'][$row['id']];
+    $products_map[$row['id']] = $row;
+}
+foreach ($cart_keys as $cart_key) {
+    $parts = explode('|', $cart_key, 2);
+    $pid = intval($parts[0]);
+    $variant = isset($parts[1]) ? $parts[1] : '';
+    if (!isset($products_map[$pid])) continue;
+    $row = $products_map[$pid];
+    $row['qty'] = $_SESSION['cart'][$cart_key];
     $row['subtotal'] = $row['qty'] * $row['price'];
+    $row['variant'] = $variant;
     $cart_items[] = $row;
     $total += $row['subtotal'];
 }
@@ -41,8 +74,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $order_id = $pdo->lastInsertId();
     foreach ($cart_items as $item) {
         $prod_name = $item['name_' . $lang] ?? $item['name'];
-        $stmt = $pdo->prepare('INSERT INTO order_items (order_id, product_id, name, price, qty, subtotal) VALUES (?, ?, ?, ?, ?, ?)');
-        $stmt->execute([$order_id, $item['id'], $prod_name, $item['price'], $item['qty'], $item['subtotal']]);
+        // Add variant_key column to order_items if not present
+        $stmt = $pdo->prepare('INSERT INTO order_items (order_id, product_id, name, price, qty, subtotal, variant_key) VALUES (?, ?, ?, ?, ?, ?, ?)');
+        $stmt->execute([$order_id, $item['id'], $prod_name, $item['price'], $item['qty'], $item['subtotal'], $item['variant']]);
     }
     // Clear cart
     $_SESSION['cart'] = [];
@@ -110,64 +144,163 @@ if (isset($_SESSION['user_id'])) {
             </div>
         </div>
         <h2>إتمام الشراء</h2>
+        
+        <!-- Order Summary -->
+        <div class="order-summary" style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 30px;">
+            <h3 style="margin-top: 0; color: #1A237E;">ملخص الطلب</h3>
+            <table style="width: 100%; border-collapse: collapse;">
+                <thead>
+                    <tr style="background: #e3f2fd;">
+                        <th style="padding: 10px; text-align: right; border-bottom: 1px solid #ddd;">المنتج</th>
+                        <th style="padding: 10px; text-align: center; border-bottom: 1px solid #ddd;">الكمية</th>
+                        <th style="padding: 10px; text-align: center; border-bottom: 1px solid #ddd;">السعر</th>
+                        <th style="padding: 10px; text-align: center; border-bottom: 1px solid #ddd;">المجموع</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($cart_items as $item): ?>
+                    <tr>
+                        <td style="padding: 10px; text-align: right; border-bottom: 1px solid #eee;">
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <?php if ($item['image']): ?>
+                                    <img src="uploads/<?php echo htmlspecialchars($item['image']); ?>" alt="صورة المنتج" style="width: 40px; height: 40px; object-fit: cover; border-radius: 4px;">
+                                <?php endif; ?>
+                                <div>
+                                    <div style="font-weight: bold;"><?php echo htmlspecialchars($item['name']); ?></div>
+                                    <?php if (!empty($item['variant'])): ?>
+                                        <div style="font-size: 0.9em; color: #1A237E;">(<?php echo htmlspecialchars($item['variant']); ?>)</div>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                        </td>
+                        <td style="padding: 10px; text-align: center; border-bottom: 1px solid #eee;"><?php echo $item['qty']; ?></td>
+                        <td style="padding: 10px; text-align: center; border-bottom: 1px solid #eee;"><?php echo $item['price']; ?> د.ت</td>
+                        <td style="padding: 10px; text-align: center; border-bottom: 1px solid #eee; font-weight: bold;"><?php echo $item['subtotal']; ?> د.ت</td>
+                    </tr>
+                    <?php endforeach; ?>
+                </tbody>
+                <tfoot>
+                    <tr style="background: #e8f5e8;">
+                        <td colspan="3" style="padding: 15px; text-align: left; font-weight: bold; font-size: 1.1em;">الإجمالي:</td>
+                        <td style="padding: 15px; text-align: center; font-weight: bold; font-size: 1.1em; color: #1A237E;"><?php echo $total; ?> د.ت</td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+        
         <?php if ($success): ?>
             <div class="order-success">تم استلام طلبك بنجاح! سنقوم بالتواصل معك قريبًا.</div>
             <a href="index.php" class="checkout-btn">العودة للصفحة الرئيسية</a>
         <?php else: ?>
-        <form method="post" class="modern-form">
-            <div class="form-group">
-                <label for="name">الاسم الكامل:</label>
-                <input type="text" name="name" id="name" required autocomplete="name" placeholder=" " value="<?php echo htmlspecialchars($user['name'] ?? ''); ?>">
+        
+        <!-- Guest Checkout Notice -->
+        <?php if (!$is_logged_in): ?>
+            <div style="background: #fff3cd; border: 1px solid #ffeaa7; color: #856404; padding: 15px; border-radius: 8px; margin-bottom: 20px; text-align: center;">
+                <strong>🛒 Guest Checkout</strong><br>
+                You can complete your purchase without creating an account. 
+                <strong>Note:</strong> Cash on delivery requires account registration for security.
             </div>
-            <div class="form-group">
-                <label for="address">العنوان:</label>
-                <input type="text" name="address" id="address" required autocomplete="street-address" placeholder=" " value="<?php echo htmlspecialchars($user['address'] ?? ''); ?>">
+        <?php endif; ?>
+        
+        <form method="post" style="margin-top: 20px;">
+            <div style="margin-bottom: 15px;">
+                <label for="name" style="display: block; margin-bottom: 5px; font-weight: bold;">الاسم الكامل:</label>
+                <input type="text" name="name" id="name" required style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 5px; font-size: 16px;" value="<?php echo htmlspecialchars($user['name'] ?? ''); ?>">
             </div>
-            <div class="form-group">
-                <label for="phone">رقم الهاتف:</label>
-                <input type="tel" name="phone" id="phone" required autocomplete="tel" placeholder=" " pattern="^(2|5|9|4)[0-9]{7}$" inputmode="numeric" maxlength="8" title="<?= __('valid_tunisian_phone') ?>" oninput="this.value=this.value.replace(/[^0-9]/g,'');">
+            
+            <div style="margin-bottom: 15px;">
+                <label for="address" style="display: block; margin-bottom: 5px; font-weight: bold;">العنوان:</label>
+                <input type="text" name="address" id="address" required style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 5px; font-size: 16px;" value="<?php echo htmlspecialchars($user['address'] ?? ''); ?>">
             </div>
-            <div class="form-group">
-                <label for="email">البريد الإلكتروني:</label>
-                <input type="email" name="email" id="email" required autocomplete="email" placeholder=" " value="<?php echo htmlspecialchars($user['email'] ?? ''); ?>" pattern="^[^@\s]+@[^@\s]+\.[^@\s]+$" title="<?= __('enter_valid_email') ?>">
+            
+            <div style="margin-bottom: 15px;">
+                <label for="phone" style="display: block; margin-bottom: 5px; font-weight: bold;">رقم الهاتف:</label>
+                <input type="tel" name="phone" id="phone" required style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 5px; font-size: 16px;" maxlength="8" value="">
             </div>
-            <div class="form-group">
-                <label for="payment">طريقة الدفع:</label>
-                <select id="payment" name="payment" required autocomplete="off">
+            
+            <div style="margin-bottom: 15px;">
+                <label for="email" style="display: block; margin-bottom: 5px; font-weight: bold;">البريد الإلكتروني:</label>
+                <input type="email" name="email" id="email" required style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 5px; font-size: 16px;" value="<?php echo htmlspecialchars($user['email'] ?? ''); ?>">
+            </div>
+            
+            <div style="margin-bottom: 15px;">
+                <label for="payment" style="display: block; margin-bottom: 5px; font-weight: bold;">طريقة الدفع:</label>
+                <select id="payment" name="payment" required style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 5px; font-size: 16px;" onchange="handlePaymentChange(this.value)">
                     <option value="">اختر طريقة الدفع</option>
-                    <option value="card">بطاقة بنكية</option>
-                    <option value="d17">D17</option>
-                    <option value="cod">الدفع عند الاستلام</option>
+                    <option value="card">💳 بطاقة بنكية (Online Payment)</option>
+                    <option value="d17">📱 D17 (Online Payment)</option>
+                    <?php if ($is_logged_in): ?>
+                        <option value="cod">💰 الدفع عند الاستلام (Cash on Delivery)</option>
+                    <?php else: ?>
+                        <option value="cod" disabled>💰 الدفع عند الاستلام (تسجيل الدخول مطلوب)</option>
+                    <?php endif; ?>
                 </select>
+                <?php if (!$is_logged_in): ?>
+                    <div id="cod-notice" style="display: none; background: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; padding: 10px; border-radius: 5px; margin-top: 8px; font-size: 0.9em;">
+                        <strong>⚠️ Login Required:</strong> Cash on delivery requires account registration to prevent fraud and ensure payment security.
+                        <br><a href="client/login.php" style="color: #721c24; text-decoration: underline;">Login or Register</a>
+                    </div>
+                <?php endif; ?>
             </div>
-            <div class="form-group">
-                <label for="shipping">طريقة الشحن:</label>
-                <select id="shipping" name="shipping" required autocomplete="off">
+            
+            <div style="margin-bottom: 15px;">
+                <label for="shipping" style="display: block; margin-bottom: 5px; font-weight: bold;">طريقة الشحن:</label>
+                <select id="shipping" name="shipping" required style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 5px; font-size: 16px;">
                     <option value="">اختر طريقة الشحن</option>
                     <option value="first">First Delivery</option>
                 </select>
             </div>
-            <button type="submit" class="checkout-btn">تأكيد الطلب</button>
+            
+            <button type="submit" style="width: 100%; padding: 16px; background: #00BFAE; color: white; border: none; border-radius: 5px; font-size: 18px; font-weight: bold; cursor: pointer; margin-top: 20px;">تأكيد الطلب</button>
         </form>
         <?php endif; ?>
     </div>
     <script>
-    // Extra JS validation for phone and email
+    // Handle payment method changes
+    function handlePaymentChange(paymentMethod) {
+        const codNotice = document.getElementById('cod-notice');
+        const paymentSelect = document.getElementById('payment');
+        
+        if (paymentMethod === 'cod') {
+            if (codNotice) {
+                codNotice.style.display = 'block';
+                paymentSelect.value = ''; // Reset selection
+            }
+        } else {
+            if (codNotice) {
+                codNotice.style.display = 'none';
+            }
+        }
+    }
+    
+    // Simple form validation
     document.addEventListener('DOMContentLoaded', function() {
-      var form = document.querySelector('.modern-form');
+      var form = document.querySelector('form');
       if (!form) return;
+      
       form.addEventListener('submit', function(e) {
         var phone = form.phone.value.trim();
         var email = form.email.value.trim();
-        var phonePattern = /^(2|5|9|4)[0-9]{7}$/;
-        var emailPattern = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
-        if (!phonePattern.test(phone)) {
-          alert('يرجى إدخال رقم هاتف تونسي صحيح (8 أرقام يبدأ بـ 2 أو 5 أو 9 أو 4)');
+        var payment = form.payment.value;
+        
+        // Check if COD is selected for guest users
+        if (payment === 'cod' && !<?php echo $is_logged_in ? 'true' : 'false'; ?>) {
+          alert('Cash on delivery requires account registration. Please login or choose an online payment method.');
+          form.payment.focus();
+          e.preventDefault();
+          return false;
+        }
+        
+        // Simple phone validation
+        if (phone.length !== 8 || !/^[0-9]+$/.test(phone)) {
+          alert('يرجى إدخال رقم هاتف صحيح (8 أرقام)');
           form.phone.focus();
           e.preventDefault();
           return false;
         }
-        if (!emailPattern.test(email)) {
+        
+        // Simple email validation
+        if (!email.includes('@') || !email.includes('.')) {
           alert('يرجى إدخال بريد إلكتروني صحيح');
           form.email.focus();
           e.preventDefault();

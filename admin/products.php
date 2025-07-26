@@ -13,7 +13,17 @@ if (!isset($_SESSION['admin_id'])) {
     header('Location: login.php');
     exit();
 }
+
+$page_title = 'إدارة المنتجات';
+$page_subtitle = 'عرض، تعديل، وحذف المنتجات في المتجر';
+$breadcrumb = [
+    ['title' => 'الرئيسية', 'url' => 'dashboard.php'],
+    ['title' => 'إدارة المنتجات']
+];
+
 require '../db.php';
+require 'admin_header.php';
+
 // Handle delete
 if (isset($_GET['delete'])) {
     $id = intval($_GET['delete']);
@@ -27,7 +37,22 @@ if (isset($_GET['delete'])) {
     header('Location: products.php');
     exit();
 }
+
+if (isset($_GET['approve'])) {
+    $id = intval($_GET['approve']);
+    $stmt = $pdo->prepare('UPDATE products SET approved = 1 WHERE id = ?');
+    $stmt->execute([$id]);
+    // Log activity
+    $admin_id = $_SESSION['admin_id'];
+    $action = 'approve_product';
+    $details = 'Approved product ID: ' . $id;
+    $pdo->prepare('INSERT INTO activity_log (admin_id, action, details) VALUES (?, ?, ?)')->execute([$admin_id, $action, $details]);
+    header('Location: products.php');
+    exit();
+}
+
 $products = $pdo->query('SELECT * FROM products ORDER BY created_at DESC')->fetchAll();
+
 // Get current admin details
 $stmt = $pdo->prepare('SELECT role FROM admins WHERE id = ?');
 $stmt->execute([$_SESSION['admin_id']]);
@@ -40,62 +65,191 @@ $permissions = [
 ];
 $role = $current_admin['role'];
 ?>
-<!DOCTYPE html>
-<html lang="ar">
-<head>
-    <meta charset="UTF-8">
-    <title>إدارة المنتجات</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../beta333.css">
-    <?php if (!empty($_SESSION['is_mobile'])): ?>
-    <link rel="stylesheet" href="../mobile.css">
-    <?php endif; ?>
-    <style>
-        .products-container { max-width: 900px; margin: 40px auto; background: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-        .products-container h2 { text-align: center; margin-bottom: 30px; }
-        .add-btn { background: var(--primary-color); color: #fff; padding: 10px 24px; border-radius: 5px; text-decoration: none; font-size: 1em; margin-bottom: 20px; display: inline-block; transition: background 0.2s, color 0.2s; box-shadow: 0 2px 8px rgba(0,0,0,0.08); border: 1.5px solid var(--primary-color); }
-        .add-btn:hover { background: var(--secondary-color); color: #fff; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { padding: 12px; border-bottom: 1px solid #eee; text-align: center; }
-        th { background: #f4f4f4; }
-        .action-btn { background: #c00; color: #fff; padding: 6px 16px; border-radius: 5px; text-decoration: none; font-size: 0.95em; margin: 0 4px; border: 1.5px solid #a00; box-shadow: 0 1px 4px rgba(0,0,0,0.07); transition: background 0.2s, color 0.2s; }
-        .action-btn:hover { background: #a00; color: #fff; }
-        .edit-btn { background: #1A237E; color: #fff; border: 1.5px solid #FFD600; box-shadow: 0 2px 8px rgba(26,35,126,0.10); }
-        .edit-btn:hover { background: #FFD600; color: #1A237E; border: 1.5px solid #1A237E; }
-    </style>
-</head>
-<body>
-    <div class="products-container">
-        <h2>إدارة المنتجات</h2>
-        <a href="add_product.php" class="add-btn"<?php if (!$permissions[$role]['manage_products']) echo ' style="opacity:0.5;pointer-events:none;" tabindex="-1"'; ?>>إضافة منتج جديد</a>
-        <table>
-            <thead>
-                <tr>
-                    <th>الصورة</th>
-                    <th>الاسم</th>
-                    <th>الوصف</th>
-                    <th>السعر</th>
-                    <th>المخزون</th>
-                    <th>الإجراءات</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($products as $product): ?>
-                <tr>
-                    <td><?php if ($product['image']): ?><img src="../uploads/<?php echo htmlspecialchars($product['image']); ?>" alt="صورة المنتج" style="width:60px; height:60px; object-fit:cover; border-radius:6px; "><?php endif; ?></td>
-                    <td><?php echo htmlspecialchars($product['name']); ?></td>
-                    <td><?php echo htmlspecialchars($product['description']); ?></td>
-                    <td><?php echo htmlspecialchars($product['price']); ?> د.ت</td>
-                    <td><?php echo htmlspecialchars($product['stock']); ?></td>
-                    <td>
-                        <a href="edit_product.php?id=<?php echo $product['id']; ?>" class="action-btn edit-btn"<?php if (!$permissions[$role]['manage_products']) echo ' style="opacity:0.5;pointer-events:none;" tabindex="-1"'; ?>>تعديل</a>
-                        <a href="products.php?delete=<?php echo $product['id']; ?>" class="action-btn" onclick="return confirm('هل أنت متأكد من حذف هذا المنتج؟');"<?php if (!$permissions[$role]['manage_products']) echo ' style="opacity:0.5;pointer-events:none;" tabindex="-1"'; ?>>حذف</a>
-                    </td>
-                </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
-        <a href="dashboard.php" class="add-btn" style="background:var(--secondary-color);margin-top:30px; color:#fff; border:1.5px solid #FFD600; box-shadow:0 2px 8px rgba(0,191,174,0.10);">العودة للوحة التحكم</a>
+
+<div class="admin-content">
+    <div class="content-header">
+        <div class="header-actions">
+            <a href="add_product.php" class="btn btn-primary" <?php if (!$permissions[$role]['manage_products']) echo ' style="opacity:0.5;pointer-events:none;" tabindex="-1"'; ?>>
+                <span class="btn-icon">➕</span>
+                إضافة منتج جديد
+            </a>
+        </div>
     </div>
-</body>
-</html> 
+
+    <div class="content-body">
+        <div class="admin-table-container">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>الصورة</th>
+                        <th>الاسم</th>
+                        <th>الوصف</th>
+                        <th>السعر</th>
+                        <th>المخزون</th>
+                        <th>الحالة</th>
+                        <th>الإجراءات</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($products as $prod): ?>
+                    <tr>
+                        <td>
+                            <?php if ($prod['image']): ?>
+                                <img src="../uploads/<?php echo htmlspecialchars($prod['image']); ?>" 
+                                     alt="صورة المنتج" 
+                                     class="product-thumbnail">
+                            <?php else: ?>
+                                <div class="no-image">لا توجد صورة</div>
+                            <?php endif; ?>
+                        </td>
+                        <td><?php echo htmlspecialchars($prod['name']); ?></td>
+                        <td class="description-cell">
+                            <?php echo htmlspecialchars(substr($prod['description'], 0, 100)) . (strlen($prod['description']) > 100 ? '...' : ''); ?>
+                        </td>
+                        <td><?php echo htmlspecialchars($prod['price']); ?> د.ت</td>
+                        <td>
+                            <span class="stock-badge <?php echo $prod['stock'] > 0 ? 'in-stock' : 'out-of-stock'; ?>">
+                                <?php echo $prod['stock']; ?>
+                            </span>
+                        </td>
+                        <td>
+                            <span class="status-badge <?php echo $prod['approved'] ? 'approved' : 'pending'; ?>">
+                                <?php echo $prod['approved'] ? 'موافق عليه' : 'في الانتظار'; ?>
+                            </span>
+                        </td>
+                        <td class="actions-cell">
+                            <div class="action-buttons">
+                                <a href="edit_product.php?id=<?php echo $prod['id']; ?>" 
+                                   class="btn btn-warning btn-sm" 
+                                   title="تعديل">
+                                    <span class="btn-icon">✏️</span>
+                                </a>
+                                
+                                <?php if (!$prod['approved']): ?>
+                                <a href="?approve=<?php echo $prod['id']; ?>" 
+                                   class="btn btn-success btn-sm" 
+                                   title="موافقة"
+                                   onclick="return confirm('هل أنت متأكد من الموافقة على هذا المنتج؟')">
+                                    <span class="btn-icon">✅</span>
+                                </a>
+                                <?php endif; ?>
+                                
+                                <a href="?delete=<?php echo $prod['id']; ?>" 
+                                   class="btn btn-danger btn-sm" 
+                                   title="حذف"
+                                   onclick="return confirm('هل أنت متأكد من حذف هذا المنتج؟')">
+                                    <span class="btn-icon">🗑️</span>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+            
+            <?php if (empty($products)): ?>
+            <div class="empty-state">
+                <div class="empty-icon">📦</div>
+                <h3>لا توجد منتجات</h3>
+                <p>لم يتم إضافة أي منتجات بعد. ابدأ بإضافة منتج جديد.</p>
+                <a href="add_product.php" class="btn btn-primary">إضافة منتج جديد</a>
+            </div>
+            <?php endif; ?>
+        </div>
+    </div>
+</div>
+
+<style>
+.product-thumbnail {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 2px solid #e0e0e0;
+}
+
+.no-image {
+    width: 60px;
+    height: 60px;
+    background: #f5f5f5;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    color: #999;
+    border: 2px dashed #ddd;
+}
+
+.description-cell {
+    max-width: 200px;
+    word-wrap: break-word;
+}
+
+.stock-badge {
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.stock-badge.in-stock {
+    background: #e8f5e8;
+    color: #2e7d32;
+}
+
+.stock-badge.out-of-stock {
+    background: #ffebee;
+    color: #c62828;
+}
+
+.status-badge {
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.status-badge.approved {
+    background: #e8f5e8;
+    color: #2e7d32;
+}
+
+.status-badge.pending {
+    background: #fff3e0;
+    color: #ef6c00;
+}
+
+.actions-cell {
+    min-width: 120px;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 4px;
+    justify-content: center;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: #666;
+}
+
+.empty-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+}
+
+.empty-state h3 {
+    margin-bottom: 8px;
+    color: #333;
+}
+
+.empty-state p {
+    margin-bottom: 24px;
+    color: #666;
+}
+</style>
+
+<?php require 'admin_footer.php'; ?> 

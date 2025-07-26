@@ -24,7 +24,7 @@ if (!$order) {
   echo '<div style="max-width:600px;margin:40px auto;text-align:center;font-size:1.2em;">'.__('order_not_found').'</div>';
   exit;
 }
-$stmt = $pdo->prepare('SELECT p.*, oi.quantity, oi.price FROM order_items oi JOIN products p ON oi.product_id = p.id WHERE oi.order_id = ?');
+$stmt = $pdo->prepare('SELECT p.*, oi.quantity, oi.price, oi.variant_key FROM order_items oi JOIN products p ON oi.product_id = p.id WHERE oi.order_id = ?');
 $stmt->execute([$order_id]);
 $items = $stmt->fetchAll(PDO::FETCH_ASSOC);
 $status_steps = ['pending' => 'قيد الانتظار', 'processing' => 'قيد المعالجة', 'shipped' => 'تم الشحن', 'delivered' => 'تم التسليم', 'cancelled' => 'ملغي'];
@@ -75,7 +75,11 @@ $lang = $_GET['lang'] ?? $_SESSION['lang'] ?? 'ar';
         <?php foreach ($items as $item): ?>
           <?php $prod_name = $item['name_' . $lang] ?? $item['name']; ?>
           <tr>
-            <td><?= htmlspecialchars($prod_name) ?></td>
+            <td><?= htmlspecialchars($prod_name) ?>
+            <?php if (!empty($item['variant_key'])): ?>
+              <div style="font-size:0.98em;color:#1A237E;margin-top:4px;">(<?= htmlspecialchars($item['variant_key']) ?>)</div>
+            <?php endif; ?>
+            </td>
             <td><?= $item['quantity'] ?></td>
             <td><?= $item['price'] ?> د.ت</td>
           </tr>

@@ -25,28 +25,302 @@ if (!isset($_SESSION['admin_id'])) {
     <link rel="stylesheet" href="../mobile.css">
     <?php endif; ?>
     <style>
-        .dashboard-container { max-width: 900px; margin: 40px auto; background: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-        .dashboard-container h2 { text-align: center; margin-bottom: 30px; }
-        .dashboard-nav { display: flex; justify-content: center; gap: 30px; margin-bottom: 30px; }
-        .dashboard-nav a { background: var(--primary-color); color: #fff; padding: 12px 30px; border-radius: 5px; text-decoration: none; font-size: 1.1em; transition: background 0.2s; }
-        .dashboard-nav a:hover { background: var(--secondary-color); }
-        .logout-btn { float: left; background: #c00; color: #fff; padding: 8px 18px; border-radius: 5px; text-decoration: none; margin-bottom: 20px; }
-        .logout-btn:hover { background: #a00; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            direction: rtl;
+        }
+        
+        .dashboard-container {
+            max-width: 1200px;
+            margin: 20px auto;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .dashboard-header {
+            text-align: center;
+            margin-bottom: 40px;
+            position: relative;
+        }
+        
+        .dashboard-header h2 {
+            font-size: 2.5em;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-weight: 700;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .dashboard-subtitle {
+            color: #7f8c8d;
+            font-size: 1.1em;
+            margin-bottom: 20px;
+        }
+        
+        .logout-btn {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: #fff;
+            padding: 12px 24px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
+        }
+        
+        .logout-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(231, 76, 60, 0.4);
+        }
+        
+        .dashboard-nav {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        
+        .nav-card {
+            background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%);
+            border: 1px solid #e9ecef;
+            border-radius: 15px;
+            padding: 25px;
+            text-decoration: none;
+            color: #2c3e50;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .nav-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #3498db, #2ecc71, #f39c12, #e74c3c);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+        
+        .nav-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+            border-color: #3498db;
+        }
+        
+        .nav-card:hover::before {
+            transform: scaleX(1);
+        }
+        
+        .nav-card h3 {
+            font-size: 1.3em;
+            margin-bottom: 10px;
+            color: #2c3e50;
+            font-weight: 600;
+        }
+        
+        .nav-card p {
+            color: #7f8c8d;
+            font-size: 0.9em;
+            line-height: 1.5;
+        }
+        
+        .nav-icon {
+            font-size: 2em;
+            margin-bottom: 15px;
+            display: block;
+        }
+        
+        /* Special styling for disabled sellers card */
+        .nav-card.disabled-sellers {
+            background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+            border-color: #ffc107;
+        }
+        
+        .nav-card.disabled-sellers .nav-icon {
+            color: #ffc107;
+        }
+        
+        /* Category-specific colors */
+        .nav-card.products { border-left: 4px solid #3498db; }
+        .nav-card.orders { border-left: 4px solid #2ecc71; }
+        .nav-card.reviews { border-left: 4px solid #f39c12; }
+        .nav-card.categories { border-left: 4px solid #9b59b6; }
+        .nav-card.disabled-sellers { border-left: 4px solid #ffc107; }
+        .nav-card.admins { border-left: 4px solid #e74c3c; }
+        .nav-card.activity { border-left: 4px solid #1abc9c; }
+        .nav-card.newsletter { border-left: 4px solid #34495e; }
+        .nav-card.email-campaigns { border-left: 4px solid #e67e22; }
+        .nav-card.seller-tips { border-left: 4px solid #16a085; }
+        .nav-card.bulk-upload { border-left: 4px solid #9c27b0; }
+        
+        .welcome-message {
+            text-align: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-top: 30px;
+        }
+        
+        .welcome-message h3 {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+        }
+        
+        .welcome-message p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+        
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .dashboard-container {
+                margin: 10px;
+                padding: 20px;
+            }
+            
+            .dashboard-nav {
+                grid-template-columns: 1fr;
+            }
+            
+            .dashboard-header h2 {
+                font-size: 2em;
+            }
+            
+            .logout-btn {
+                position: static;
+                display: inline-block;
+                margin-bottom: 20px;
+            }
+        }
+        
+        /* Animation for cards */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .nav-card {
+            animation: fadeInUp 0.6s ease forwards;
+        }
+        
+        .nav-card:nth-child(1) { animation-delay: 0.1s; }
+        .nav-card:nth-child(2) { animation-delay: 0.2s; }
+        .nav-card:nth-child(3) { animation-delay: 0.3s; }
+        .nav-card:nth-child(4) { animation-delay: 0.4s; }
+        .nav-card:nth-child(5) { animation-delay: 0.5s; }
+        .nav-card:nth-child(6) { animation-delay: 0.6s; }
+        .nav-card:nth-child(7) { animation-delay: 0.7s; }
+        .nav-card:nth-child(8) { animation-delay: 0.8s; }
+        .nav-card:nth-child(9) { animation-delay: 0.9s; }
+        .nav-card:nth-child(10) { animation-delay: 1s; }
+        .nav-card:nth-child(11) { animation-delay: 1.1s; }
     </style>
 </head>
 <body>
     <div class="dashboard-container">
-        <a href="logout.php" class="logout-btn">تسجيل الخروج</a>
-        <h2>لوحة تحكم المشرف</h2>
+        <div class="dashboard-header">
+            <a href="logout.php" class="logout-btn">تسجيل الخروج</a>
+            <h2>لوحة تحكم المشرف</h2>
+            <p class="dashboard-subtitle">WeBuy - إدارة متجرك الإلكتروني</p>
+        </div>
+        
         <nav class="dashboard-nav">
-            <a href="products.php">إدارة المنتجات</a>
-            <a href="orders.php">إدارة الطلبات</a>
-            <a href="reviews.php">إدارة المراجعات</a>
-            <a href="categories.php">إدارة التصنيفات</a>
-            <a href="admins.php">إدارة المشرفين</a>
-            <a href="activity.php">سجل الأنشطة</a>
+            <a href="products.php" class="nav-card products">
+                <span class="nav-icon">📦</span>
+                <h3>إدارة المنتجات</h3>
+                <p>إضافة، تعديل، وحذف المنتجات في المتجر</p>
+            </a>
+            
+            <a href="bulk_upload.php" class="nav-card bulk-upload">
+                <span class="nav-icon">📊</span>
+                <h3>رفع المنتجات بالجملة</h3>
+                <p>استيراد منتجات متعددة من ملف CSV</p>
+            </a>
+            
+            <a href="orders.php" class="nav-card orders">
+                <span class="nav-icon">🛒</span>
+                <h3>إدارة الطلبات</h3>
+                <p>متابعة وإدارة طلبات العملاء</p>
+            </a>
+            
+            <a href="reviews.php" class="nav-card reviews">
+                <span class="nav-icon">⭐</span>
+                <h3>إدارة المراجعات</h3>
+                <p>مراجعة وتدقيق تقييمات العملاء</p>
+            </a>
+            
+            <a href="categories.php" class="nav-card categories">
+                <span class="nav-icon">📂</span>
+                <h3>إدارة التصنيفات</h3>
+                <p>تنظيم المنتجات في تصنيفات</p>
+            </a>
+            
+            <a href="disabled_sellers.php" class="nav-card disabled-sellers">
+                <span class="nav-icon">🌟</span>
+                <h3>البائعون ذوو الإعاقة</h3>
+                <p>إدارة البائعين ذوي الإعاقة ومنتجاتهم</p>
+            </a>
+            
+            <a href="admins.php" class="nav-card admins">
+                <span class="nav-icon">👥</span>
+                <h3>إدارة المشرفين</h3>
+                <p>إدارة حسابات المشرفين والصلاحيات</p>
+            </a>
+            
+            <a href="activity.php" class="nav-card activity">
+                <span class="nav-icon">📊</span>
+                <h3>سجل الأنشطة</h3>
+                <p>متابعة نشاطات النظام والمستخدمين</p>
+            </a>
+            
+            <a href="newsletter.php" class="nav-card newsletter">
+                <span class="nav-icon">📧</span>
+                <h3>النشرات الإخبارية</h3>
+                <p>إدارة النشرات الإخبارية للمشتركين</p>
+            </a>
+            
+            <a href="email_campaigns.php" class="nav-card email-campaigns">
+                <span class="nav-icon">📢</span>
+                <h3>حملات البريد الإلكتروني</h3>
+                <p>إرسال حملات تسويقية للعملاء</p>
+            </a>
+            
+            <a href="seller_tips.php" class="nav-card seller-tips">
+                <span class="nav-icon">💡</span>
+                <h3>نصائح البائعين</h3>
+                <p>نصائح وإرشادات للبائعين</p>
+            </a>
         </nav>
-        <p style="text-align:center;">مرحبًا بك في لوحة التحكم. اختر إجراء من الأعلى.</p>
+        
+        <div class="welcome-message">
+            <h3>مرحبًا بك في لوحة التحكم!</h3>
+            <p>اختر القسم المطلوب من البطاقات أعلاه لإدارة متجرك الإلكتروني</p>
+        </div>
     </div>
 </body>
 </html> 

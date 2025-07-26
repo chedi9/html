@@ -130,8 +130,7 @@ return [
     'recently_viewed' => 'المنتجات المشاهدة مؤخراً',
     'featured_categories' => 'الأقسام المميزة',
     'confirm_password' => 'تأكيد كلمة المرور',
-<<<<<<< Current (Your changes)
-=======
+
     // Additional missing keys for hardcoded strings
     'product_details' => 'تفاصيل المنتج',
     'product_image_alt' => 'صورة المنتج',
@@ -190,5 +189,4 @@ return [
     'continue_shopping' => 'العودة للتسوق',
     'view_cart' => 'عرض السلة',
     'seller_photo' => 'صورة البائع',
->>>>>>> Incoming (Background Agent changes)
 ];

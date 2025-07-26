@@ -45,8 +45,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error = __('code_expired');
     } else {
         // Insert user into DB
-        $stmt = $pdo->prepare('INSERT INTO users (name, email, password_hash, is_verified) VALUES (?, ?, ?, 1)');
-        $stmt->execute([$pending['name'], $pending['email'], $pending['password_hash']]);
+        $stmt = $pdo->prepare('INSERT INTO users (name, email, password_hash, is_verified, is_seller) VALUES (?, ?, ?, 1, ?)');
+        $stmt->execute([$pending['name'], $pending['email'], $pending['password_hash'], $pending['is_seller']]);
+        $user_id = $pdo->lastInsertId();
+        // If seller, create seller record
+        if (!empty($pending['is_seller'])) {
+            $stmt = $pdo->prepare('INSERT INTO sellers (user_id, store_name) VALUES (?, ?)');
+            $stmt->execute([$user_id, $pending['name'] . "'s Store"]);
+        }
         unset($_SESSION['pending_registration']);
         unset($_SESSION['pending_email']);
         $success = true;
