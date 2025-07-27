@@ -83,8 +83,11 @@ $lang = $_GET['lang'] ?? $_SESSION['lang'] ?? 'ar';
         th { background: #f4f4f4; }
         .remove-btn { background: #c00; color: #fff; padding: 6px 16px; border-radius: 5px; text-decoration: none; font-size: 0.95em; margin: 0 4px; }
         .remove-btn:hover { background: #a00; }
-        .checkout-btn { background: var(--primary-color); color: #fff; padding: 12px 30px; border-radius: 5px; text-decoration: none; font-size: 1.1em; display: inline-block; margin-top: 20px; }
+        .checkout-btn { background: var(--primary-color); color: #fff; padding: 12px 30px; border-radius: 5px; text-decoration: none; font-size: 1.1em; display: inline-block !important; margin-top: 20px; border: none; cursor: pointer; }
         .checkout-btn:hover { background: var(--secondary-color); }
+        .cart-container .checkout-btn { display: inline-block !important; visibility: visible !important; opacity: 1 !important; }
+        .cart-container button.checkout-btn { display: inline-block !important; }
+        .cart-container a.checkout-btn { display: inline-block !important; }
     </style>
 </head>
 <body>
@@ -109,7 +112,16 @@ $lang = $_GET['lang'] ?? $_SESSION['lang'] ?? 'ar';
   <?php $prod_name = $item['name_' . $lang] ?? $item['name']; ?>
   <?php $cart_key = array_keys($_SESSION['cart'])[$idx]; ?>
   <tr>
-    <td><?php if ($item['image']): ?><img src="uploads/<?php echo htmlspecialchars($item['image']); ?>" alt="صورة المنتج" style="width:60px; height:60px; object-fit:cover; border-radius:6px; "><?php endif; ?></td>
+    <td><?php if ($item['image']): ?>
+            <div class="product-img-wrap">
+                <?php 
+                $image_path = "uploads/" . htmlspecialchars($item['image']);
+                $thumb_path = "uploads/thumbnails/" . pathinfo($item['image'], PATHINFO_FILENAME) . "_thumb.jpg";
+                $final_image = file_exists($thumb_path) ? $thumb_path : $image_path;
+                ?>
+                <img src="<?php echo $final_image; ?>" alt="<?php echo htmlspecialchars($item['name']); ?>" loading="lazy" width="300" height="300">
+            </div>
+    <?php endif; ?></td>
     <td><a href="product.php?id=<?php echo $item['id']; ?>"><?php echo htmlspecialchars($item['name']); ?></a>
     <?php if (!empty($item['variant'])): ?>
       <div style="font-size:0.98em;color:#1A237E;margin-top:4px;">(<?php echo htmlspecialchars($item['variant']); ?>)</div>
@@ -123,7 +135,7 @@ $lang = $_GET['lang'] ?? $_SESSION['lang'] ?? 'ar';
 <?php endforeach; ?>
             </tbody>
         </table>
-                  <button type="submit" name="update" class="checkout-btn" style="background:var(--secondary-color);margin-top:20px;">تحديث الكميات</button>
+                  <button type="submit" name="update" class="checkout-btn" style="background:var(--secondary-color);margin-top:20px;display:inline-block !important;visibility:visible !important;opacity:1 !important;">تحديث الكميات</button>
         </form>
         <h3 style="text-align:left; margin-top:30px;">الإجمالي: <?php echo $total; ?> د.ت</h3>
                   <a href="checkout.php" class="checkout-btn">إتمام الشراء</a>
@@ -133,7 +145,7 @@ $lang = $_GET['lang'] ?? $_SESSION['lang'] ?? 'ar';
           <?php else: ?>
           <p style="text-align:center;">سلة التسوق فارغة</p>
         <?php endif; ?>
-                  <a href="index.php" class="checkout-btn" style="background:var(--secondary-color);margin-top:30px;">العودة للتسوق</a>
+                  <a href="index.php" class="checkout-btn" style="background:var(--secondary-color);margin-top:30px;display:inline-block !important;visibility:visible !important;opacity:1 !important;">العودة للتسوق</a>
     </div>
 </div>
 </body>

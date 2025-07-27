@@ -88,6 +88,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </form>
         <div class="register-link">
             <?= __('no_account') ?> <a href="register.php"><?= __('create_new_account') ?></a>
+            <br><br>
+            <a href="../forgot_password.php">نسيت كلمة المرور؟</a>
         </div>
     </div>
     <script src="../main.js"></script>

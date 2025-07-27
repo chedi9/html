@@ -14,17 +14,9 @@ if (!isset($_SESSION['admin_id'])) {
     exit();
 }
 
-$page_title = 'إدارة المدراء';
-$page_subtitle = 'عرض وإدارة حسابات المدراء';
-$breadcrumb = [
-    ['title' => 'الرئيسية', 'url' => 'dashboard.php'],
-    ['title' => 'إدارة المدراء']
-];
-
 require '../db.php';
-require 'admin_header.php';
 
-// Handle delete
+// Handle delete - BEFORE any HTML output
 if (isset($_GET['delete'])) {
     $id = intval($_GET['delete']);
     // Prevent deleting self
@@ -43,7 +35,7 @@ if (isset($_GET['delete'])) {
     }
 }
 
-// Handle role update
+// Handle role update - BEFORE any HTML output
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['admin_id'], $_POST['role'])) {
     $admin_id = intval($_POST['admin_id']);
     $role = $_POST['role'];
@@ -62,6 +54,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['admin_id'], $_POST['r
         exit();
     }
 }
+
+$page_title = 'إدارة المدراء';
+$page_subtitle = 'عرض وإدارة حسابات المدراء';
+$breadcrumb = [
+    ['title' => 'الرئيسية', 'url' => 'dashboard.php'],
+    ['title' => 'إدارة المدراء']
+];
+
+require 'admin_header.php';
 
 $admins = $pdo->query('SELECT * FROM admins ORDER BY created_at DESC')->fetchAll();
 

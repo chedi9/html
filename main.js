@@ -146,43 +146,7 @@ if (hamburger && megaMenuList) {
     megaMenuList.classList.toggle('active');
   });
 }
-// Cart Dropdown: hybrid hover (desktop) + click (all devices)
-document.querySelectorAll('[data-cart-dropdown]').forEach(wrapper => {
-  const toggleBtn = wrapper.querySelector('.cart-dropdown-toggle');
-  const dropdown = wrapper.querySelector('.cart-dropdown-menu');
-  let hoverTimeout;
-  if (toggleBtn && dropdown) {
-    // Click to toggle (always works)
-    toggleBtn.addEventListener('click', function(e) {
-      e.stopPropagation();
-      const isOpen = dropdown.classList.contains('open');
-      document.querySelectorAll('.cart-dropdown-menu.open').forEach(d => d.classList.remove('open'));
-      if (!isOpen) dropdown.classList.add('open');
-      else dropdown.classList.remove('open');
-    });
-    // Desktop: open on hover
-    wrapper.addEventListener('mouseenter', function() {
-      if (window.innerWidth > 900) {
-        clearTimeout(hoverTimeout);
-        document.querySelectorAll('.cart-dropdown-menu.open').forEach(d => d.classList.remove('open'));
-        dropdown.classList.add('open');
-      }
-    });
-    wrapper.addEventListener('mouseleave', function() {
-      if (window.innerWidth > 900) {
-        hoverTimeout = setTimeout(() => dropdown.classList.remove('open'), 100);
-      }
-    });
-    // Close on outside click
-    document.addEventListener('click', function(e) {
-      if (!wrapper.contains(e.target)) dropdown.classList.remove('open');
-    });
-    // Close on Escape
-    document.addEventListener('keydown', function(e) {
-      if (e.key === 'Escape') dropdown.classList.remove('open');
-    });
-  }
-});
+// Cart dropdown functionality removed - now using simple link to cart.php
 // AJAX Add to Cart
 function setupAjaxAddToCart() {
   document.querySelectorAll('.add-to-cart-form').forEach(form => {

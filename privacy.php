@@ -21,6 +21,13 @@ if (!isset($_SESSION['is_mobile'])) {
     <?php endif; ?>
 </head>
 <body>
+  <div style="display:flex;justify-content:flex-end;align-items:center;margin-bottom:10px;max-width:700px;margin-left:auto;margin-right:auto;gap:18px;">
+    <button id="darkModeToggle" class="dark-mode-toggle" title="Toggle dark mode" style="background:#00BFAE;color:#fff;border:none;border-radius:50%;width:40px;height:40px;display:flex;align-items:center;justify-content:center;font-size:1.3em;margin-left:16px;cursor:pointer;box-shadow:0 2px 8px rgba(0,191,174,0.10);transition:background 0.2s, color 0.2s;">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 12.79A9 9 0 1 1 11.21 3a7 7 0 0 0 9.79 9.79z"/>
+      </svg>
+    </button>
+  </div>
     <section class="container" style="max-width:700px;margin:40px auto;">
         <h2>سياسة الخصوصية</h2>
         <p>
@@ -30,5 +37,6 @@ if (!isset($_SESSION['is_mobile'])) {
         لمزيد من المعلومات أو الاستفسارات، يرجى التواصل معنا عبر البريد الإلكتروني: <a href="mailto:webuytn0@gmail.com" style="color:var(--accent-color);">webuytn0@gmail.com</a>
         </p>
     </section>
+    <script src="main.js?v=1.2"></script>
 </body>
 </html> 

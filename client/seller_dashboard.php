@@ -2,6 +2,8 @@
 session_start();
 require '../db.php';
 require '../lang.php';
+require_once '../db.php';
+require_once 'make_thumbnail.php';
 if (!isset($_SESSION['user_id'])) {
     header('Location: login.php');
     exit();
@@ -21,10 +23,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $logo_path = $seller['store_logo'];
     if (isset($_FILES['store_logo']) && $_FILES['store_logo']['error'] === UPLOAD_ERR_OK) {
         $ext = pathinfo($_FILES['store_logo']['name'], PATHINFO_EXTENSION);
-        $new_name = 'seller_logo_' . $seller['id'] . '_' . time() . '.' . $ext;
-        $target = '../uploads/' . $new_name;
+        $logo = uniqid('logo_', true) . '.' . $ext;
+        $target = '../uploads/' . $logo;
         if (move_uploaded_file($_FILES['store_logo']['tmp_name'], $target)) {
-            $logo_path = $new_name;
+            // Generate thumbnail
+            $thumb_dir = '../uploads/thumbnails/';
+            if (!is_dir($thumb_dir)) mkdir($thumb_dir, 0777, true);
+            $thumb_path = $thumb_dir . pathinfo($logo, PATHINFO_FILENAME) . '_thumb.jpg';
+            make_thumbnail($target, $thumb_path, 150, 150);
+            
+            $stmt = $pdo->prepare('UPDATE users SET store_logo = ? WHERE id = ?');
+            $stmt->execute([$logo, $_SESSION['user_id']]);
         }
     }
     $stmt = $pdo->prepare('UPDATE sellers SET store_name = ?, store_description = ?, store_logo = ? WHERE id = ?');

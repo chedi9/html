@@ -1,12 +1,29 @@
 <?php
+// Security and compatibility headers
+header('Content-Type: text/html; charset=utf-8');
+header('Cache-Control: public, max-age=3600');
+header('X-Content-Type-Options: nosniff');
+header("Content-Security-Policy: frame-ancestors 'self'");
+if (session_status() === PHP_SESSION_NONE) session_start();
+if (!isset($_SESSION['is_mobile'])) {
+    $is_mobile = preg_match('/android|iphone|ipad|ipod|blackberry|windows phone|opera mini|mobile/i', $_SERVER['HTTP_USER_AGENT']);
+    $_SESSION['is_mobile'] = $is_mobile ? true : false;
+}
+if (!isset($_SESSION['admin_id'])) {
+    header('Location: login.php');
+    exit();
+}
+
 $page_title = 'إدارة البائعين ذوي الإعاقة';
 $page_subtitle = 'إضافة وتعديل وحذف البائعين ذوي الإعاقة ومنتجاتهم';
 $breadcrumb = [
+    ['title' => 'الرئيسية', 'url' => 'dashboard.php'],
     ['title' => 'إدارة البائعين ذوي الإعاقة']
 ];
 
 require '../db.php';
 require 'admin_header.php';
+require_once '../client/make_thumbnail.php';
 
 // Handle actions
 $message = '';
@@ -25,8 +42,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $seller_photo = '';
                 if (isset($_FILES['seller_photo']) && $_FILES['seller_photo']['error'] === UPLOAD_ERR_OK) {
                     $ext = pathinfo($_FILES['seller_photo']['name'], PATHINFO_EXTENSION);
-                    $seller_photo = uniqid('disabled_seller_', true) . '.' . $ext;
+                    $seller_photo = uniqid('seller_', true) . '.' . $ext;
                     move_uploaded_file($_FILES['seller_photo']['tmp_name'], '../uploads/' . $seller_photo);
+                    
+                    // Generate thumbnail
+                    $thumb_dir = '../uploads/thumbnails/';
+                    if (!is_dir($thumb_dir)) mkdir($thumb_dir, 0777, true);
+                    $thumb_path = $thumb_dir . pathinfo($seller_photo, PATHINFO_FILENAME) . '_thumb.jpg';
+                    make_thumbnail('../uploads/' . $seller_photo, $thumb_path, 150, 150);
                 }
                 
                 $stmt = $pdo->prepare('INSERT INTO disabled_sellers (name, story, disability_type, location, contact_info, seller_photo, priority_level, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, NOW())');
@@ -49,6 +72,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $ext = pathinfo($_FILES['seller_photo']['name'], PATHINFO_EXTENSION);
                     $seller_photo = uniqid('disabled_seller_', true) . '.' . $ext;
                     move_uploaded_file($_FILES['seller_photo']['tmp_name'], '../uploads/' . $seller_photo);
+                    
+                    // Generate thumbnail
+                    $thumb_dir = '../uploads/thumbnails/';
+                    if (!is_dir($thumb_dir)) mkdir($thumb_dir, 0777, true);
+                    $thumb_path = $thumb_dir . pathinfo($seller_photo, PATHINFO_FILENAME) . '_thumb.jpg';
+                    make_thumbnail('../uploads/' . $seller_photo, $thumb_path, 150, 150);
                 }
                 
                 $stmt = $pdo->prepare('UPDATE disabled_sellers SET name = ?, story = ?, disability_type = ?, location = ?, contact_info = ?, seller_photo = ?, priority_level = ? WHERE id = ?');

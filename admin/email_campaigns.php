@@ -25,9 +25,11 @@ if ($_POST && isset($_POST['action'])) {
                 $product = $stmt->fetch();
                 
                 if ($product) {
-                    // Get users who might be interested (recent viewers, wishlist users, etc.)
-                    $stmt = $pdo->prepare("SELECT DISTINCT u.email, u.name FROM users u WHERE u.email IS NOT NULL AND u.email != ''");
-                    $stmt->execute();
+                    // Get users who have this product in their wishlist
+                    $stmt = $pdo->prepare("SELECT DISTINCT u.email, u.name FROM users u 
+                                          JOIN wishlist w ON u.id = w.user_id 
+                                          WHERE w.product_id = ? AND u.email IS NOT NULL AND u.email != ''");
+                    $stmt->execute([$product_id]);
                     $recipients = $stmt->fetchAll();
                     
                     $sent_count = 0;
@@ -65,9 +67,11 @@ if ($_POST && isset($_POST['action'])) {
                 $product = $stmt->fetch();
                 
                 if ($product) {
-                    // Get users who have this product in wishlist (simulated)
-                    $stmt = $pdo->prepare("SELECT DISTINCT u.email, u.name FROM users u WHERE u.email IS NOT NULL AND u.email != ''");
-                    $stmt->execute();
+                    // Get users who have this product in their wishlist
+                    $stmt = $pdo->prepare("SELECT DISTINCT u.email, u.name FROM users u 
+                                          JOIN wishlist w ON u.id = w.user_id 
+                                          WHERE w.product_id = ? AND u.email IS NOT NULL AND u.email != ''");
+                    $stmt->execute([$product_id]);
                     $recipients = $stmt->fetchAll();
                     
                     $sent_count = 0;

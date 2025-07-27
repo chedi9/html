@@ -88,76 +88,7 @@ if (!empty($_SESSION['viewed_products'])) {
                 <span class="logo-text" style="font-size:1.5em;font-weight:bold;color:#FFD600;margin-right:12px;letter-spacing:1.5px;text-shadow:0 2px 8px rgba(0,191,174,0.10);">WeBuy نجوم تونس</span>
             </div>
             <div class="header-actions-group">
-                <!-- Cart Dropdown -->
-                <div class="cart-dropdown-wrapper" data-cart-dropdown>
-                    <button class="cart-dropdown-toggle" aria-label="Cart">
-                        <img src="cart-icon.svg" alt="Cart">
-                        <span class="cart-count"><?php echo isset($_SESSION['cart']) ? array_sum($_SESSION['cart']) : 0; ?></span>
-                    </button>
-                    <div id="mini-cart" class="cart-dropdown-menu">
-                        <strong>سلة التسوق</strong>
-                        <hr>
-                        <?php if (isset($_SESSION['cart']) && $_SESSION['cart']): ?>
-                            <?php
-                            $cart_keys = array_keys($_SESSION['cart']);
-                            $ids = array_map(function($k){ return explode('|', $k)[0]; }, $cart_keys);
-                            $ids_str = implode(',', array_map('intval', $ids));
-                            $stmt = $pdo->query("SELECT * FROM products WHERE id IN ($ids_str)");
-                            $products_map = [];
-                            while ($row = $stmt->fetch()) {
-                                $products_map[$row['id']] = $row;
-                            }
-                            $total = 0;
-                            foreach ($cart_keys as $cart_key):
-                                $parts = explode('|', $cart_key, 2);
-                                $pid = intval($parts[0]);
-                                $variant = isset($parts[1]) ? $parts[1] : '';
-                                if (!isset($products_map[$pid])) {
-                                    // Remove the missing product from cart
-                                    unset($_SESSION['cart'][$cart_key]);
-                                    continue;
-                                }
-                                $item = $products_map[$pid];
-                                $qty = $_SESSION['cart'][$cart_key];
-                                $subtotal = $qty * $item['price'];
-                                $total += $subtotal;
-                            ?>
-                                <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
-                                    <img src="uploads/<?php echo htmlspecialchars($item['image']); ?>" alt="<?= __('product_image') ?>" style="width:38px;height:38px;object-fit:cover;border-radius:6px;">
-                                    <span style="flex:1;"> <?php echo htmlspecialchars($item['name']); ?>
-                                    <?php if (!empty($variant)): ?>
-                                        <div style="font-size:0.8em;color:#1A237E;">(<?php echo htmlspecialchars($variant); ?>)</div>
-                                    <?php endif; ?>
-                                    (<?php echo $qty; ?>) </span>
-                                                                          <span style="color:var(--secondary-color);font-weight:bold;"> <?php echo $subtotal; ?> <?= __('currency') ?> </span>
-                                </div>
-                            <?php endforeach; ?>
-                            <hr>
-                                                          <div style="text-align:left;font-weight:bold;"><?= __('total') ?>: <?php echo $total; ?> <?= __('currency') ?></div>
-                                                          <a href="cart.php" class="checkout-btn" style="width:100%;margin-top:10px;"><?= __('view_cart') ?></a>
-                          <?php else: ?>
-                              <div style="text-align:center;color:#888;"><?= __('cart_empty') ?></div>
-                        <?php endif; ?>
-                    </div>
-                </div>
-                <button class="dark-mode-toggle" id="darkModeToggle" title="<?= __('dark_mode_toggle') ?>">🌙</button>
-                <!-- User Dropdown -->
-                <div class="user-dropdown-wrapper">
-                    <button class="user-dropdown-toggle" aria-label="User Menu">
-                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" fill="#FFD600"/><ellipse cx="12" cy="17" rx="7" ry="5" fill="#00BFAE"/></svg>
-                    </button>
-                    <div class="user-dropdown-menu">
-                        <?php if (isset($_SESSION['user_id'])): ?>
-                            <a href="client/account.php"><?= __('account') ?></a>
-                            <a href="client/orders.php"><?= __('orders') ?></a>
-                            <a href="wishlist.php"><?= __('wishlist') ?></a>
-                            <a href="client/logout.php"><?= __('logout') ?></a>
-                        <?php else: ?>
-                            <a href="client/login.php"><?= __('login') ?></a>
-                            <a href="client/register.php"><?= __('register') ?></a>
-                        <?php endif; ?>
-                    </div>
-                </div>
+                <!-- Header actions are now handled by header.php include -->
             </div>
         </div>
         <div class="header-mega-menu-row">
@@ -322,7 +253,7 @@ if (!empty($_SESSION['viewed_products'])) {
         <!-- Disabled Sellers Showcase Section -->
         <?php
         require_once 'priority_products_helper.php';
-        $priority_products = getPriorityProducts($pdo, 6);
+        $priority_products = getPriorityProducts(6);
         
         if (!empty($priority_products)):
         ?>
@@ -347,7 +278,7 @@ if (!empty($_SESSION['viewed_products'])) {
                     </button>
                     <a href="product.php?id=<?php echo $product['id']; ?>">
                         <div class="product-img-wrap">
-                            <img src="uploads/<?php echo htmlspecialchars($product['image']); ?>" alt="<?php echo htmlspecialchars($product['name']); ?>">
+                            <img src="uploads/<?php echo htmlspecialchars($product['image']); ?>" alt="<?php echo htmlspecialchars($product['name']); ?>" loading="lazy" width="300" height="300">
                         </div>
                         <h3><?php echo htmlspecialchars($product['name']); ?></h3>
                         <p><?php echo htmlspecialchars($product['description']); ?></p>
@@ -399,7 +330,12 @@ if (!empty($_SESSION['viewed_products'])) {
                         </button>
                     <a href="product.php?id=<?php echo $product['id']; ?>">
                         <div class="product-img-wrap">
-                            <img src="uploads/<?php echo htmlspecialchars($product['image']); ?>" alt="<?php echo htmlspecialchars($product['name']); ?>">
+                            <?php 
+                            $image_path = "uploads/" . htmlspecialchars($product['image']);
+                            $thumb_path = "uploads/thumbnails/" . pathinfo($product['image'], PATHINFO_FILENAME) . "_thumb.jpg";
+                            $final_image = file_exists($thumb_path) ? $thumb_path : $image_path;
+                            ?>
+                            <img src="<?php echo $final_image; ?>" alt="<?php echo htmlspecialchars($product['name']); ?>" loading="lazy" width="300" height="300">
                         </div>
                         <h3><?php echo htmlspecialchars($product['name']); ?></h3>
                         <p><?php echo htmlspecialchars($product['description']); ?></p>

@@ -2,6 +2,10 @@
 session_start();
 header('Content-Type: application/json');
 require 'db.php';
+
+// Add error logging
+error_log("Wishlist action called: " . print_r($_POST, true));
+
 if (!isset($_SESSION['user_id'])) {
   echo json_encode(['status' => 'login']);
   exit;
@@ -17,11 +21,18 @@ if ($action === 'toggle') {
   $exists = $pdo->prepare('SELECT 1 FROM wishlist WHERE user_id = ? AND product_id = ?');
   $exists->execute([$user_id, $product_id]);
   if ($exists->fetch()) {
-    $pdo->prepare('DELETE FROM wishlist WHERE user_id = ? AND product_id = ?')->execute([$user_id, $product_id]);
+    $delete_stmt = $pdo->prepare('DELETE FROM wishlist WHERE user_id = ? AND product_id = ?');
+    $delete_result = $delete_stmt->execute([$user_id, $product_id]);
+    error_log("Wishlist delete result: " . ($delete_result ? 'success' : 'failed'));
     echo json_encode(['status' => 'removed']);
     exit;
   } else {
-    $pdo->prepare('INSERT IGNORE INTO wishlist (user_id, product_id) VALUES (?, ?)')->execute([$user_id, $product_id]);
+    $insert_stmt = $pdo->prepare('INSERT INTO wishlist (user_id, product_id) VALUES (?, ?)');
+    $insert_result = $insert_stmt->execute([$user_id, $product_id]);
+    error_log("Wishlist insert result: " . ($insert_result ? 'success' : 'failed'));
+    if (!$insert_result) {
+      error_log("Wishlist insert error: " . print_r($insert_stmt->errorInfo(), true));
+    }
     echo json_encode(['status' => 'added']);
     exit;
   }

@@ -1,533 +1,882 @@
 <?php
-// Security and compatibility headers
-header('Content-Type: text/html; charset=utf-8');
-header('Cache-Control: public, max-age=3600');
-header('X-Content-Type-Options: nosniff');
-header("Content-Security-Policy: frame-ancestors 'self'");
-require 'db.php';
-require 'lang.php';
-session_start();
-if (!isset($_SESSION['viewed_products'])) {
-    $_SESSION['viewed_products'] = [];
-}
-$id = isset($_GET['id']) ? intval($_GET['id']) : 0;
-if ($id) {
-    // Remove if already exists
-    $_SESSION['viewed_products'] = array_diff($_SESSION['viewed_products'], [$id]);
-    // Add to end
-    $_SESSION['viewed_products'][] = $id;
-    // Limit to last 6
-    $_SESSION['viewed_products'] = array_slice($_SESSION['viewed_products'], -6);
-}
-// Update product query to join sellers
-$stmt = $pdo->prepare('SELECT p.*, c.name AS category_name, s.store_name, s.store_description, s.store_logo
-    FROM products p
-    LEFT JOIN categories c ON p.category_id = c.id
-    LEFT JOIN sellers s ON p.seller_id = s.id
-    WHERE p.id = ?');
-$stmt->execute([$id]);
-$product = $stmt->fetch();
-if (!$product) {
-    die('المنتج غير موجود.');
+require_once 'db.php';
+require_once 'lang.php';
+
+if (!isset($_GET['id'])) {
+    header('Location: index.php');
+    exit();
 }
 
-// Related products (same category, exclude current)
-$related = [];
-if ($product['category_id']) {
-    $rel_stmt = $pdo->prepare('SELECT id, name, image, price FROM products WHERE category_id = ? AND id != ? ORDER BY RAND() LIMIT 3');
-    $rel_stmt->execute([$product['category_id'], $product['id']]);
-    $related = $rel_stmt->fetchAll();
+$product_id = intval($_GET['id']);
+
+// Get product details with seller information
+$stmt = $pdo->prepare('
+    SELECT p.*, c.name as category_name, c.name_ar as category_name_ar, 
+           ds.name as disabled_seller_name, ds.story as disabled_seller_story, ds.seller_photo as disabled_seller_photo,
+           ds.disability_type, ds.priority_level
+    FROM products p 
+    LEFT JOIN categories c ON p.category_id = c.id 
+    LEFT JOIN disabled_sellers ds ON p.disabled_seller_id = ds.id
+    WHERE p.id = ? AND p.approved = 1
+');
+$stmt->execute([$product_id]);
+$product = $stmt->fetch();
+
+if (!$product) {
+    header('Location: index.php');
+    exit();
 }
-// Fetch reviews for this product
-$reviews = [];
-$avg_rating = 0;
-$review_count = 0;
-$stmt = $pdo->prepare('SELECT * FROM reviews WHERE product_id = ? AND (hidden IS NULL OR hidden = 0) ORDER BY created_at DESC');
-$stmt->execute([$product['id']]);
+
+// Get all product images
+$stmt = $pdo->prepare('SELECT * FROM product_images WHERE product_id = ? ORDER BY is_main DESC, sort_order ASC');
+$stmt->execute([$product_id]);
+$product_images = $stmt->fetchAll();
+
+// If no additional images, use main product image
+if (empty($product_images)) {
+    $product_images = [['image_path' => $product['image'], 'is_main' => 1]];
+}
+
+// Get related products
+$stmt = $pdo->prepare('
+    SELECT p.*, ds.name as disabled_seller_name, ds.priority_level
+    FROM products p 
+    LEFT JOIN disabled_sellers ds ON p.disabled_seller_id = ds.id
+    WHERE p.category_id = ? AND p.id != ? AND p.approved = 1
+    ORDER BY ds.priority_level DESC, p.created_at DESC 
+    LIMIT 8
+');
+$stmt->execute([$product['category_id'], $product_id]);
+$related_products = $stmt->fetchAll();
+
+// Get reviews
+$stmt = $pdo->prepare('
+    SELECT r.*, u.name as user_name, u.id as user_id
+    FROM reviews r 
+    LEFT JOIN users u ON r.user_id = u.id 
+    WHERE r.product_id = ? AND r.status = "approved"
+    ORDER BY r.created_at DESC
+');
+$stmt->execute([$product_id]);
 $reviews = $stmt->fetchAll();
-if ($reviews) {
-    $review_count = count($reviews);
-    $avg_rating = round(array_sum(array_column($reviews, 'rating')) / $review_count, 1);
+
+// Calculate average rating
+$avg_rating = 0;
+if (!empty($reviews)) {
+    $total_rating = array_sum(array_column($reviews, 'rating'));
+    $avg_rating = round($total_rating / count($reviews), 1);
 }
-$rating_counts = [5=>0,4=>0,3=>0,2=>0,1=>0];
-foreach ($reviews as $rev) {
-    $r = (int)$rev['rating'];
-    if (isset($rating_counts[$r])) $rating_counts[$r]++;
-}
-// Fetch product images
-$stmt_imgs = $pdo->prepare('SELECT * FROM product_images WHERE product_id = ? ORDER BY is_main DESC, sort_order ASC, id ASC');
-$stmt_imgs->execute([$product['id']]);
-$product_images = $stmt_imgs->fetchAll();
-// Fetch product variants
-$stmtOpt = $pdo->prepare('SELECT * FROM product_variant_options WHERE product_id = ? ORDER BY sort_order ASC, id ASC');
-$stmtOpt->execute([$product['id']]);
-$variant_options = $stmtOpt->fetchAll();
-$variant_values = [];
-foreach ($variant_options as $opt) {
-    $stmtVal = $pdo->prepare('SELECT * FROM product_variant_values WHERE option_id = ? ORDER BY sort_order ASC, id ASC');
-    $stmtVal->execute([$opt['id']]);
-    $variant_values[$opt['id']] = $stmtVal->fetchAll();
-}
-$stmtComb = $pdo->prepare('SELECT * FROM product_variant_combinations WHERE product_id = ? ORDER BY sort_order ASC, id ASC');
-$stmtComb->execute([$product['id']]);
-$variant_combinations = $stmtComb->fetchAll();
+
+$page_title = $product['name'];
 ?>
+
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title><?php echo htmlspecialchars($product['name_' . $lang] ?? $product['name']); ?> - <?= __('product_details') ?></title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><?php echo htmlspecialchars($product['name']); ?> - WeBuy</title>
     <link rel="stylesheet" href="beta333.css">
-    <?php if (!empty($_SESSION['is_mobile'])): ?>
-    <link rel="stylesheet" href="mobile.css">
-    <?php endif; ?>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        .product-detail-container { max-width: 700px; margin: 40px auto; background: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-        .breadcrumb { font-size: 0.98em; margin-bottom: 18px; color: #888; }
-        .breadcrumb a { color: var(--secondary-color); text-decoration: none; }
-        .breadcrumb a:hover { text-decoration: underline; }
-        .product-header { display: flex; gap: 30px; align-items: flex-start; }
-        .product-gallery { display: flex; gap: 10px; align-items: center; }
-        .product-img { width: 260px; height: 260px; object-fit: cover; border-radius: 10px; background: #fafafa; }
-        .gallery-thumbs { display: flex; gap: 8px; margin-top: 10px; }
-        .gallery-thumbs img { width: 48px; height: 48px; object-fit: cover; border-radius: 6px; border: 2px solid #eee; cursor: pointer; }
-        .product-info { flex: 1; }
-        .product-info h2 { margin: 0 0 10px; }
-        .product-info .price { color: var(--secondary-color); font-weight: bold; font-size: 1.2em; margin-bottom: 10px; }
-        .product-info .stock { color: #228B22; }
-        .product-info .out-stock { color: #c00; }
-        .product-info .category { color: #555; font-size: 0.98em; margin-bottom: 10px; }
-        .add-cart-btn { margin-top: 10px; padding: 10px 24px; background: var(--primary-color); color: #fff; border: none; border-radius: 5px; font-size: 1em; cursor: pointer; }
-        .add-cart-btn:disabled { background: #ccc; cursor: not-allowed; }
-        .tabs { display: flex; gap: 10px; margin-top: 30px; }
-        .tab-btn { background: #eee; color: #333; border: none; border-radius: 6px 6px 0 0; padding: 10px 24px; cursor: pointer; font-size: 1em; }
-        .tab-btn.active { background: var(--primary-color); color: #fff; }
-        .tab-content { background: #fafafa; border-radius: 0 0 10px 10px; padding: 20px; margin-top: -2px; }
-        .reviews-section { margin-top: 0; }
-        .review-item { background: #f9f9f9; border-radius: 8px; padding: 16px; margin-bottom: 18px; }
-        .reviewer-name { font-weight: bold; color: var(--secondary-color); }
-        .review-text { margin-top: 5px; }
-        .related-products { margin-top: 40px; }
-        .related-products h3 { margin-bottom: 18px; }
-        .related-grid { display: flex; gap: 18px; flex-wrap: wrap; }
-        .related-card { width: 180px; background: #fafafa; border: 1px solid #eee; border-radius: 10px; padding: 12px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
-        .related-card img { width: 100%; height: 90px; object-fit: cover; border-radius: 8px; }
-        .related-card h4 { margin: 8px 0 4px; font-size: 1em; }
-        .related-card .price { color: var(--secondary-color); font-weight: bold; }
-        /* Star rating widget styles */
-        .star-rating { display: flex; gap: 5px; }
-        .star-rating span { cursor: pointer; }
-        .star-rating span:hover { color: #FFD600; }
-        .star-rating span.active { color: #FFD600; }
+        /* Product Gallery Styles */
+        .product-gallery {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .main-image-container {
+            position: relative;
+            background: #fff;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        
+        .main-image {
+            width: 100%;
+            height: 600px;
+            object-fit: contain;
+            cursor: zoom-in;
+            transition: transform 0.3s ease;
+        }
+        
+        .main-image:hover {
+            transform: scale(1.02);
+        }
+        
+        .image-zoom-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+            z-index: 9999;
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .zoomed-image {
+            max-width: 95%;
+            max-height: 95%;
+            object-fit: contain;
+            border-radius: 8px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+        }
+        
+        .close-zoom {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: white;
+            font-size: 30px;
+            cursor: pointer;
+            background: rgba(0,0,0,0.7);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        
+        .close-zoom:hover {
+            background: rgba(255,255,255,0.2);
+            transform: scale(1.1);
+        }
+            object-fit: contain;
+            cursor: zoom-in;
+            transition: transform 0.3s ease;
+        }
+        
+        .main-image:hover {
+            transform: scale(1.02);
+        }
+        
+        .image-zoom-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            z-index: 9999;
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .zoomed-image {
+            max-width: 90%;
+            max-height: 90%;
+            object-fit: contain;
+            border-radius: 8px;
+        }
+        
+        .close-zoom {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: white;
+            font-size: 30px;
+            cursor: pointer;
+            background: rgba(0,0,0,0.5);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .thumbnail-gallery {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        
+        .thumbnail {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 12px;
+            cursor: pointer;
+            border: 3px solid transparent;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .thumbnail.active {
+            border-color: #00BFAE;
+            transform: scale(1.1);
+            box-shadow: 0 4px 20px rgba(0,191,174,0.3);
+        }
+        
+        .thumbnail:hover {
+            transform: scale(1.15);
+            box-shadow: 0 6px 25px rgba(0,0,0,0.2);
+        }
+        
+        .image-nav {
+            display: flex;
+            justify-content: space-between;
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 100%;
+            padding: 0 20px;
+            z-index: 10;
+        }
+        
+        .nav-btn {
+            background: rgba(255,255,255,0.95);
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: #333;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        
+        .nav-btn:hover {
+            background: white;
+            transform: scale(1.15);
+            box-shadow: 0 6px 25px rgba(0,0,0,0.3);
+        }
+        
+        .nav-btn:active {
+            transform: scale(0.95);
+        }
+        
+        .product-info {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        
+        .product-title {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 15px;
+        }
+        
+        .product-price {
+            font-size: 2em;
+            color: #00BFAE;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        
+        .product-description {
+            font-size: 1.1em;
+            line-height: 1.6;
+            color: #666;
+            margin-bottom: 25px;
+        }
+        
+        .seller-info {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+        }
+        
+        .seller-photo {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 10px;
+        }
+        
+        .seller-name {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .seller-story {
+            font-size: 0.9em;
+            color: #666;
+            line-height: 1.5;
+        }
+        
+        .priority-badge {
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: bold;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #00BFAE, #00897B);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,191,174,0.3);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(135deg, #F44336, #D32F2F);
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(244,67,54,0.3);
+        }
+        
+        .btn-outline {
+            background: transparent;
+            color: #00BFAE;
+            border: 2px solid #00BFAE;
+        }
+        
+        .btn-outline:hover {
+            background: #00BFAE;
+            color: white;
+        }
+        
+        .quantity-selector {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .quantity-btn {
+            width: 40px;
+            height: 40px;
+            border: 2px solid #00BFAE;
+            background: white;
+            color: #00BFAE;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+        
+        .quantity-btn:hover {
+            background: #00BFAE;
+            color: white;
+        }
+        
+        .quantity-input {
+            width: 60px;
+            height: 40px;
+            text-align: center;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1.1em;
+            font-weight: bold;
+        }
+        
+        .product-meta {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .meta-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .meta-label {
+            font-size: 0.9em;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
+        .meta-value {
+            font-size: 1.1em;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .reviews-section {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            margin-top: 30px;
+        }
+        
+        .reviews-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+        
+        .rating-summary {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .rating-stars {
+            color: #FFD700;
+            font-size: 1.5em;
+        }
+        
+        .rating-text {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .related-products {
+            margin-top: 40px;
+        }
+        
+        .related-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .product-gallery {
+                grid-template-columns: 1fr;
+            }
+            
+            .thumbnail-gallery {
+                flex-direction: row;
+                max-height: none;
+                overflow-x: auto;
+            }
+            
+            .thumbnail {
+                width: 60px;
+                height: 60px;
+                flex-shrink: 0;
+            }
+            
+            .main-image {
+                height: 300px;
+            }
+            
+            .product-title {
+                font-size: 2em;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+        }
     </style>
-    <script>
-    // function showTab(tab) {
-    //     document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-    //     document.querySelectorAll('.tab-content').forEach(tc => tc.style.display = 'none');
-    //     document.getElementById(tab+'-tab').classList.add('active');
-    //     document.getElementById(tab+'-content').style.display = 'block';
-    // }
-    // window.onload = function() { showTab('desc'); };
-    </script>
 </head>
 <body>
-<div id="pageContent">
     <?php include 'header.php'; ?>
-    <!-- Skeleton loader for product detail -->
-    <div class="skeleton-detail" id="skeletonDetail" style="display:none;">
-      <div class="skeleton-detail-img"></div>
-      <div class="skeleton-detail-info">
-        <div class="skeleton-detail-line long"></div>
-        <div class="skeleton-detail-line medium"></div>
-        <div class="skeleton-detail-line short"></div>
-        <div class="skeleton-detail-line medium"></div>
-      </div>
-    </div>
-    <div class="product-detail-container">
-        <a href="index.php" class="back-home-btn"><span class="arrow">&#8592;</span> <?= __('back_to_home') ?></a>
-        <div class="breadcrumb">
-            <a href="index.php"><?= __('home') ?></a> &gt; 
-            <?php if ($product['category_name']): ?>
-                <a href="search.php?category=<?php echo urlencode($product['category_name_' . $lang] ?? $product['category_name']); ?>"><?php echo htmlspecialchars($product['category_name_' . $lang] ?? $product['category_name']); ?></a> &gt; 
-            <?php endif; ?>
-            <span><?php echo htmlspecialchars($product['name_' . $lang] ?? $product['name']); ?></span>
+    
+    <div class="container" style="max-width: 1200px; margin: 20px auto; padding: 0 20px;">
+        <!-- Image Zoom Overlay -->
+        <div class="image-zoom-overlay" id="zoomOverlay">
+            <div class="close-zoom" onclick="closeZoom()">×</div>
+            <img class="zoomed-image" id="zoomedImage" src="" alt="">
         </div>
-        <div class="product-header">
-            <div class="product-gallery">
-                <?php if ($product_images && count($product_images) > 0): ?>
-                    <div class="gallery-main-frame" style="width:260px;height:260px;overflow:hidden;position:relative;">
-                        <img id="mainProductImg" src="uploads/<?php echo htmlspecialchars($product_images[0]['image_path']); ?>" alt="<?= __('product_image') ?>" style="width:260px;height:260px;object-fit:cover;border-radius:10px;transition:opacity 0.35s;">
-                        <button class="gallery-arrow left" id="galleryArrowLeft" style="position:absolute;top:50%;left:0;transform:translateY(-50%);z-index:2;background:rgba(255,255,255,0.7);border:none;border-radius:50%;width:36px;height:36px;font-size:1.5em;cursor:pointer;">&#8592;</button>
-                        <button class="gallery-arrow right" id="galleryArrowRight" style="position:absolute;top:50%;right:0;transform:translateY(-50%);z-index:2;background:rgba(255,255,255,0.7);border:none;border-radius:50%;width:36px;height:36px;font-size:1.5em;cursor:pointer;">&#8594;</button>
-                    </div>
-                    <div class="gallery-thumbs" id="galleryThumbs" style="display:flex;gap:8px;margin-top:10px;justify-content:center;">
-                        <?php foreach ($product_images as $i => $img): ?>
-                            <img src="uploads/<?php echo htmlspecialchars($img['image_path']); ?>" alt="<?= __('product_image') ?>" class="gallery-thumb" data-idx="<?php echo $i; ?>" style="width:48px;height:48px;object-fit:cover;border-radius:6px;border:2px solid <?php echo $i===0?'#FFD600':'#eee'; ?>;cursor:pointer;transition:border 0.2s;">
-                        <?php endforeach; ?>
-                    </div>
-                    <script>
-                    (function(){
-                        const mainImg = document.getElementById('mainProductImg');
-                        const thumbs = document.querySelectorAll('#galleryThumbs .gallery-thumb');
-                        const leftBtn = document.getElementById('galleryArrowLeft');
-                        const rightBtn = document.getElementById('galleryArrowRight');
-                        let activeIdx = 0;
-                        let autoScroll = true;
-                        let autoTimer = null;
-                        function setActive(idx, user) {
-                            if (idx === activeIdx) return;
-                            mainImg.style.opacity = 0.5;
-                            setTimeout(()=>{
-                                mainImg.src = thumbs[idx].src;
-                                mainImg.style.opacity = 1;
-                            }, 150);
-                            thumbs.forEach((t,i)=>t.style.border = i===idx?'2px solid #FFD600':'2px solid #eee');
-                            activeIdx = idx;
-                            thumbs[idx].scrollIntoView({behavior:'smooth',inline:'center',block:'nearest'});
-                            if (user) resetAuto();
-                        }
-                        function next() { setActive((activeIdx+1)%thumbs.length); }
-                        function prev() { setActive((activeIdx-1+thumbs.length)%thumbs.length); }
-                        function resetAuto() {
-                            autoScroll = false;
-                            clearInterval(autoTimer);
-                            setTimeout(()=>{ autoScroll = true; autoTimer = setInterval(()=>{ if(autoScroll) next(); }, 3000); }, 7000);
-                        }
-                        thumbs.forEach((thumb,i)=>{
-                            thumb.addEventListener('click',()=>setActive(i,true));
-                        });
-                        leftBtn.addEventListener('click',()=>{ prev(); resetAuto(); });
-                        rightBtn.addEventListener('click',()=>{ next(); resetAuto(); });
-                        // Pause auto-scroll on hover
-                        [mainImg,leftBtn,rightBtn,...thumbs].forEach(el=>{
-                            el.addEventListener('mouseenter',()=>{autoScroll=false;clearInterval(autoTimer);});
-                            el.addEventListener('mouseleave',()=>{autoScroll=true;autoTimer=setInterval(()=>{if(autoScroll)next();},3000);});
-                        });
-                        // Touch swipe for mobile
-                        let startX=0,dx=0;
-                        mainImg.parentElement.addEventListener('touchstart',e=>{startX=e.touches[0].clientX;});
-                        mainImg.parentElement.addEventListener('touchmove',e=>{dx=e.touches[0].clientX-startX;});
-                        mainImg.parentElement.addEventListener('touchend',()=>{
-                            if(Math.abs(dx)>50){
-                                if(dx>0) prev(); else next();
-                                resetAuto();
-                            }
-                            dx=0;
-                        });
-                        // Start auto-scroll
-                        autoTimer = setInterval(()=>{ if(autoScroll) next(); }, 3000);
-                    })();
-                    </script>
-                <?php else: ?>
-                <img src="uploads/<?php echo htmlspecialchars($product['image']); ?>" alt="<?= __('product_image') ?>" class="product-img main-img" id="mainProductImg" loading="lazy">
-                <?php endif; ?>
-            </div>
-            <div class="product-info">
-                <h2><?php echo htmlspecialchars($product['name_' . $lang] ?? $product['name']); ?></h2>
-                <div class="price" id="variantPrice"><?= __('price') ?>: <?php echo htmlspecialchars($product['price']); ?> <?= __('currency') ?></div>
-                <?php if ($product['stock'] > 0): ?>
-                    <div class="stock" id="variantStock"><?= __('in_stock') ?>: <?php echo htmlspecialchars($product['stock']); ?></div>
-                <?php else: ?>
-                    <div class="out-stock" id="variantStock"><?= __('out_of_stock') ?></div>
-                <?php endif; ?>
-                <?php if ($product['category_name']): ?>
-                    <div class="category"><?= __('category') ?>: <?php echo htmlspecialchars($product['category_name_' . $lang] ?? $product['category_name']); ?></div>
-                <?php endif; ?>
-                <?php if ($variant_options): ?>
-<form action="add_to_cart.php" method="get" class="add-to-cart-form sticky-add-cart" id="variantCartForm">
-    <input type="hidden" name="id" value="<?php echo $product['id']; ?>">
-    <input type="hidden" name="variant_key" id="variantKeyInput">
-    <div id="variantSelectors"></div>
-    <div id="variantSummary" style="margin:10px 0 10px 0;font-size:1.08em;color:#1A237E;"></div>
-    <button type="submit" class="add-cart-btn" id="addToCartBtn" disabled><?= __('add_to_cart') ?></button>
-</form>
-<script>
-const variantOptions = <?php echo json_encode(array_map(function($o){return $o['option_name'];}, $variant_options)); ?>;
-const variantValues = <?php echo json_encode(array_values($variant_values)); ?>;
-const variantCombinations = <?php echo json_encode($variant_combinations); ?>;
-const priceBase = <?php echo json_encode($product['price']); ?>;
-const priceEl = document.getElementById('variantPrice');
-const stockEl = document.getElementById('variantStock');
-const addToCartBtn = document.getElementById('addToCartBtn');
-const variantKeyInput = document.getElementById('variantKeyInput');
-const selectorsDiv = document.getElementById('variantSelectors');
-const summaryDiv = document.getElementById('variantSummary');
-let selected = Array(variantOptions.length).fill('');
-function renderSelectors() {
-    selectorsDiv.innerHTML = '';
-    variantOptions.forEach((opt, idx) => {
-        const div = document.createElement('div');
-        div.style.marginBottom = '10px';
-        div.innerHTML = `<label style='font-weight:bold;'>${opt}:</label> `;
-        variantValues[idx].forEach(valObj => {
-            const val = valObj.value;
-            // Check if this value is available in any valid combination with current selection
-            let possible = false;
-            for (let c of variantCombinations) {
-                let match = true;
-                for (let i=0; i<variantOptions.length; i++) {
-                    if (i === idx) {
-                        if (c.combination_key.indexOf(opt+':'+val) === -1) { match = false; break; }
-                    } else if (selected[i] && c.combination_key.indexOf(variantOptions[i]+':'+selected[i]) === -1) { match = false; break; }
-                }
-                if (match && c.stock > 0) { possible = true; break; }
-            }
-            const btn = document.createElement('button');
-            btn.type = 'button';
-            btn.textContent = val;
-            btn.style.marginRight = '8px';
-            btn.style.padding = '6px 18px';
-            btn.style.borderRadius = '18px';
-            btn.style.border = selected[idx] === val ? '2px solid #FFD600' : '1.5px solid #E3E7ED';
-            btn.style.background = selected[idx] === val ? '#FFD600' : (possible ? '#fafbfc' : '#eee');
-            btn.style.color = selected[idx] === val ? '#1A237E' : (possible ? '#1A237E' : '#aaa');
-            btn.style.cursor = possible ? 'pointer' : 'not-allowed';
-            btn.disabled = !possible;
-            btn.onclick = function() {
-                if (!possible) return;
-                selected[idx] = val;
-                renderSelectors();
-                updateVariant();
-            };
-            div.appendChild(btn);
-        });
-        selectorsDiv.appendChild(div);
-    });
-}
-function updateVariant() {
-    let keyParts = [];
-    let allSelected = true;
-    selected.forEach((val, idx) => {
-        if (!val) allSelected = false;
-        keyParts.push(variantOptions[idx] + ':' + val);
-    });
-    const key = keyParts.join(';');
-    let found = null;
-    for (let i=0; i<variantCombinations.length; i++) {
-        if (variantCombinations[i].combination_key === key) {
-            found = variantCombinations[i];
-            break;
-        }
-    }
-    if (allSelected && found) {
-        priceEl.innerHTML = '<?= __('price') ?>: ' + (found.price ? found.price : priceBase) + ' <?= __('currency') ?>';
-        stockEl.innerHTML = found.stock > 0 ? '<?= __('in_stock') ?>: ' + found.stock : '<?= __('out_of_stock') ?>';
-        addToCartBtn.disabled = found.stock <= 0;
-        variantKeyInput.value = key;
-        summaryDiv.innerHTML = '<?= __('selected') ?>: ' + key.replace(/;/g, ', ');
-    } else {
-        priceEl.innerHTML = '<?= __('price') ?>: ' + priceBase + ' <?= __('currency') ?>';
-        stockEl.innerHTML = '<?= __('in_stock') ?>: <?php echo htmlspecialchars($product['stock']); ?>';
-        addToCartBtn.disabled = true;
-        variantKeyInput.value = '';
-        summaryDiv.innerHTML = '';
-    }
-}
-renderSelectors();
-updateVariant();
-</script>
-<?php else: ?>
-<form action="add_to_cart.php" method="get" class="add-to-cart-form sticky-add-cart">
-                    <input type="hidden" name="id" value="<?php echo $product['id']; ?>">
-                    <button type="submit" class="add-cart-btn" <?php if ($product['stock'] <= 0) echo 'disabled'; ?>><?= __('add_to_cart') ?></button>
-                </form>
-                <?php endif; ?>
-            </div>
-        </div>
-        <?php if (!empty($product['store_name'])): ?>
-<div class="seller-story" style="margin:32px 0 0 0; padding:24px; background:#f4f6fb; border-radius:14px; box-shadow:0 2px 8px #0001;">
-    <h3 style="color:var(--primary-color);margin-bottom:10px;">
-        <?= __('about_seller') ?>
-        <?php if (!empty($product['is_disabled'])): ?>
-            <span style="background:#FFD600;color:#1A237E;padding:4px 14px;border-radius:8px;font-size:0.85em;margin-left:10px;vertical-align:middle;">Disabled Seller</span>
-        <?php endif; ?>
-    </h3>
-    <?php if (!empty($product['store_logo'])): ?>
-        <img src="uploads/<?php echo htmlspecialchars($product['store_logo']); ?>" alt="<?= __('seller_photo') ?>" style="width:80px;height:80px;border-radius:50%;object-fit:cover;margin-bottom:10px;">
-    <?php endif; ?>
-    <div class="seller-name" style="font-weight:bold;font-size:1.1em;margin-bottom:6px;"> <?php echo htmlspecialchars($product['store_name']); ?> </div>
-    <?php if (!empty($product['is_disabled']) && !empty($product['store_description'])): ?>
-        <div style="margin:16px 0 0 0;font-size:1.13em;color:#1A237E;background:#FFF8E1;padding:14px 18px;border-radius:10px;max-width:600px;margin-left:auto;margin-right:auto;box-shadow:0 2px 8px #FFD60022;">
-            <b>Seller Story:</b> <?php echo nl2br(htmlspecialchars($product['store_description'])); ?>
-        </div>
-    <?php elseif (!empty($product['store_description'])): ?>
-        <div class="seller-story-text" style="color:#333;line-height:1.7;"> <?php echo nl2br(htmlspecialchars($product['store_description'])); ?> </div>
-    <?php endif; ?>
-</div>
-<?php endif; ?>
-        <div class="product-details-section" style="background:#fafafa;border-radius:14px;padding:36px 28px 32px 28px;margin-top:36px;box-shadow:0 2px 16px rgba(0,191,174,0.06);max-width:800px;margin-left:auto;margin-right:auto;">
-    <h2 style="display:flex;align-items:center;gap:10px;font-size:1.5em;color:var(--primary-color);margin-bottom:18px;">
-        <span style="font-size:1.2em;">📝</span> <?= __('description') ?>
-    </h2>
-    <p style="font-size:1.13em;line-height:1.7;color:#222;margin-bottom:32px;"> <?php echo nl2br(htmlspecialchars($product['description'])); ?> </p>
-    <hr style="border:none;border-top:1.5px solid #E3E7ED;margin:32px 0 28px 0;">
-    <div style="display:flex;align-items:center;gap:18px;margin-bottom:18px;">
-        <h2 style="margin:0;font-size:1.25em;color:var(--primary-color);display:flex;align-items:center;gap:8px;">
-            <span style="font-size:1.1em;">⭐</span> <?= __('customer_reviews') ?>
-        </h2>
-        <?php if($review_count): ?>
-            <div style="display:flex;align-items:center;gap:6px;font-size:1.18em;">
-                <span style="color:#FFD600;font-size:1.3em;letter-spacing:2px;">
-                    <?php for($i=1;$i<=5;$i++) echo $i <= round($avg_rating) ? '★' : '☆'; ?>
-                </span>
-                <span style="color:#888;font-size:1em;">(<?= $avg_rating ?>/5, <?= $review_count ?>)</span>
-            </div>
-        <?php endif; ?>
-    </div>
-    <?php if($review_count): ?>
-    <div class="review-breakdown" style="margin-bottom:18px;max-width:340px;">
-        <?php for($star=5;$star>=1;$star--): ?>
-            <div style="display:flex;align-items:center;gap:8px;margin-bottom:3px;">
-                <span style="width:38px;display:inline-block;"> <?= $star ?> <span style="color:#FFD600;">★</span> </span>
-                <div style="background:#E3E7ED;border-radius:6px;height:12px;width:120px;overflow:hidden;">
-                    <div style="background:#FFD600;height:100%;width:<?= $review_count ? round($rating_counts[$star]/$review_count*100) : 0 ?>%;"></div>
+        
+        <div class="product-gallery">
+            <!-- Main Image Section -->
+            <div class="main-image-container">
+                <img class="main-image" id="mainImage" src="uploads/<?php echo htmlspecialchars($product_images[0]['image_path']); ?>" 
+                     alt="<?php echo htmlspecialchars($product['name']); ?>" onclick="openZoomWithNavigation(this.src, currentImageIndex)">
+                
+                <!-- Navigation Buttons -->
+                <div class="image-nav">
+                    <button class="nav-btn" onclick="previousImage()" id="prevBtn">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <button class="nav-btn" onclick="nextImage()" id="nextBtn">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
                 </div>
-                <span style="color:#888;font-size:0.98em;min-width:22px;text-align:right;"> <?= $rating_counts[$star] ?> </span>
+            </div>
+            
+            <!-- Thumbnail Gallery -->
+            <div class="thumbnail-gallery">
+                <?php foreach ($product_images as $index => $image): ?>
+                    <img class="thumbnail <?php echo $index === 0 ? 'active' : ''; ?>" 
+                         src="uploads/<?php echo htmlspecialchars($image['image_path']); ?>"
+                         alt="<?php echo htmlspecialchars($product['name']); ?> - Image <?php echo $index + 1; ?>"
+                         onclick="changeMainImage(this.src, <?php echo $index; ?>)"
+                         data-index="<?php echo $index; ?>">
+                <?php endforeach; ?>
+            </div>
         </div>
-        <?php endfor; ?>
-        </div>
-    <?php endif; ?>
-    <div id="reviews-content">
-            <?php if ($reviews): ?>
-                <?php foreach ($reviews as $rev): ?>
-                <div style="background:#fff;border:1.5px solid #E3E7ED;border-radius:10px;padding:16px 18px 12px 18px;margin-bottom:18px;box-shadow:0 2px 8px rgba(26,35,126,0.04);">
-                    <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;">
-                        <span style="font-weight:bold;color:#00BFAE;font-size:1.08em;"> <?php echo htmlspecialchars($rev['name']); ?> </span>
-                        <span style="color:#FFD600;font-size:1.15em;letter-spacing:1px;">
-                            <?php echo str_repeat('★', (int)$rev['rating']); ?><?php echo str_repeat('☆', 5-(int)$rev['rating']); ?>
+        
+        <!-- Product Information -->
+        <div class="product-info">
+            <?php if ($product['is_priority_product'] || $product['disabled_seller_id']): ?>
+                <div class="priority-badge">
+                    <i class="fas fa-star"></i> منتج ذو أولوية
+                </div>
+            <?php endif; ?>
+            
+            <h1 class="product-title"><?php echo htmlspecialchars($product['name']); ?></h1>
+            
+            <div class="product-price"><?php echo number_format($product['price'], 3); ?> د.ت</div>
+            
+            <div class="product-meta">
+                <div class="meta-item">
+                    <div class="meta-label">الفئة</div>
+                    <div class="meta-value"><?php echo htmlspecialchars($product['category_name_ar'] ?? $product['category_name']); ?></div>
+                </div>
+                <div class="meta-item">
+                    <div class="meta-label">المخزون</div>
+                    <div class="meta-value"><?php echo $product['stock']; ?> قطعة</div>
+                </div>
+                <div class="meta-item">
+                    <div class="meta-label">التقييم</div>
+                    <div class="meta-value">
+                        <span class="rating-stars">
+                            <?php for ($i = 1; $i <= 5; $i++): ?>
+                                <i class="fas fa-star<?php echo $i <= $avg_rating ? '' : '-o'; ?>"></i>
+                            <?php endfor; ?>
                         </span>
-                        </div>
-                    <?php if (!empty($rev['comment'])): ?>
-                        <div style="margin-bottom:6px;font-size:1.08em;color:#222;"> <?php echo nl2br(htmlspecialchars($rev['comment'])); ?> </div>
+                        (<?php echo count($reviews); ?>)
+                    </div>
+                </div>
+            </div>
+            
+            <div class="product-description">
+                <?php echo nl2br(htmlspecialchars($product['description'])); ?>
+            </div>
+            
+            <?php if ($product['disabled_seller_id'] && $product['disabled_seller_name']): ?>
+                <div class="seller-info">
+                    <?php if ($product['disabled_seller_photo']): ?>
+                        <img src="uploads/<?php echo htmlspecialchars($product['disabled_seller_photo']); ?>" 
+                             alt="<?php echo htmlspecialchars($product['disabled_seller_name']); ?>" 
+                             class="seller-photo">
                     <?php endif; ?>
-                    <div style="color:#888;font-size:0.97em;text-align:left;"> <?php echo $rev['created_at']; ?> </div>
-                    </div>
-                <?php endforeach; ?>
-            <?php else: ?>
-            <div style="color:#888;font-size:1.08em;margin-bottom:18px;"> <?= __('no_reviews_yet') ?> </div>
+                    <div class="seller-name"><?php echo htmlspecialchars($product['disabled_seller_name']); ?></div>
+                    <div class="seller-story"><?php echo htmlspecialchars($product['disabled_seller_story']); ?></div>
+                </div>
             <?php endif; ?>
-            <?php if (isset($_SESSION['user_id'])): ?>
-        <div style="background:#f4f6fb;border:1.5px solid #E3E7ED;border-radius:12px;padding:22px 18px 18px 18px;margin:32px 0 0 0;max-width:420px;">
-            <h4 style="margin:0 0 12px 0;font-size:1.13em;color:#1A237E;display:flex;align-items:center;gap:6px;">
-                <span style="font-size:1.1em;">✍️</span> <?= __('add_your_review') ?>
-            </h4>
-            <form method="post" action="submit_review.php" class="modern-form" id="reviewForm">
-                <input type="hidden" name="product_id" value="<?php echo $product['id']; ?>">
-                <div class="form-group" style="margin-bottom:14px;">
-                    <label style="font-size:1.08em;"> <?= __('your_rating') ?>: </label>
-                    <div id="starRating" class="star-rating" style="font-size:2em; color:#FFD600; cursor:pointer;">
-                        <span data-value="1">☆</span><span data-value="2">☆</span><span data-value="3">☆</span><span data-value="4">☆</span><span data-value="5">☆</span>
-                    </div>
-                    <input type="hidden" name="rating" id="ratingInput" required>
-                </div>
-                <div class="form-group" id="commentGroup" style="display:none;margin-bottom:14px;">
-                    <label for="comment" style="font-size:1.08em;"> <?= __('your_comment') ?>: </label>
-                    <textarea id="comment" name="comment" rows="3" placeholder="<?= __('your_comment') ?> (اختياري)" style="width:100%;border-radius:8px;border:1.5px solid #E3E7ED;padding:10px 12px;font-size:1em;"></textarea>
-                </div>
-                <button type="submit" class="add-cart-btn" id="submitReviewBtn" style="display:none;width:100%;font-size:1.08em;"> <?= __('submit_review') ?> </button>
-            </form>
-        </div>
-        <script>
-        // Interactive star rating widget
-        const stars = document.querySelectorAll('#starRating span');
-        const ratingInput = document.getElementById('ratingInput');
-        const commentGroup = document.getElementById('commentGroup');
-        const submitBtn = document.getElementById('submitReviewBtn');
-        let selected = 0;
-        stars.forEach(star => {
-            star.addEventListener('mouseenter', function() {
-                const val = parseInt(this.dataset.value);
-                stars.forEach((s, i) => s.textContent = i < val ? '★' : '☆');
-            });
-            star.addEventListener('mouseleave', function() {
-                stars.forEach((s, i) => s.textContent = i < selected ? '★' : '☆');
-            });
-            star.addEventListener('click', function() {
-                selected = parseInt(this.dataset.value);
-                ratingInput.value = selected;
-                stars.forEach((s, i) => s.textContent = i < selected ? '★' : '☆');
-                commentGroup.style.display = 'block';
-                submitBtn.style.display = 'block';
-            });
-        });
-        // Prevent submit if no rating
-        const reviewForm = document.getElementById('reviewForm');
-        reviewForm.addEventListener('submit', function(e) {
-            if (!ratingInput.value) {
-                e.preventDefault();
-                alert('يرجى اختيار عدد النجوم');
-            }
-        });
-        </script>
-            <?php else: ?>
-            <div style="color:#888;font-size:1.08em;margin-top:18px;"> <?= __('please_login_to_add_review') ?> <a href="client/login.php"> <?= __('login') ?> </a></div>
-            <?php endif; ?>
-        </div>
-    <hr style="border:none;border-top:1.5px solid #E3E7ED;margin:36px 0 28px 0;">
-    <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
-        <h3 style="margin:0;font-size:1.15em;color:var(--primary-color);display:flex;align-items:center;gap:8px;">
-            <span style="font-size:1.1em;">🚚</span> <?= __('shipping') ?>
-        </h3>
-    </div>
-    <div style="background:#fffbe7;border:1.5px solid #FFD600;border-radius:10px;padding:16px 18px 12px 18px;font-size:1.08em;color:#1A237E;max-width:420px;">
-        <?= __('shipping_available') ?> <?= __('within_2_5_working_days') ?>
-    </div>
-        </div>
-        <div class="related-products">
-            <h3><?= __('related_products') ?></h3>
-            <div class="related-grid">
-                <?php foreach ($related as $rel): ?>
-                    <?php $rel_name = $rel['name_' . $lang] ?? $rel['name']; ?>
-                <div class="related-card">
-                    <a href="product.php?id=<?php echo $rel['id']; ?>">
-                        <img src="uploads/<?php echo htmlspecialchars($rel['image']); ?>" alt="<?php echo htmlspecialchars($rel_name); ?>">
-                        <h4><?php echo htmlspecialchars($rel_name); ?></h4>
-                        <div class="price"><?php echo htmlspecialchars($rel['price']); ?> د.ت</div>
-                    </a>
-                </div>
-                <?php endforeach; ?>
+            
+            <!-- Quantity Selector -->
+            <div class="quantity-selector">
+                <label for="quantity">الكمية:</label>
+                <button class="quantity-btn" onclick="changeQuantity(-1)">-</button>
+                <input type="number" id="quantity" class="quantity-input" value="1" min="1" max="<?php echo $product['stock']; ?>">
+                <button class="quantity-btn" onclick="changeQuantity(1)">+</button>
+            </div>
+            
+            <!-- Action Buttons -->
+            <div class="action-buttons">
+                <button class="btn btn-primary" onclick="addToCart(<?php echo $product_id; ?>)">
+                    <i class="fas fa-shopping-cart"></i>
+                    أضف إلى السلة
+                </button>
+                <button class="btn btn-secondary" onclick="addToWishlist(<?php echo $product_id; ?>)">
+                    <i class="fas fa-heart"></i>
+                    أضف إلى المفضلة
+                </button>
+                <a href="#reviews" class="btn btn-outline">
+                    <i class="fas fa-star"></i>
+                    التقييمات (<?php echo count($reviews); ?>)
+                </a>
             </div>
         </div>
+        
+        <!-- Reviews Section -->
+        <div class="reviews-section" id="reviews">
+            <div class="reviews-header">
+                <div class="rating-summary">
+                    <div class="rating-stars">
+                        <?php for ($i = 1; $i <= 5; $i++): ?>
+                            <i class="fas fa-star<?php echo $i <= $avg_rating ? '' : '-o'; ?>"></i>
+                        <?php endfor; ?>
+                    </div>
+                    <div class="rating-text"><?php echo $avg_rating; ?>/5 (<?php echo count($reviews); ?> تقييم)</div>
+                </div>
+                <a href="submit_review.php?product_id=<?php echo $product_id; ?>" class="btn btn-primary">
+                    <i class="fas fa-edit"></i>
+                    اكتب تقييم
+                </a>
+            </div>
+            
+            <?php if (!empty($reviews)): ?>
+                <div class="reviews-list">
+                    <?php foreach ($reviews as $review): ?>
+                        <div class="review-item" style="border-bottom: 1px solid #eee; padding: 20px 0;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                                <div style="font-weight: bold; color: #333;">
+                                    <?php echo htmlspecialchars($review['user_name'] ?? 'مستخدم'); ?>
+                                </div>
+                                <div class="rating-stars">
+                                    <?php for ($i = 1; $i <= 5; $i++): ?>
+                                        <i class="fas fa-star<?php echo $i <= $review['rating'] ? '' : '-o'; ?>"></i>
+                                    <?php endfor; ?>
+                                </div>
+                            </div>
+                            <div style="color: #666; line-height: 1.6;">
+                                <?php echo nl2br(htmlspecialchars($review['comment'])); ?>
+                            </div>
+                            <div style="font-size: 0.9em; color: #999; margin-top: 10px;">
+                                <?php echo date('Y-m-d', strtotime($review['created_at'])); ?>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+            <?php else: ?>
+                <div style="text-align: center; color: #666; padding: 40px;">
+                    <i class="fas fa-star" style="font-size: 3em; color: #ddd; margin-bottom: 20px;"></i>
+                    <p>لا توجد تقييمات بعد. كن أول من يقيم هذا المنتج!</p>
+                </div>
+            <?php endif; ?>
+        </div>
+        
+        <!-- Related Products -->
+        <?php if (!empty($related_products)): ?>
+            <div class="related-products">
+                <h2 style="margin-bottom: 20px; color: #333;">منتجات مشابهة</h2>
+                <div class="related-grid">
+                    <?php foreach ($related_products as $rel): ?>
+                        <div class="product-card" style="background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.1);">
+                            <a href="product.php?id=<?php echo $rel['id']; ?>">
+                                <div class="product-img-wrap">
+                                    <?php 
+                                    $image_path = "uploads/" . htmlspecialchars($rel['image']);
+                                    $thumb_path = "uploads/thumbnails/" . pathinfo($rel['image'], PATHINFO_FILENAME) . "_thumb.jpg";
+                                    $final_image = file_exists($thumb_path) ? $thumb_path : $image_path;
+                                    ?>
+                                    <img src="<?php echo $final_image; ?>" alt="<?php echo htmlspecialchars($rel['name']); ?>" loading="lazy" width="300" height="300">
+                                </div>
+                                <h3><?php echo htmlspecialchars($rel['name']); ?></h3>
+                                <div style="color: #00BFAE; font-weight: bold; font-size: 1.2em;">
+                                    <?php echo number_format($rel['price'], 3); ?> د.ت
+                                </div>
+                            </a>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+        <?php endif; ?>
     </div>
+    
     <script>
-    // function showTab(tab) {
-    //     document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-    //     document.querySelectorAll('.tab-content').forEach(tc => tc.style.display = 'none');
-    //     document.getElementById(tab+'-tab').classList.add('active');
-    //     document.getElementById(tab+'-content').style.display = 'block';
-    // }
-    // window.onload = function() { showTab('desc'); };
+        let currentImageIndex = 0;
+        const images = <?php echo json_encode(array_column($product_images, 'image_path')); ?>;
+        const totalImages = images.length;
+        
+        function changeMainImage(src, index) {
+            document.getElementById('mainImage').src = 'uploads/' + src;
+            currentImageIndex = index;
+            
+            // Update active thumbnail
+            document.querySelectorAll('.thumbnail').forEach((thumb, i) => {
+                thumb.classList.toggle('active', i === index);
+            });
+            
+            // Update navigation buttons
+            updateNavButtons();
+        }
+        
+        function nextImage() {
+            currentImageIndex = (currentImageIndex + 1) % totalImages;
+            changeMainImage(images[currentImageIndex], currentImageIndex);
+        }
+        
+        function previousImage() {
+            currentImageIndex = (currentImageIndex - 1 + totalImages) % totalImages;
+            changeMainImage(images[currentImageIndex], currentImageIndex);
+        }
+        
+        function updateNavButtons() {
+            document.getElementById('prevBtn').style.display = totalImages > 1 ? 'flex' : 'none';
+            document.getElementById('nextBtn').style.display = totalImages > 1 ? 'flex' : 'none';
+        }
+        
+        function openZoom(src) {
+            document.getElementById('zoomedImage').src = src;
+            document.getElementById('zoomOverlay').style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+            
+            // Add smooth fade-in effect
+            const overlay = document.getElementById('zoomOverlay');
+            overlay.style.opacity = '0';
+            setTimeout(() => {
+                overlay.style.opacity = '1';
+                overlay.style.transition = 'opacity 0.3s ease';
+            }, 10);
+        }
+        
+        function closeZoom() {
+            const overlay = document.getElementById('zoomOverlay');
+            overlay.style.opacity = '0';
+            overlay.style.transition = 'opacity 0.3s ease';
+            
+            setTimeout(() => {
+                overlay.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            }, 300);
+        }
+        
+        // Enhanced zoom with image navigation
+        function openZoomWithNavigation(src, index) {
+            currentImageIndex = index;
+            openZoom(src);
+            updateZoomedImage();
+        }
+        
+        function updateZoomedImage() {
+            const zoomedImage = document.getElementById('zoomedImage');
+            zoomedImage.src = 'uploads/' + images[currentImageIndex];
+        }
+        
+        function changeQuantity(delta) {
+            const input = document.getElementById('quantity');
+            const newValue = Math.max(1, Math.min(<?php echo $product['stock']; ?>, parseInt(input.value) + delta));
+            input.value = newValue;
+        }
+        
+        function addToCart(productId) {
+            const quantity = document.getElementById('quantity').value;
+            window.location.href = `add_to_cart.php?product_id=${productId}&quantity=${quantity}`;
+        }
+        
+        function addToWishlist(productId) {
+            fetch('wishlist_action.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `action=add&product_id=${productId}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('تم إضافة المنتج إلى المفضلة بنجاح!');
+                } else {
+                    alert(data.message || 'حدث خطأ أثناء إضافة المنتج إلى المفضلة');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('حدث خطأ أثناء إضافة المنتج إلى المفضلة');
+            });
+        }
+        
+        // Enhanced keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            const overlay = document.getElementById('zoomOverlay');
+            const isZoomed = overlay.style.display === 'flex';
+            
+            if (isZoomed) {
+                if (e.key === 'Escape') {
+                    closeZoom();
+                } else if (e.key === 'ArrowLeft') {
+                    e.preventDefault();
+                    previousImage();
+                    updateZoomedImage();
+                } else if (e.key === 'ArrowRight') {
+                    e.preventDefault();
+                    nextImage();
+                    updateZoomedImage();
+                }
+            } else {
+                // Navigation when not zoomed
+                if (e.key === 'ArrowLeft' && totalImages > 1) {
+                    e.preventDefault();
+                    previousImage();
+                } else if (e.key === 'ArrowRight' && totalImages > 1) {
+                    e.preventDefault();
+                    nextImage();
+                }
+            }
+        });
+        
+        // Touch/swipe support for mobile
+        let touchStartX = 0;
+        let touchEndX = 0;
+        
+        document.addEventListener('touchstart', function(e) {
+            touchStartX = e.changedTouches[0].screenX;
+        });
+        
+        document.addEventListener('touchend', function(e) {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        });
+        
+        function handleSwipe() {
+            const swipeThreshold = 50;
+            const diff = touchStartX - touchEndX;
+            
+            if (Math.abs(diff) > swipeThreshold) {
+                if (diff > 0) {
+                    // Swipe left - next image
+                    if (document.getElementById('zoomOverlay').style.display === 'flex') {
+                        nextImage();
+                        updateZoomedImage();
+                    } else {
+                        nextImage();
+                    }
+                } else {
+                    // Swipe right - previous image
+                    if (document.getElementById('zoomOverlay').style.display === 'flex') {
+                        previousImage();
+                        updateZoomedImage();
+                    } else {
+                        previousImage();
+                    }
+                }
+            }
+        }
+        
+        // Initialize navigation buttons
+        updateNavButtons();
     </script>
-    <script>
-if (!localStorage.getItem('cookiesAccepted')) {
-  // do nothing, wait for accept
-} else {
-  var gaScript = document.createElement('script');
-  gaScript.src = 'https://www.googletagmanager.com/gtag/js?id=G-PVP8CCFQPL';
-  gaScript.async = true;
-  document.head.appendChild(gaScript);
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-PVP8CCFQPL');
-}
-</script>
-<script>
-var acceptBtn = document.getElementById('acceptCookiesBtn');
-if (acceptBtn) {
-  acceptBtn.addEventListener('click', function() {
-    var gaScript = document.createElement('script');
-    gaScript.src = 'https://www.googletagmanager.com/gtag/js?id=G-PVP8CCFQPL';
-    gaScript.async = true;
-    document.head.appendChild(gaScript);
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-PVP8CCFQPL');
-  });
-}
-</script>
-</div>
+    
+    <?php include 'footer.php'; ?>
 </body>
 </html> 

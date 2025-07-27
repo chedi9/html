@@ -62,6 +62,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <input type="password" id="password" name="password" required autocomplete="current-password">
             <button type="submit">دخول</button>
         </form>
+        <div style="text-align: center; margin-top: 15px;">
+            <a href="forgot_admin_password.php">نسيت كلمة المرور؟</a>
+        </div>
     </div>
 </body>
 </html> 

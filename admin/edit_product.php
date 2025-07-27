@@ -14,6 +14,7 @@ if (!isset($_SESSION['admin_id'])) {
     exit();
 }
 require '../db.php';
+require_once '../client/make_thumbnail.php';
 $categories = $pdo->query('SELECT * FROM categories ORDER BY name')->fetchAll();
 $users = $pdo->query('SELECT id, name FROM users ORDER BY name')->fetchAll();
 if (!isset($_GET['id'])) {
@@ -86,10 +87,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $ext = pathinfo($_FILES['image']['name'], PATHINFO_EXTENSION);
         $image = uniqid('prod_', true) . '.' . $ext;
         move_uploaded_file($_FILES['image']['tmp_name'], '../uploads/' . $image);
-        // Insert as new main image
-        $pdo->prepare('UPDATE product_images SET is_main = 0 WHERE product_id = ?')->execute([$id]);
-        $pdo->prepare('INSERT INTO product_images (product_id, image_path, is_main, sort_order) VALUES (?, ?, 1, ? )')->execute([$id, $image, count($product_images)]);
-        $pdo->prepare('UPDATE products SET image = ? WHERE id = ?')->execute([$image, $id]);
+        
+        // Generate thumbnail
+        $thumb_dir = '../uploads/thumbnails/';
+        if (!is_dir($thumb_dir)) mkdir($thumb_dir, 0777, true);
+        $thumb_path = $thumb_dir . pathinfo($image, PATHINFO_FILENAME) . '_thumb.jpg';
+        make_thumbnail('../uploads/' . $image, $thumb_path, 300, 300);
+        
+        $stmt = $pdo->prepare('UPDATE products SET image = ? WHERE id = ?');
+        $stmt->execute([$image, $id]);
     }
     // Handle multiple new images
     if (isset($_FILES['images']) && count($_FILES['images']['name']) > 0) {
@@ -101,7 +107,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $ext = pathinfo($files['name'][$i], PATHINFO_EXTENSION);
                 $img_name = uniqid('prodimg_', true) . '.' . $ext;
                 move_uploaded_file($files['tmp_name'][$i], '../uploads/' . $img_name);
-                $pdo->prepare('INSERT INTO product_images (product_id, image_path, is_main, sort_order) VALUES (?, ?, 0, ? )')->execute([$id, $img_name, $current_count + $i]);
+                
+                // Generate thumbnail
+                $thumb_dir = '../uploads/thumbnails/';
+                if (!is_dir($thumb_dir)) mkdir($thumb_dir, 0777, true);
+                $thumb_path = $thumb_dir . pathinfo($img_name, PATHINFO_FILENAME) . '_thumb.jpg';
+                make_thumbnail('../uploads/' . $img_name, $thumb_path, 300, 300);
+                
+                $is_main = ($i === 0) ? 1 : 0; // Assuming the first new image is the main one
+                if ($is_main) $main_image_filename = $img_name;
+                $stmt_img = $pdo->prepare('INSERT INTO product_images (product_id, image_path, is_main, sort_order) VALUES (?, ?, ?, ?)');
+                $stmt_img->execute([$id, $img_name, $is_main, $current_count + $i]);
             }
         }
     }

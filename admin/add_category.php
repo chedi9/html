@@ -14,6 +14,7 @@ if (!isset($_SESSION['admin_id'])) {
     exit();
 }
 require '../db.php';
+require_once '../client/make_thumbnail.php';
 $error = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $name_ar = trim($_POST['name_ar']);
@@ -23,13 +24,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $icon = '';
     if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
         $ext = pathinfo($_FILES['image']['name'], PATHINFO_EXTENSION);
-        $image = uniqid('catimg_', true) . '.' . $ext;
+        $image = uniqid('cat_', true) . '.' . $ext;
         move_uploaded_file($_FILES['image']['tmp_name'], '../uploads/' . $image);
+        
+        // Generate thumbnail
+        $thumb_dir = '../uploads/thumbnails/';
+        if (!is_dir($thumb_dir)) mkdir($thumb_dir, 0777, true);
+        $thumb_path = $thumb_dir . pathinfo($image, PATHINFO_FILENAME) . '_thumb.jpg';
+        make_thumbnail('../uploads/' . $image, $thumb_path, 300, 300);
     }
     if (isset($_FILES['icon']) && $_FILES['icon']['error'] === UPLOAD_ERR_OK) {
         $ext = pathinfo($_FILES['icon']['name'], PATHINFO_EXTENSION);
-        $icon = uniqid('caticon_', true) . '.' . $ext;
+        $icon = uniqid('icon_', true) . '.' . $ext;
         move_uploaded_file($_FILES['icon']['tmp_name'], '../uploads/' . $icon);
+        
+        // Generate thumbnail for icon
+        $thumb_dir = '../uploads/thumbnails/';
+        if (!is_dir($thumb_dir)) mkdir($thumb_dir, 0777, true);
+        $thumb_path = $thumb_dir . pathinfo($icon, PATHINFO_FILENAME) . '_thumb.jpg';
+        make_thumbnail('../uploads/' . $icon, $thumb_path, 150, 150);
     }
     if ($name_ar) {
         $stmt = $pdo->prepare('INSERT INTO categories (name, name_ar, name_fr, name_en, image, icon) VALUES (?, ?, ?, ?, ?, ?)');

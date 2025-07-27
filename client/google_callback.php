@@ -68,9 +68,14 @@ if ($user) {
     $stmt->execute([$userinfo['id'], $user['id']]);
     $_SESSION['user_id'] = $user['id'];
 } else {
-    $stmt = $pdo->prepare('INSERT INTO users (name, email, google_id) VALUES (?, ?, ?)');
-    $stmt->execute([$userinfo['name'], $userinfo['email'], $userinfo['id']]);
+    // New user - insert and send welcome email
+    $stmt = $pdo->prepare('INSERT INTO users (name, email, gender, google_id, is_verified) VALUES (?, ?, ?, ?, 1)');
+    $stmt->execute([$userinfo['name'], $userinfo['email'], 'prefer_not_to_say', $userinfo['id']]);
     $_SESSION['user_id'] = $pdo->lastInsertId();
+    
+    // Send welcome email to new client
+    require_once __DIR__ . '/mailer.php';
+    send_welcome_email_client($userinfo['email'], $userinfo['name']);
 }
 header('Location: ../index.php');
 exit(); 

@@ -1,4 +1,5 @@
 <?php
+session_start();
 require 'db.php';
 require 'lang.php';
 if (!isset($_GET['seller_id'])) {
@@ -164,6 +165,13 @@ if ($review_count) {
     </style>
 </head>
 <body>
+  <div style="display:flex;justify-content:flex-end;align-items:center;margin-bottom:10px;max-width:900px;margin-left:auto;margin-right:auto;gap:18px;">
+    <button id="darkModeToggle" class="dark-mode-toggle" title="Toggle dark mode" style="background:#00BFAE;color:#fff;border:none;border-radius:50%;width:40px;height:40px;display:flex;align-items:center;justify-content:center;font-size:1.3em;margin-left:16px;cursor:pointer;box-shadow:0 2px 8px rgba(0,191,174,0.10);transition:background 0.2s, color 0.2s;">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 12.79A9 9 0 1 1 11.21 3a7 7 0 0 0 9.79 9.79z"/>
+      </svg>
+    </button>
+  </div>
     <div class="account-container">
         <div class="store-hero">
             <?php if (!empty($seller['store_logo'])): ?>
@@ -218,9 +226,24 @@ if ($review_count) {
         <?php if ($products): ?>
             <div class="store-products-grid">
             <?php foreach ($products as $prod): ?>
-                <div class="store-product-card">
+                <div class="store-product-card" style="position: relative;">
+                    <?php if (isset($_SESSION['user_id'])): 
+                        // Check if product is in user's wishlist
+                        $wishlist_check = $pdo->prepare('SELECT 1 FROM wishlist WHERE user_id = ? AND product_id = ?');
+                        $wishlist_check->execute([$_SESSION['user_id'], $prod['id']]);
+                        $in_wishlist = $wishlist_check->fetch();
+                    ?>
+                        <button class="wishlist-btn" data-product-id="<?php echo $prod['id']; ?>" title="<?= __('add_to_favorites') ?>" style="position: absolute; top: 12px; left: 12px; z-index: 3; background: none; border: none; cursor: pointer; font-size: 1.5em; color: <?= $in_wishlist ? '#F44336' : '#FFD600' ?>;"><?= $in_wishlist ? '★' : '☆' ?></button>
+                    <?php endif; ?>
                     <a href="product.php?id=<?php echo $prod['id']; ?>">
-                        <img src="uploads/<?php echo htmlspecialchars($prod['image']); ?>" alt="<?php echo htmlspecialchars($prod['name']); ?>">
+                        <div class="product-img-wrap">
+                            <?php 
+                            $image_path = "uploads/" . htmlspecialchars($prod['image']);
+                            $thumb_path = "uploads/thumbnails/" . pathinfo($prod['image'], PATHINFO_FILENAME) . "_thumb.jpg";
+                            $final_image = file_exists($thumb_path) ? $thumb_path : $image_path;
+                            ?>
+                            <img src="<?php echo $final_image; ?>" alt="<?php echo htmlspecialchars($prod['name']); ?>" loading="lazy" width="300" height="300">
+                        </div>
                     </a>
                     <div class="product-name"><?php echo htmlspecialchars($prod['name']); ?></div>
                     <div class="product-price"><?php echo $prod['price']; ?> <?= __('currency') ?></div>
@@ -251,5 +274,6 @@ if ($review_count) {
         <?php endif; ?>
         </div>
     </div>
+    <script src="main.js?v=1.2"></script>
 </body>
 </html> 

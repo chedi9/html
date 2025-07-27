@@ -29,6 +29,13 @@ $lang = $_GET['lang'] ?? $_SESSION['lang'] ?? 'ar';
   <?php endif; ?>
 </head>
 <body>
+  <div style="display:flex;justify-content:flex-end;align-items:center;margin-bottom:10px;max-width:900px;margin-left:auto;margin-right:auto;gap:18px;">
+    <button id="darkModeToggle" class="dark-mode-toggle" title="Toggle dark mode" style="background:#00BFAE;color:#fff;border:none;border-radius:50%;width:40px;height:40px;display:flex;align-items:center;justify-content:center;font-size:1.3em;margin-left:16px;cursor:pointer;box-shadow:0 2px 8px rgba(0,191,174,0.10);transition:background 0.2s, color 0.2s;">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 12.79A9 9 0 1 1 11.21 3a7 7 0 0 0 9.79 9.79z"/>
+      </svg>
+    </button>
+  </div>
 <div id="pageContent">
   <div class="container">
     <h2><?= __('my_wishlist') ?></h2>
@@ -38,7 +45,14 @@ $lang = $_GET['lang'] ?? $_SESSION['lang'] ?? 'ar';
         <div class="product-card">
           <button class="wishlist-remove-btn" data-product-id="<?= $prod['id'] ?>" title="<?= __('remove_from_wishlist') ?>" style="position:absolute;top:10px;left:10px;background:none;border:none;cursor:pointer;font-size:1.5em;color:#F44336;z-index:2;">✖</button>
           <a href="product.php?id=<?= $prod['id'] ?>">
-            <img src="uploads/<?= htmlspecialchars($prod['image'] ?? 'default-product.png') ?>" alt="<?= htmlspecialchars($prod_name) ?>" style="width:120px;height:120px;object-fit:cover;border-radius:12px;margin-bottom:10px;">
+            <div class="product-img-wrap">
+                <?php 
+                $image_path = "uploads/" . htmlspecialchars($prod['image']);
+                $thumb_path = "uploads/thumbnails/" . pathinfo($prod['image'], PATHINFO_FILENAME) . "_thumb.jpg";
+                $final_image = file_exists($thumb_path) ? $thumb_path : $image_path;
+                ?>
+                <img src="<?php echo $final_image; ?>" alt="<?php echo htmlspecialchars($prod['name']); ?>" loading="lazy" width="300" height="300">
+            </div>
             <div class="product-name" style="font-weight:bold;font-size:1.08em;"> <?= htmlspecialchars($prod_name) ?> </div>
             <div class="product-price" style="color:#00BFAE;font-weight:bold;"> <?= $prod['price'] ?> د.ت </div>
           </a>
@@ -50,6 +64,6 @@ $lang = $_GET['lang'] ?? $_SESSION['lang'] ?? 'ar';
     </div>
   </div>
 </div>
-  <script src="main.js"></script>
+  <script src="main.js?v=1.2"></script>
 </body>
 </html> 

@@ -14,6 +14,7 @@ if (!isset($_SESSION['admin_id'])) {
     exit();
 }
 require '../db.php';
+require_once __DIR__ . '/../client/make_thumbnail.php';
 $categories = $pdo->query('SELECT * FROM categories ORDER BY name')->fetchAll();
 $error = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -35,6 +36,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $ext = pathinfo($_FILES['image']['name'], PATHINFO_EXTENSION);
         $image = uniqid('prod_', true) . '.' . $ext;
         move_uploaded_file($_FILES['image']['tmp_name'], '../uploads/' . $image);
+        // Generate thumbnail
+        $thumb_dir = '../uploads/thumbnails/';
+        if (!is_dir($thumb_dir)) mkdir($thumb_dir, 0777, true);
+        $thumb_path = $thumb_dir . pathinfo($image, PATHINFO_FILENAME) . '_thumb.jpg';
+        make_thumbnail('../uploads/' . $image, $thumb_path, 300, 300);
     }
     // Add seller_story and seller_photo logic
     if (isset($_FILES['seller_photo']) && $_FILES['seller_photo']['error'] === UPLOAD_ERR_OK) {

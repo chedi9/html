@@ -170,6 +170,9 @@ if (!isset($_SESSION['admin_id'])) {
         .nav-card.email-campaigns { border-left: 4px solid #e67e22; }
         .nav-card.seller-tips { border-left: 4px solid #16a085; }
         .nav-card.bulk-upload { border-left: 4px solid #9c27b0; }
+        .nav-card.seller-analytics { border-left: 4px solid #2980b9; }
+        .nav-card.automated-reports { border-left: 4px solid #8e44ad; }
+        .nav-card.returns { border-left: 4px solid #e67e22; }
         
         .welcome-message {
             text-align: center;
@@ -239,6 +242,9 @@ if (!isset($_SESSION['admin_id'])) {
         .nav-card:nth-child(9) { animation-delay: 0.9s; }
         .nav-card:nth-child(10) { animation-delay: 1s; }
         .nav-card:nth-child(11) { animation-delay: 1.1s; }
+        .nav-card:nth-child(12) { animation-delay: 1.2s; }
+        .nav-card:nth-child(13) { animation-delay: 1.3s; }
+        .nav-card:nth-child(14) { animation-delay: 1.4s; }
     </style>
 </head>
 <body>
@@ -268,10 +274,10 @@ if (!isset($_SESSION['admin_id'])) {
                 <p>متابعة وإدارة طلبات العملاء</p>
             </a>
             
-            <a href="reviews.php" class="nav-card reviews">
+            <a href="reviews_management.php" class="nav-card reviews">
                 <span class="nav-icon">⭐</span>
                 <h3>إدارة المراجعات</h3>
-                <p>مراجعة وتدقيق تقييمات العملاء</p>
+                <p>إدارة المراجعات والأسئلة والأجوبة والبلاغات</p>
             </a>
             
             <a href="categories.php" class="nav-card categories">
@@ -314,6 +320,24 @@ if (!isset($_SESSION['admin_id'])) {
                 <span class="nav-icon">💡</span>
                 <h3>نصائح البائعين</h3>
                 <p>نصائح وإرشادات للبائعين</p>
+            </a>
+            
+            <a href="seller_analytics.php" class="nav-card seller-analytics">
+                <span class="nav-icon">📈</span>
+                <h3>تحليلات البائعين</h3>
+                <p>عرض وإرسال التقارير التحليلية للبائعين</p>
+            </a>
+            
+            <a href="automated_reports.php" class="nav-card automated-reports">
+                <span class="nav-icon">📊</span>
+                <h3>التقارير الآلية</h3>
+                <p>إدارة التقارير اليومية والأسبوعية والشهرية</p>
+            </a>
+            
+            <a href="returns.php" class="nav-card returns">
+                <span class="nav-icon">🔄</span>
+                <h3>إدارة الإرجاعات</h3>
+                <p>مراجعة وإدارة طلبات الإرجاع من العملاء</p>
             </a>
         </nav>
         

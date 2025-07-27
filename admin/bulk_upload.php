@@ -1,11 +1,28 @@
 <?php
+// Security and compatibility headers
+header('Content-Type: text/html; charset=utf-8');
+header('Cache-Control: public, max-age=3600');
+header('X-Content-Type-Options: nosniff');
+header("Content-Security-Policy: frame-ancestors 'self'");
+if (session_status() === PHP_SESSION_NONE) session_start();
+if (!isset($_SESSION['is_mobile'])) {
+    $is_mobile = preg_match('/android|iphone|ipad|ipod|blackberry|windows phone|opera mini|mobile/i', $_SERVER['HTTP_USER_AGENT']);
+    $_SESSION['is_mobile'] = $is_mobile ? true : false;
+}
+if (!isset($_SESSION['admin_id'])) {
+    header('Location: login.php');
+    exit();
+}
+
 $page_title = 'رفع المنتجات بالجملة';
 $page_subtitle = 'استيراد منتجات متعددة من ملف CSV';
 $breadcrumb = [
+    ['title' => 'الرئيسية', 'url' => 'dashboard.php'],
     ['title' => 'رفع المنتجات بالجملة']
 ];
 
 require '../db.php';
+require_once '../client/make_thumbnail.php';
 require 'admin_header.php';
 
 $message = '';

@@ -95,11 +95,12 @@ $role = $current_admin['role'];
                     <tr>
                         <td>
                             <?php if ($prod['image']): ?>
-                                <img src="../uploads/<?php echo htmlspecialchars($prod['image']); ?>" 
-                                     alt="صورة المنتج" 
-                                     class="product-thumbnail">
-                            <?php else: ?>
-                                <div class="no-image">لا توجد صورة</div>
+                                <?php 
+                                $image_path = "../uploads/" . htmlspecialchars($prod['image']);
+                                $thumb_path = "../uploads/thumbnails/" . pathinfo($prod['image'], PATHINFO_FILENAME) . "_thumb.jpg";
+                                $final_image = file_exists($thumb_path) ? $thumb_path : $image_path;
+                                ?>
+                                <img src="<?php echo $final_image; ?>" alt="Product" style="width: 50px; height: 50px; object-fit: cover;">
                             <?php endif; ?>
                         </td>
                         <td><?php echo htmlspecialchars($prod['name']); ?></td>

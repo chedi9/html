@@ -48,15 +48,74 @@ $orders = $orders->fetchAll();
         label { display: block; margin-bottom: 6px; }
         input[type=text], input[type=email], input[type=password] { width: 100%; padding: 8px; border-radius: 5px; border: 1px solid #ccc; }
         .save-btn { background: var(--primary-color); color: #fff; border: none; border-radius: 6px; padding: 10px 24px; font-size: 1em; cursor: pointer; }
+        
+        /* Returns and notifications styles */
+        .return-btn { background: var(--secondary-color); color: #fff; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-size: 0.9em; }
+        .return-status { color: #666; font-style: italic; font-size: 0.9em; }
+        
+        .returns-list { display: flex; flex-direction: column; gap: 16px; }
+        .return-item { border: 1px solid #ddd; border-radius: 8px; padding: 16px; background: #f9f9f9; }
+        .return-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .return-header h4 { margin: 0; color: #333; }
+        .return-status.pending { color: #f57c00; }
+        .return-status.approved { color: #388e3c; }
+        .return-status.rejected { color: #d32f2f; }
+        .return-status.completed { color: #1976d2; }
+        .return-details p { margin: 8px 0; color: #666; }
+        
+        .notifications-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+        .unread-badge { background: var(--primary-color); color: white; padding: 4px 8px; border-radius: 12px; font-size: 0.8em; }
+        .view-all-btn { color: var(--primary-color); text-decoration: none; font-weight: 500; }
+        .view-all-btn:hover { text-decoration: underline; }
+        
+        .notifications-list { display: flex; flex-direction: column; gap: 12px; }
+        .notification-item { border: 1px solid #eee; border-radius: 6px; padding: 12px; background: white; }
+        .notification-item.unread { border-left: 4px solid var(--primary-color); background: #f0f8ff; }
+        .notification-title { font-weight: 600; margin-bottom: 4px; color: #333; }
+        .notification-message { color: #666; margin-bottom: 8px; }
+        .notification-time { font-size: 0.8em; color: #999; }
+        
+        .view-all-section { text-align: center; margin-top: 20px; padding-top: 16px; border-top: 1px solid #eee; }
     </style>
     <script>
     function showTab(tab) {
+        // Remove active class from all tabs
         document.querySelectorAll('.account-tab').forEach(btn => btn.classList.remove('active'));
-        document.querySelectorAll('.tab-content').forEach(tc => tc.style.display = 'none');
-        document.getElementById(tab+'-tab').classList.add('active');
-        document.getElementById(tab+'-content').style.display = 'block';
+        
+        // Hide all tab content
+        document.querySelectorAll('.tab-content').forEach(tc => {
+            if (tc) tc.style.display = 'none';
+        });
+        
+        // Add active class to selected tab
+        const tabElement = document.getElementById(tab+'-tab');
+        if (tabElement) {
+            tabElement.classList.add('active');
+        }
+        
+        // Show selected tab content
+        const contentElement = document.getElementById(tab+'-content');
+        if (contentElement) {
+            contentElement.style.display = 'block';
+        } else {
+            console.warn('Tab content element not found:', tab+'-content');
+        }
     }
-    window.onload = function() { showTab('orders'); };
+    
+    window.onload = function() { 
+        // Check if orders tab exists before trying to show it
+        const ordersTab = document.getElementById('orders-tab');
+        if (ordersTab) {
+            showTab('orders'); 
+        } else {
+            // If orders tab doesn't exist, show the first available tab
+            const firstTab = document.querySelector('.account-tab');
+            if (firstTab) {
+                const tabId = firstTab.id.replace('-tab', '');
+                showTab(tabId);
+            }
+        }
+    };
     </script>
 </head>
 <body>
@@ -65,6 +124,10 @@ $orders = $orders->fetchAll();
         <a href="../index.php" class="back-home-btn"><span class="arrow">&#8592;</span> <?= __('return_to_home') ?></a>
         <div class="account-tabs">
             <button type="button" class="account-tab" id="orders-tab" onclick="showTab('orders')"><?= __('order_history') ?></button>
+            <button type="button" class="account-tab" id="returns-tab" onclick="showTab('returns')">الإرجاعات والاسترداد</button>
+            <button type="button" class="account-tab" id="notifications-tab" onclick="showTab('notifications')">الإشعارات</button>
+            <button type="button" class="account-tab" id="saved-addresses-tab" onclick="showTab('saved-addresses')">العناوين المحفوظة</button>
+            <button type="button" class="account-tab" id="payment-methods-tab" onclick="showTab('payment-methods')">طرق الدفع المحفوظة</button>
             <button type="button" class="account-tab" id="wishlist-tab" onclick="showTab('wishlist')"><?= __('wishlist') ?></button>
             <button type="button" class="account-tab" id="viewed-tab" onclick="showTab('viewed')"><?= __('viewed_products') ?></button>
             <button type="button" class="account-tab" id="address-tab" onclick="showTab('address')"><?= __('address_and_phone') ?></button>
@@ -78,7 +141,7 @@ $orders = $orders->fetchAll();
             <?php if ($orders): ?>
             <table class="orders-table">
                 <thead>
-                    <tr><th><?= __('order_number') ?></th><th><?= __('total') ?></th><th><?= __('status') ?></th><th><?= __('order_date') ?></th></tr>
+                    <tr><th><?= __('order_number') ?></th><th><?= __('total') ?></th><th><?= __('status') ?></th><th><?= __('order_date') ?></th><th>الإجراءات</th></tr>
                 </thead>
                 <tbody>
                 <?php foreach ($orders as $order): ?>
@@ -87,6 +150,13 @@ $orders = $orders->fetchAll();
                         <td><?php echo $order['total']; ?> <?= __('currency') ?></td>
                         <td><?php echo htmlspecialchars($order['status']); ?></td>
                         <td><?php echo $order['created_at']; ?></td>
+                        <td>
+                            <?php if ($order['status'] === 'delivered' && ($order['return_status'] ?? 'none') !== 'return_requested'): ?>
+                                <a href="request_return.php?order_id=<?php echo $order['id']; ?>" class="return-btn">طلب إرجاع</a>
+                            <?php elseif (($order['return_status'] ?? 'none') === 'return_requested'): ?>
+                                <span class="return-status">طلب إرجاع قيد المراجعة</span>
+                            <?php endif; ?>
+                        </td>
                     </tr>
                 <?php endforeach; ?>
                 </tbody>
@@ -95,6 +165,103 @@ $orders = $orders->fetchAll();
                 <p><?= __('no_orders_yet') ?></p>
             <?php endif; ?>
         </div>
+        
+        <div class="tab-content" id="returns-content" style="display:none;">
+            <h3>الإرجاعات والاسترداد</h3>
+            <?php
+            // Fetch user returns
+            $returns = $pdo->prepare('
+                SELECT r.*, o.total as order_total 
+                FROM returns r 
+                JOIN orders o ON r.order_id = o.id 
+                WHERE r.user_id = ? 
+                ORDER BY r.created_at DESC
+            ');
+            $returns->execute([$user_id]);
+            $returns = $returns->fetchAll();
+            ?>
+            
+            <?php if ($returns): ?>
+                <div class="returns-list">
+                    <?php foreach ($returns as $return): ?>
+                        <div class="return-item">
+                            <div class="return-header">
+                                <h4>طلب إرجاع #<?php echo $return['return_number']; ?></h4>
+                                <span class="return-status <?php echo $return['status']; ?>">
+                                    <?php
+                                    switch ($return['status']) {
+                                        case 'pending': echo 'قيد المراجعة'; break;
+                                        case 'approved': echo 'تمت الموافقة'; break;
+                                        case 'rejected': echo 'مرفوض'; break;
+                                        case 'completed': echo 'مكتمل'; break;
+                                    }
+                                    ?>
+                                </span>
+                            </div>
+                            <div class="return-details">
+                                <p><strong>الطلب:</strong> #<?php echo $return['order_id']; ?></p>
+                                <p><strong>السبب:</strong> <?php echo htmlspecialchars($return['reason']); ?></p>
+                                <p><strong>التاريخ:</strong> <?php echo date('j M Y', strtotime($return['created_at'])); ?></p>
+                                <?php if ($return['description']): ?>
+                                    <p><strong>التفاصيل:</strong> <?php echo htmlspecialchars($return['description']); ?></p>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+            <?php else: ?>
+                <p>لا توجد طلبات إرجاع حتى الآن.</p>
+            <?php endif; ?>
+        </div>
+        
+        <div class="tab-content" id="notifications-content" style="display:none;">
+            <h3>الإشعارات</h3>
+            <?php
+            // Fetch user notifications
+            $notifications = $pdo->prepare('
+                SELECT * FROM notifications 
+                WHERE user_id = ? 
+                ORDER BY created_at DESC 
+                LIMIT 10
+            ');
+            $notifications->execute([$user_id]);
+            $notifications = $notifications->fetchAll();
+            
+            // Count unread notifications
+            $unread_count = $pdo->prepare('SELECT COUNT(*) FROM notifications WHERE user_id = ? AND is_read = 0');
+            $unread_count->execute([$user_id]);
+            $unread_count = $unread_count->fetchColumn();
+            ?>
+            
+            <?php if ($unread_count > 0): ?>
+                <div class="notifications-header">
+                    <span class="unread-badge"><?php echo $unread_count; ?> غير مقروء</span>
+                    <a href="user_notifications.php" class="view-all-btn">عرض جميع الإشعارات</a>
+                </div>
+            <?php endif; ?>
+            
+            <?php if ($notifications): ?>
+                <div class="notifications-list">
+                    <?php foreach ($notifications as $notification): ?>
+                        <div class="notification-item <?php echo $notification['is_read'] ? '' : 'unread'; ?>">
+                            <div class="notification-content">
+                                <div class="notification-title"><?php echo htmlspecialchars($notification['title']); ?></div>
+                                <div class="notification-message"><?php echo htmlspecialchars($notification['message']); ?></div>
+                                <div class="notification-time">
+                                    <?php echo date('j M Y g:i A', strtotime($notification['created_at'])); ?>
+                                </div>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+                <div class="view-all-section">
+                    <a href="user_notifications.php" class="view-all-btn">عرض جميع الإشعارات</a>
+                </div>
+            <?php else: ?>
+                <p>لا توجد إشعارات حتى الآن.</p>
+            <?php endif; ?>
+        </div>
+        
         <div class="tab-content" id="wishlist-content" style="display:none;">
             <h3><?= __('wishlist') ?></h3>
             <?php
@@ -182,6 +349,123 @@ $orders = $orders->fetchAll();
                 <button type="submit" class="save-btn"><?= __('change_password') ?></button>
             </form>
         </div>
+        
+        <div class="tab-content" id="saved-addresses-content" style="display:none;">
+            <h3>العناوين المحفوظة</h3>
+            <?php
+            // Fetch user addresses
+            $stmt = $pdo->prepare('SELECT * FROM addresses WHERE user_id = ? ORDER BY is_default DESC, created_at DESC LIMIT 3');
+            $stmt->execute([$user_id]);
+            $addresses = $stmt->fetchAll();
+            ?>
+            
+            <?php if ($addresses): ?>
+                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; margin-bottom: 20px;">
+                    <?php foreach ($addresses as $address): ?>
+                        <div style="border: 1px solid #ddd; border-radius: 8px; padding: 16px; background: <?php echo $address['is_default'] ? '#f0f8ff' : '#f9f9f9'; ?>;">
+                            <?php if ($address['is_default']): ?>
+                                <div style="background: var(--primary-color); color: #fff; padding: 4px 8px; border-radius: 12px; font-size: 0.8em; display: inline-block; margin-bottom: 8px;">افتراضي</div>
+                            <?php endif; ?>
+                            
+                            <div style="color: #666; font-size: 0.9em; margin-bottom: 8px;">
+                                <?php
+                                switch ($address['type']) {
+                                    case 'shipping': echo 'عنوان الشحن'; break;
+                                    case 'billing': echo 'عنوان الفواتير'; break;
+                                    case 'both': echo 'عنوان الشحن والفواتير'; break;
+                                }
+                                ?>
+                            </div>
+                            
+                            <div style="font-weight: bold; margin-bottom: 6px;"><?php echo htmlspecialchars($address['full_name']); ?></div>
+                            <div style="color: #666; margin-bottom: 8px;"><?php echo htmlspecialchars($address['phone']); ?></div>
+                            
+                            <div style="line-height: 1.4; margin-bottom: 12px;">
+                                <?php echo htmlspecialchars($address['address_line1']); ?><br>
+                                <?php if ($address['address_line2']): ?>
+                                    <?php echo htmlspecialchars($address['address_line2']); ?><br>
+                                <?php endif; ?>
+                                <?php echo htmlspecialchars($address['city']); ?>
+                                <?php if ($address['state']): ?>
+                                    , <?php echo htmlspecialchars($address['state']); ?>
+                                <?php endif; ?>
+                                <?php if ($address['postal_code']): ?>
+                                    , <?php echo htmlspecialchars($address['postal_code']); ?>
+                                <?php endif; ?><br>
+                                <?php echo htmlspecialchars($address['country']); ?>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+                
+                <div style="text-align: center;">
+                    <a href="manage_addresses.php" class="save-btn" style="background: var(--secondary-color); text-decoration: none; display: inline-block;">إدارة جميع العناوين</a>
+                </div>
+            <?php else: ?>
+                <p>لا توجد عناوين محفوظة</p>
+                <div style="text-align: center; margin-top: 20px;">
+                    <a href="manage_addresses.php" class="save-btn" style="background: var(--primary-color); text-decoration: none; display: inline-block;">إضافة عنوان جديد</a>
+                </div>
+            <?php endif; ?>
+        </div>
+        
+        <div class="tab-content" id="payment-methods-content" style="display:none;">
+            <h3>طرق الدفع المحفوظة</h3>
+            <?php
+            // Fetch user payment methods
+            $stmt = $pdo->prepare('SELECT * FROM payment_methods WHERE user_id = ? AND is_active = 1 ORDER BY is_default DESC, created_at DESC LIMIT 3');
+            $stmt->execute([$user_id]);
+            $payment_methods = $stmt->fetchAll();
+            ?>
+            
+            <?php if ($payment_methods): ?>
+                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; margin-bottom: 20px;">
+                    <?php foreach ($payment_methods as $payment): ?>
+                        <div style="border: 1px solid #ddd; border-radius: 8px; padding: 16px; background: <?php echo $payment['is_default'] ? '#f0f8ff' : '#f9f9f9'; ?>;">
+                            <?php if ($payment['is_default']): ?>
+                                <div style="background: var(--primary-color); color: #fff; padding: 4px 8px; border-radius: 12px; font-size: 0.8em; display: inline-block; margin-bottom: 8px;">افتراضي</div>
+                            <?php endif; ?>
+                            
+                            <div style="color: #666; font-size: 0.9em; margin-bottom: 8px;">
+                                <?php
+                                switch ($payment['type']) {
+                                    case 'card': echo '💳 بطاقة بنكية'; break;
+                                    case 'd17': echo '📱 D17'; break;
+                                    case 'bank_transfer': echo '🏦 تحويل بنكي'; break;
+                                }
+                                ?>
+                            </div>
+                            
+                            <div style="font-weight: bold; margin-bottom: 8px;"><?php echo htmlspecialchars($payment['name']); ?></div>
+                            
+                            <?php if ($payment['card_number']): ?>
+                                <div style="font-family: monospace; margin-bottom: 6px;">
+                                    **** **** **** <?php echo substr($payment['card_number'], -4); ?>
+                                </div>
+                            <?php endif; ?>
+                            
+                            <?php if ($payment['card_type']): ?>
+                                <div style="color: #666; margin-bottom: 6px;">النوع: <?php echo htmlspecialchars($payment['card_type']); ?></div>
+                            <?php endif; ?>
+                            
+                            <?php if ($payment['expiry_month'] && $payment['expiry_year']): ?>
+                                <div style="color: #666;">تاريخ الانتهاء: <?php echo $payment['expiry_month']; ?>/<?php echo $payment['expiry_year']; ?></div>
+                            <?php endif; ?>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+                
+                <div style="text-align: center;">
+                    <a href="manage_payment_methods.php" class="save-btn" style="background: var(--secondary-color); text-decoration: none; display: inline-block;">إدارة جميع طرق الدفع</a>
+                </div>
+            <?php else: ?>
+                <p>لا توجد طرق دفع محفوظة</p>
+                <div style="text-align: center; margin-top: 20px;">
+                    <a href="manage_payment_methods.php" class="save-btn" style="background: var(--primary-color); text-decoration: none; display: inline-block;">إضافة طريقة دفع جديدة</a>
+                </div>
+            <?php endif; ?>
+        </div>
+        
         <?php if ($seller): ?>
         <div class="tab-content" id="seller-content" style="display:none;">
             <h3>Seller Dashboard</h3>

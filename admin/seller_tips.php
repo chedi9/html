@@ -14,8 +14,8 @@ $error = '';
 // Handle tips sending
 if ($_POST && isset($_POST['action'])) {
     if ($_POST['action'] === 'send_tips') {
-        $tip_type = $_POST['tip_type'];
-        $custom_message = trim($_POST['custom_message']);
+        $tip_type = $_POST['tip_type'] ?? 'custom';
+        $custom_message = trim($_POST['custom_message'] ?? '');
         
         if (!empty($custom_message)) {
             try {
@@ -80,9 +80,8 @@ $predefined_tips = [
 function sendSellerTipEmail($email, $name, $store_name, $tip_type, $custom_message) {
     $subject = "نصائح مفيدة لتحسين متجرك - WeBuy";
     
-    $headers = "MIME-Version: 1.0" . "\r\n";
-    $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
-    $headers .= "From: WeBuy <noreply@webuy.com>" . "\r\n";
+    // Use the email helper for consistent email sending
+    require_once 'email_helper.php';
     
     $html_content = "
     <!DOCTYPE html>
@@ -130,7 +129,7 @@ function sendSellerTipEmail($email, $name, $store_name, $tip_type, $custom_messa
     </body>
     </html>";
     
-    return mail($email, $subject, $html_content, $headers);
+    return sendEmail($email, $name, $subject, $html_content);
 }
 ?>
 

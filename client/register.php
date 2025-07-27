@@ -16,6 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     require_once __DIR__ . '/mailer.php';
     $name = trim($_POST['name']);
     $email = trim($_POST['email']);
+    $gender = $_POST['gender'] ?? 'prefer_not_to_say';
     $password = $_POST['password'];
     $is_seller = isset($_POST['is_seller']) ? 1 : 0;
     // Password strength check
@@ -33,6 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_SESSION['pending_registration'] = [
                 'name' => $name,
                 'email' => $email,
+                'gender' => $gender,
                 'password_hash' => $hash,
                 'verification_code' => $verification_code,
                 'code_expires_at' => $code_expires_at,
@@ -61,7 +63,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         .register-container { max-width: 400px; margin: 80px auto; background: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
         .register-container h2 { text-align: center; margin-bottom: 20px; }
         .register-container label { display: block; margin-bottom: 8px; }
-        .register-container input { width: 100%; padding: 10px; margin-bottom: 15px; border-radius: 5px; border: 1px solid #ccc; }
+        .register-container input, .register-container select { width: 100%; padding: 10px; margin-bottom: 15px; border-radius: 5px; border: 1px solid #ccc; }
         .register-container button { width: 100%; padding: 10px; background: var(--primary-color); color: #fff; border: none; border-radius: 5px; font-size: 1em; }
         .register-container .error { color: red; text-align: center; margin-bottom: 10px; }
         .login-link { text-align: center; margin-top: 10px; }
@@ -85,6 +87,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <input type="text" name="name" id="name" required autocomplete="name">
             <label for="email"><?= __('email') ?>:</label>
             <input type="email" name="email" id="email" required autocomplete="email">
+            <label for="gender">الجنس / Gender:</label>
+            <select name="gender" id="gender" required>
+                <option value="prefer_not_to_say">أفضل عدم التحديد / Prefer not to say</option>
+                <option value="male">ذكر / Male</option>
+                <option value="female">أنثى / Female</option>
+                <option value="other">آخر / Other</option>
+            </select>
             <label for="password"><?= __('password') ?>:</label>
             <input type="password" name="password" id="password" required autocomplete="new-password">
             <label for="confirm_password"><?= __('confirm_password') ?>:</label>

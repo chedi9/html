@@ -2,6 +2,8 @@
 session_start();
 require '../db.php';
 require '../lang.php';
+require_once '../db.php';
+require_once 'make_thumbnail.php';
 if (!isset($_SESSION['user_id'])) {
     header('Location: login.php');
     exit();
@@ -32,6 +34,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $ext = pathinfo($img_name, PATHINFO_EXTENSION);
                 $img_file = uniqid('prodimg_', true) . '.' . $ext;
                 move_uploaded_file($_FILES['images']['tmp_name'][$i], '../uploads/' . $img_file);
+                
+                // Generate thumbnail
+                $thumb_dir = '../uploads/thumbnails/';
+                if (!is_dir($thumb_dir)) mkdir($thumb_dir, 0777, true);
+                $thumb_path = $thumb_dir . pathinfo($img_file, PATHINFO_FILENAME) . '_thumb.jpg';
+                make_thumbnail('../uploads/' . $img_file, $thumb_path, 300, 300);
+                
                 $image_paths[] = $img_file;
                 if ($i == 0) $main_image = $img_file;
             }
