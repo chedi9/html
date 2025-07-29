@@ -1,14 +1,15 @@
 <?php
-// Security and compatibility headers
+// Less Aggressive Security Integration for Admin
+require_once '../security_integration_admin.php';
+
+// Additional compatibility headers
 header('Content-Type: text/html; charset=utf-8');
 header('Cache-Control: public, max-age=3600');
-header('X-Content-Type-Options: nosniff');
-header("Content-Security-Policy: frame-ancestors 'self'");
-session_start();
+// Session is already started by security_integration.php
 
 // Redirect to dashboard if already logged in
 if (isset($_SESSION['admin_id'])) {
-    header('Location: dashboard.php');
+    header('Location: unified_dashboard.php');
     exit();
 }
 
@@ -18,15 +19,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     require '../db.php'; // Database connection
     $username = trim($_POST['username']);
     $password = $_POST['password'];
-    $stmt = $pdo->prepare('SELECT id, password_hash FROM admins WHERE username = ?');
+    
+    // Check in admins table
+    $stmt = $pdo->prepare('SELECT id, password_hash, role FROM admins WHERE username = ?');
     $stmt->execute([$username]);
     $admin = $stmt->fetch();
+    
     if ($admin && password_verify($password, $admin['password_hash'])) {
         $_SESSION['admin_id'] = $admin['id'];
-        header('Location: dashboard.php');
+        $_SESSION['admin_username'] = $username;
+        $_SESSION['admin_role'] = $admin['role'] ?? 'admin'; // Use actual role from database
+        $_SESSION['admin_full_name'] = 'Administrator';
+        
+        logSecurityEvent('admin_login_success_legacy', [
+            'username' => $username,
+            'role' => $admin['role'] ?? 'admin',
+            'ip' => $_SERVER['REMOTE_ADDR'] ?? ''
+        ]);
+        
+        // All users go to the unified dashboard - permissions are handled within the dashboard
+        header('Location: unified_dashboard.php');
         exit();
     } else {
         $error = 'اسم المستخدم أو كلمة المرور غير صحيحة';
+        
+        logSecurityEvent('admin_login_failed', [
+            'username' => $username,
+            'ip' => $_SERVER['REMOTE_ADDR'] ?? ''
+        ]);
     }
 }
 ?>

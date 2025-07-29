@@ -219,7 +219,7 @@ function sendNewsletterEmail($email, $subject, $content) {
         </div>
         
         <div style="margin-top: 30px;">
-            <a href="dashboard.php" class="btn">العودة للوحة التحكم</a>
+            <a href="unified_dashboard.php" class="btn">العودة للوحة التحكم</a>
         </div>
     </div>
 </body>

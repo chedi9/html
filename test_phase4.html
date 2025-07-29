@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WeBuy - Phase 4 Advanced Features Test</title>
+    <link rel="stylesheet" href="css/main.css">
+    <script src="js/progressive-enhancement.js" defer></script>
+    <style>
+        /* Test-specific styles */
+        .test-section {
+            margin: var(--space-8) 0;
+            padding: var(--space-6);
+            background-color: var(--color-gray-50);
+            border-radius: var(--border-radius-lg);
+        }
+        
+        .test-section h2 {
+            margin-bottom: var(--space-4);
+            color: var(--color-gray-900);
+        }
+        
+        .demo-grid {
+            display: grid;
+            gap: var(--space-4);
+            margin: var(--space-4) 0;
+        }
+        
+        .demo-grid--2 { grid-template-columns: repeat(2, 1fr); }
+        .demo-grid--3 { grid-template-columns: repeat(3, 1fr); }
+        
+        @media (max-width: 768px) {
+            .demo-grid--2,
+            .demo-grid--3 {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .demo-box {
+            padding: var(--space-4);
+            background-color: var(--color-white);
+            border: 1px solid var(--color-gray-200);
+            border-radius: var(--border-radius-md);
+            text-align: center;
+        }
+        
+        .feature-status {
+            display: inline-block;
+            padding: var(--space-1) var(--space-2);
+            border-radius: var(--border-radius-sm);
+            font-size: var(--font-size-xs);
+            font-weight: var(--font-weight-medium);
+        }
+        
+        .feature-status--supported {
+            background-color: var(--color-success-100);
+            color: var(--color-success-700);
+        }
+        
+        .feature-status--not-supported {
+            background-color: var(--color-danger-100);
+            color: var(--color-danger-700);
+        }
+    </style>
+</head>
+<body>
+    <!-- Skip to main content link -->
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="header__container">
+            <a href="#" class="header__logo">
+                <img src="webuy.png" alt="WeBuy Logo">
+                WeBuy
+            </a>
+            
+            <nav class="nav">
+                <ul class="nav__list">
+                    <li class="nav__item">
+                        <a href="#" class="nav__link nav__link--active">Home</a>
+                    </li>
+                    <li class="nav__item">
+                        <a href="#" class="nav__link">Products</a>
+                    </li>
+                    <li class="nav__item">
+                        <a href="#" class="nav__link">About</a>
+                    </li>
+                    <li class="nav__item">
+                        <a href="#" class="nav__link">Contact</a>
+                    </li>
+                </ul>
+            </nav>
+            
+            <button class="nav__mobile-toggle" aria-label="Toggle navigation">
+                ☰
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main id="main-content" class="container">
+        <div class="breadcrumb">
+            <div class="breadcrumb__item">
+                <a href="#" class="breadcrumb__link">Home</a>
+                <span class="breadcrumb__separator">/</span>
+            </div>
+            <div class="breadcrumb__item">
+                <span class="breadcrumb__current">Phase 4 Test</span>
+            </div>
+        </div>
+
+        <h1>WeBuy - Phase 4 Advanced Features Test</h1>
+        <p>This page demonstrates all Phase 4 features: animations, accessibility, and progressive enhancement.</p>
+
+        <!-- Feature Detection Test -->
+        <section class="test-section">
+            <h2>Feature Detection</h2>
+            <div class="demo-grid demo-grid--3">
+                <div class="demo-box">
+                    <h3>CSS Grid</h3>
+                    <span class="feature-status" id="grid-status">Checking...</span>
+                </div>
+                <div class="demo-box">
+                    <h3>CSS Flexbox</h3>
+                    <span class="feature-status" id="flexbox-status">Checking...</span>
+                </div>
+                <div class="demo-box">
+                    <h3>CSS Custom Properties</h3>
+                    <span class="feature-status" id="custom-props-status">Checking...</span>
+                </div>
+                <div class="demo-box">
+                    <h3>Intersection Observer</h3>
+                    <span class="feature-status" id="intersection-status">Checking...</span>
+                </div>
+                <div class="demo-box">
+                    <h3>Fetch API</h3>
+                    <span class="feature-status" id="fetch-status">Checking...</span>
+                </div>
+                <div class="demo-box">
+                    <h3>Local Storage</h3>
+                    <span class="feature-status" id="localstorage-status">Checking...</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Animations Test -->
+        <section class="test-section">
+            <h2>Animations & Micro-interactions</h2>
+            
+            <h3>Page Transitions</h3>
+            <div class="demo-grid demo-grid--2">
+                <div class="demo-box slide-in-left" style="animation-delay: 0.2s;">
+                    <h4>Slide In Left</h4>
+                    <p>This element slides in from the left.</p>
+                </div>
+                <div class="demo-box slide-in-right" style="animation-delay: 0.4s;">
+                    <h4>Slide In Right</h4>
+                    <p>This element slides in from the right.</p>
+                </div>
+            </div>
+            <div style="text-align: center; margin: var(--space-4) 0;">
+                <button class="btn btn--secondary" onclick="retriggerAnimations()">Retrigger Animations</button>
+            </div>
+
+            <h3>Loading States</h3>
+            <div class="demo-grid demo-grid--3">
+                <div class="skeleton skeleton--text"></div>
+                <div class="skeleton skeleton--title"></div>
+                <div class="skeleton skeleton--button"></div>
+                <div class="skeleton skeleton--image"></div>
+                <div class="skeleton skeleton--card"></div>
+                <div class="spinner spinner--primary"></div>
+            </div>
+
+            <h3>Hover Effects</h3>
+            <div class="demo-grid demo-grid--3">
+                <div class="card card--hover">
+                    <div class="card__body">
+                        <h4>Hover Card</h4>
+                        <p>Hover to see the effect.</p>
+                    </div>
+                </div>
+                <button class="btn btn--primary btn--hover">Hover Button</button>
+                <div class="image--hover">
+                    <img src="webuy.png" alt="Hover Image" style="width: 100%; height: 150px; object-fit: cover; border-radius: var(--border-radius-md);">
+                </div>
+            </div>
+
+            <h3>Progress Indicators</h3>
+            <div class="demo-grid demo-grid--3">
+                <div>
+                    <h4>Default Progress</h4>
+                    <div class="progress">
+                        <div class="progress__bar" style="width: 60%;"></div>
+                    </div>
+                </div>
+                <div>
+                    <h4>Success Progress</h4>
+                    <div class="progress">
+                        <div class="progress__bar progress__bar--success" style="width: 80%;"></div>
+                    </div>
+                </div>
+                <div>
+                    <h4>Warning Progress</h4>
+                    <div class="progress">
+                        <div class="progress__bar progress__bar--warning" style="width: 40%;"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Accessibility Test -->
+        <section class="test-section">
+            <h2>Accessibility Features</h2>
+            
+            <h3>Focus Management</h3>
+            <div class="demo-grid demo-grid--2">
+                <div>
+                    <h4>Focus Indicators</h4>
+                    <p>Tab through these elements to see focus indicators:</p>
+                    <button class="btn btn--primary">Button 1</button>
+                    <button class="btn btn--secondary">Button 2</button>
+                    <input type="text" class="form__input" placeholder="Input field">
+                </div>
+                <div>
+                    <h4>Skip Links</h4>
+                    <p>Press Tab at the top of the page to see the skip link.</p>
+                    <a href="#main-content" class="link--hover">Test Link</a>
+                </div>
+            </div>
+
+            <h3>Form Accessibility</h3>
+            <div class="demo-grid demo-grid--2">
+                <div>
+                    <h4>Required Fields</h4>
+                    <div class="form__group">
+                        <label class="form__label form__label--required" for="test-required">Required Field</label>
+                        <input type="text" id="test-required" class="form__input" required>
+                        <div class="form__help">This field is required</div>
+                    </div>
+                </div>
+                <div>
+                    <h4>Error States</h4>
+                    <div class="form__group">
+                        <label class="form__label" for="test-error">Field with Error</label>
+                        <input type="email" id="test-error" class="form__input form__input--error" value="invalid-email">
+                        <div class="form__error">Please enter a valid email address</div>
+                    </div>
+                </div>
+            </div>
+
+            <h3>ARIA Support</h3>
+            <div class="demo-grid demo-grid--2">
+                <div>
+                    <h4>Alert Messages</h4>
+                    <div role="alert" aria-live="assertive" class="form__message form__message--error">
+                        This is an important alert message.
+                    </div>
+                </div>
+                <div>
+                    <h4>Progress Bar</h4>
+                    <div role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100">
+                        <div class="progress">
+                            <div class="progress__bar" style="width: 75%;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Progressive Enhancement Test -->
+        <section class="test-section">
+            <h2>Progressive Enhancement</h2>
+            
+            <h3>Toast Notifications</h3>
+            <div class="demo-grid demo-grid--4">
+                <button class="btn btn--primary" onclick="showToast('info')">Info Toast</button>
+                <button class="btn btn--success" onclick="showToast('success')">Success Toast</button>
+                <button class="btn btn--warning" onclick="showToast('warning')">Warning Toast</button>
+                <button class="btn btn--danger" onclick="showToast('danger')">Error Toast</button>
+            </div>
+
+            <h3>Modal System</h3>
+            <div class="demo-grid demo-grid--2">
+                <button class="btn btn--primary" data-modal="test-modal">Open Modal</button>
+                <button class="btn btn--secondary" onclick="testFormValidation()">Test Form Validation</button>
+            </div>
+
+            <h3>Lazy Loading</h3>
+            <div class="demo-grid demo-grid--3">
+                <img src="webuy.png" alt="Lazy loaded image 1" loading="lazy" style="width: 100%; height: 200px; object-fit: cover;">
+                <img src="webuy-logo-transparent.jpg" alt="Lazy loaded image 2" loading="lazy" style="width: 100%; height: 200px; object-fit: cover;">
+                <img src="webuy.jpg" alt="Lazy loaded image 3" loading="lazy" style="width: 100%; height: 200px; object-fit: cover;">
+            </div>
+        </section>
+
+        <!-- Performance Test -->
+        <section class="test-section">
+            <h2>Performance Features</h2>
+            
+            <h3>Performance Monitoring</h3>
+            <div class="demo-box">
+                <h4>Page Load Metrics</h4>
+                <p>Check the browser console for performance metrics.</p>
+                <div id="performance-metrics">
+                    <p>Loading metrics...</p>
+                </div>
+            </div>
+
+            <h3>Touch Targets</h3>
+            <div class="demo-grid demo-grid--3">
+                <button class="btn btn--sm">Small Button</button>
+                <button class="btn">Default Button</button>
+                <button class="btn btn--lg">Large Button</button>
+            </div>
+        </section>
+    </main>
+
+    <!-- Test Modal -->
+    <div id="test-modal" class="modal">
+        <div class="modal__header">
+            <h3>Test Modal</h3>
+            <button class="modal-close" aria-label="Close modal">×</button>
+        </div>
+        <div class="modal__body">
+            <p>This is a test modal with focus trap functionality.</p>
+            <div class="form__group">
+                <label class="form__label" for="modal-input">Test Input</label>
+                <input type="text" id="modal-input" class="form__input" placeholder="Enter text...">
+            </div>
+        </div>
+        <div class="modal__footer">
+            <button class="btn btn--secondary modal-close">Cancel</button>
+            <button class="btn btn--primary">Save</button>
+        </div>
+    </div>
+
+    <script>
+        // Feature detection test
+        function updateFeatureStatus() {
+            const features = {
+                'grid-status': document.documentElement.classList.contains('supports-grid'),
+                'flexbox-status': document.documentElement.classList.contains('supports-flexbox'),
+                'custom-props-status': document.documentElement.classList.contains('supports-custom-properties'),
+                'intersection-status': document.documentElement.classList.contains('supports-intersection-observer'),
+                'fetch-status': document.documentElement.classList.contains('supports-fetch'),
+                'localstorage-status': 'localStorage' in window
+            };
+
+            Object.entries(features).forEach(([id, supported]) => {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.textContent = supported ? 'Supported' : 'Not Supported';
+                    element.className = `feature-status ${supported ? 'feature-status--supported' : 'feature-status--not-supported'}`;
+                }
+            });
+        }
+
+        // Toast notification test
+        function showToast(type) {
+            if (window.toastManager) {
+                const messages = {
+                    info: 'This is an information message',
+                    success: 'Operation completed successfully!',
+                    warning: 'Please review your input',
+                    danger: 'An error occurred'
+                };
+                window.toastManager.show(messages[type], type);
+            } else {
+                alert(`Toast: ${messages[type]}`);
+            }
+        }
+
+        // Form validation test
+        function testFormValidation() {
+            const form = document.createElement('form');
+            form.setAttribute('data-validate', '');
+            form.innerHTML = `
+                <div class="form__group">
+                    <label class="form__label form__label--required" for="test-email">Email</label>
+                    <input type="email" id="test-email" class="form__input" required>
+                </div>
+                <button type="submit" class="btn btn--primary">Submit</button>
+            `;
+            
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const email = this.querySelector('#test-email');
+                if (!email.value || !email.value.includes('@')) {
+                    showFieldError(email, 'Please enter a valid email address');
+                } else {
+                    clearFieldError(email);
+                    showToast('success');
+                }
+            });
+            
+            document.body.appendChild(form);
+            form.querySelector('#test-email').focus();
+        }
+
+        function showFieldError(input, message) {
+            input.setAttribute('aria-invalid', 'true');
+            let errorElement = input.parentNode.querySelector('.form__error');
+            if (!errorElement) {
+                errorElement = document.createElement('div');
+                errorElement.className = 'form__error';
+                input.parentNode.appendChild(errorElement);
+            }
+            errorElement.textContent = message;
+        }
+
+        function clearFieldError(input) {
+            input.removeAttribute('aria-invalid');
+            const errorElement = input.parentNode.querySelector('.form__error');
+            if (errorElement) {
+                errorElement.remove();
+            }
+        }
+
+        // Performance monitoring
+        function updatePerformanceMetrics() {
+            if ('performance' in window) {
+                const perfData = performance.getEntriesByType('navigation')[0];
+                if (perfData) {
+                    const metrics = document.getElementById('performance-metrics');
+                    if (metrics) {
+                        metrics.innerHTML = `
+                            <p><strong>Page Load Time:</strong> ${Math.round(perfData.loadEventEnd - perfData.loadEventStart)}ms</p>
+                            <p><strong>DOM Content Loaded:</strong> ${Math.round(perfData.domContentLoadedEventEnd - perfData.domContentLoadedEventStart)}ms</p>
+                            <p><strong>First Paint:</strong> ${Math.round(perfData.domContentLoadedEventEnd - perfData.fetchStart)}ms</p>
+                        `;
+                    }
+                }
+            }
+        }
+
+        // Initialize tests
+        document.addEventListener('DOMContentLoaded', function() {
+            updateFeatureStatus();
+            
+            // Trigger slide animations after a delay
+            setTimeout(() => {
+                const slideElements = document.querySelectorAll('.slide-in-left, .slide-in-right');
+                slideElements.forEach(el => {
+                    el.style.animation = 'none';
+                    el.offsetHeight; // Trigger reflow
+                    el.style.animation = null;
+                });
+            }, 100);
+            
+            // Update performance metrics after page load
+            window.addEventListener('load', function() {
+                setTimeout(updatePerformanceMetrics, 100);
+            });
+        });
+
+        // Add test button for animations
+        function retriggerAnimations() {
+            const slideElements = document.querySelectorAll('.slide-in-left, .slide-in-right');
+            slideElements.forEach(el => {
+                el.style.animation = 'none';
+                el.offsetHeight; // Trigger reflow
+                el.style.animation = null;
+            });
+        }
+
+        // Mobile navigation toggle
+        const mobileToggle = document.querySelector('.nav__mobile-toggle');
+        const nav = document.querySelector('.nav');
+        
+        mobileToggle.addEventListener('click', () => {
+            nav.classList.toggle('nav--mobile');
+            mobileToggle.classList.toggle('nav__mobile-toggle--active');
+        });
+    </script>
+</body>
+</html>

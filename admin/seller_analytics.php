@@ -28,7 +28,7 @@ if (!function_exists('is_all_zero_or_empty')) {
 $page_title = 'تحليلات البائعين';
 $page_subtitle = 'إحصائيات متقدمة ونصائح ذكية للبائعين';
 $breadcrumb = [
-    ['title' => 'الرئيسية', 'url' => 'dashboard.php'],
+            ['title' => 'الرئيسية', 'url' => 'unified_dashboard.php'],
     ['title' => 'تحليلات البائعين']
 ];
 

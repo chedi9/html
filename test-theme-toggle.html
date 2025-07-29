@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Theme Toggle Test</title>
+    
+    <!-- CSS Files -->
+    <link rel="stylesheet" href="css/base/_variables.css">
+    <link rel="stylesheet" href="css/base/_reset.css">
+    <link rel="stylesheet" href="css/base/_typography.css">
+    <link rel="stylesheet" href="css/base/_utilities.css">
+    <link rel="stylesheet" href="css/components/_buttons.css">
+    <link rel="stylesheet" href="css/components/_forms.css">
+    <link rel="stylesheet" href="css/components/_cards.css">
+    <link rel="stylesheet" href="css/components/_navigation.css">
+    <link rel="stylesheet" href="css/layout/_grid.css">
+    <link rel="stylesheet" href="css/layout/_sections.css">
+    <link rel="stylesheet" href="css/layout/_footer.css">
+    <link rel="stylesheet" href="css/themes/_light.css">
+    <link rel="stylesheet" href="css/themes/_dark.css">
+    <link rel="stylesheet" href="css/build.css">
+    
+    <!-- JavaScript -->
+    <script src="main.js?v=1.3" defer></script>
+    
+    <style>
+        body {
+            padding: 20px;
+            font-family: Arial, sans-serif;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid var(--color-border);
+            border-radius: 8px;
+            background: var(--color-card);
+        }
+        .theme-info {
+            background: var(--color-primary-50);
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Theme Toggle Test</h1>
+    
+    <div class="test-section">
+        <h2>Theme Toggle Button</h2>
+        <button class="theme-toggle" id="themeToggle" aria-label="Toggle Dark Mode">
+            <svg class="theme-toggle__icon theme-toggle__icon--light" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="5"></circle>
+                <line x1="12" y1="1" x2="12" y2="3"></line>
+                <line x1="12" y1="21" x2="12" y2="23"></line>
+                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                <line x1="1" y1="12" x2="3" y2="12"></line>
+                <line x1="21" y1="12" x2="23" y2="12"></line>
+                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+            </svg>
+            <svg class="theme-toggle__icon theme-toggle__icon--dark" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+            </svg>
+        </button>
+    </div>
+    
+    <div class="test-section">
+        <h2>Current Theme</h2>
+        <div class="theme-info">
+            <p><strong>Current theme:</strong> <span id="currentTheme">light</span></p>
+            <p><strong>Background color:</strong> <span id="bgColor">white</span></p>
+            <p><strong>Text color:</strong> <span id="textColor">black</span></p>
+        </div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Test Content</h2>
+        <p>This is a test paragraph to see how the theme affects text and background colors.</p>
+        <button class="btn btn--primary">Primary Button</button>
+        <button class="btn btn--secondary">Secondary Button</button>
+    </div>
+    
+    <script>
+        // Update theme info
+        function updateThemeInfo() {
+            const theme = document.documentElement.getAttribute('data-theme') || 'light';
+            const bgColor = getComputedStyle(document.body).backgroundColor;
+            const textColor = getComputedStyle(document.body).color;
+            
+            document.getElementById('currentTheme').textContent = theme;
+            document.getElementById('bgColor').textContent = bgColor;
+            document.getElementById('textColor').textContent = textColor;
+        }
+        
+        // Update on page load
+        updateThemeInfo();
+        
+        // Update when theme changes
+        const observer = new MutationObserver(function(mutations) {
+            mutations.forEach(function(mutation) {
+                if (mutation.type === 'attributes' && mutation.attributeName === 'data-theme') {
+                    updateThemeInfo();
+                }
+            });
+        });
+        
+        observer.observe(document.documentElement, {
+            attributes: true,
+            attributeFilter: ['data-theme']
+        });
+    </script>
+</body>
+</html>

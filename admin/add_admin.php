@@ -65,7 +65,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $errors[] = 'كلمة المرور غير متطابقة';
     }
     
-    if (!in_array($role, ['moderator', 'admin', 'superadmin'])) {
+    if (!in_array($role, ['moderator', 'admin', 'superadmin', 'security_personnel'])) {
         $errors[] = 'الدور غير صحيح';
     }
     
@@ -107,9 +107,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 $page_title = 'إضافة مدير جديد';
 $page_subtitle = 'إضافة حساب مدير جديد للنظام';
 $breadcrumb = [
-    ['title' => 'الرئيسية', 'url' => 'dashboard.php'],
-    ['title' => 'إدارة المدراء', 'url' => 'admins.php'],
-    ['title' => 'إضافة مدير جديد']
+    ['title' => 'الرئيسية', 'url' => 'unified_dashboard.php'],
+    ['title' => 'إضافة مشرف جديد']
 ];
 
 require 'admin_header.php';
@@ -185,6 +184,7 @@ require 'admin_header.php';
                         <option value="moderator" <?php echo (isset($_POST['role']) && $_POST['role'] === 'moderator') ? 'selected' : ''; ?>>مشرف</option>
                         <option value="admin" <?php echo (isset($_POST['role']) && $_POST['role'] === 'admin') ? 'selected' : ''; ?>>مدير</option>
                         <option value="superadmin" <?php echo (isset($_POST['role']) && $_POST['role'] === 'superadmin') ? 'selected' : ''; ?>>مدير عام</option>
+                        <option value="security_personnel" <?php echo (isset($_POST['role']) && $_POST['role'] === 'security_personnel') ? 'selected' : ''; ?>>موظف الأمان</option>
                     </select>
                 </div>
                 

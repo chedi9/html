@@ -16,6 +16,13 @@ $options = [
 
 try {
     $pdo = new PDO($dsn, $user, $pass, $options);
+    
+    // Set timezone to Tunisia (UTC+1)
+    $pdo->exec("SET time_zone = '+01:00'");
+    
+    // Also set PHP timezone
+    date_default_timezone_set('Africa/Tunis');
+    
 } catch (PDOException $e) {
     throw new PDOException($e->getMessage(), (int)$e->getCode());
 }

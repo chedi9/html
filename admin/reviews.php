@@ -17,7 +17,7 @@ if (!isset($_SESSION['admin_id'])) {
 $page_title = 'إدارة التقييمات';
 $page_subtitle = 'عرض وإدارة تقييمات المنتجات';
 $breadcrumb = [
-    ['title' => 'الرئيسية', 'url' => 'dashboard.php'],
+            ['title' => 'الرئيسية', 'url' => 'unified_dashboard.php'],
     ['title' => 'إدارة التقييمات']
 ];
 

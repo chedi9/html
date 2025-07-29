@@ -307,14 +307,14 @@ if (!isset($_SESSION['admin_id'])) {
                 <?php endif; ?>
             </div>
             <div class="admin-nav">
-                <a href="dashboard.php" class="back-btn">العودة للوحة التحكم</a>
+                <a href="unified_dashboard.php" class="back-btn">العودة للوحة التحكم</a>
                 <a href="logout.php" class="logout-btn">تسجيل الخروج</a>
             </div>
         </div>
         
         <?php if (isset($breadcrumb)): ?>
         <div class="breadcrumb">
-            <a href="dashboard.php">لوحة التحكم</a> 
+                            <a href="unified_dashboard.php">لوحة التحكم</a> 
             <?php foreach ($breadcrumb as $item): ?>
                 <?php if (isset($item['url'])): ?>
                     > <a href="<?php echo $item['url']; ?>"><?php echo $item['title']; ?></a>

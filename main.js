@@ -1,15 +1,62 @@
-// Dark Mode Toggle
+// Dark Mode Toggle - Consolidated
+const themeToggle = document.getElementById('themeToggle');
 const darkModeToggle = document.getElementById('darkModeToggle');
+
+console.log('Script loaded, themeToggle element:', themeToggle);
+console.log('Current data-theme attribute:', document.documentElement.getAttribute('data-theme'));
+
+// Function to toggle theme
+function toggleTheme() {
+  const currentTheme = document.documentElement.getAttribute('data-theme');
+  const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+  
+  console.log('Toggling theme from', currentTheme, 'to', newTheme);
+  
+  document.documentElement.setAttribute('data-theme', newTheme);
+  localStorage.setItem('theme', newTheme);
+  
+  console.log('Theme updated to:', document.documentElement.getAttribute('data-theme'));
+}
+
+// Set up theme toggle (new version)
+if (themeToggle) {
+  console.log('Theme toggle found, setting up event listener');
+  themeToggle.addEventListener('click', toggleTheme);
+  
+  // Test click event
+  themeToggle.addEventListener('click', function(e) {
+    console.log('Theme toggle clicked!', e);
+  });
+} else {
+  console.log('Theme toggle not found');
+}
+
+// Set up legacy dark mode toggle (for backward compatibility)
 if (darkModeToggle) {
   darkModeToggle.addEventListener('click', () => {
     document.body.classList.toggle('dark-mode');
     localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
   });
+  
   // On load, set dark mode if previously chosen
   if (localStorage.getItem('darkMode') === 'true') {
     document.body.classList.add('dark-mode');
   }
 }
+
+// Initialize theme on page load - Force light mode if no preference
+const savedTheme = localStorage.getItem('theme');
+if (savedTheme === 'dark') {
+  console.log('Initializing theme: dark (from localStorage)');
+  document.documentElement.setAttribute('data-theme', 'dark');
+} else {
+  console.log('Initializing theme: light (default)');
+  document.documentElement.setAttribute('data-theme', 'light');
+  localStorage.setItem('theme', 'light'); // Ensure light mode is saved
+}
+
+console.log('Final theme after initialization:', document.documentElement.getAttribute('data-theme'));
+
 // Quick View Modal
 const quickViewModal = document.getElementById('quickViewModal');
 const quickViewImg = document.getElementById('quickViewImg');
@@ -436,4 +483,12 @@ document.addEventListener('DOMContentLoaded', function() {
       setInterval(updateCountdown, 1000);
     }
   }
+}); 
+document.querySelectorAll('.card__image img').forEach(img => {
+  img.addEventListener('load', function() {
+    img.classList.add('loaded');
+    const skeleton = img.parentElement.querySelector('.skeleton');
+    if (skeleton) skeleton.style.opacity = '0';
+    setTimeout(() => { if (skeleton) skeleton.remove(); }, 400);
+  });
 }); 

@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WeBuy - Styling Test</title>
+    
+    <!-- CSS Files -->
+    <link rel="stylesheet" href="css/base/_variables.css">
+    <link rel="stylesheet" href="css/base/_reset.css">
+    <link rel="stylesheet" href="css/base/_typography.css">
+    <link rel="stylesheet" href="css/base/_utilities.css">
+    <link rel="stylesheet" href="css/components/_buttons.css">
+    <link rel="stylesheet" href="css/components/_forms.css">
+    <link rel="stylesheet" href="css/components/_cards.css">
+    <link rel="stylesheet" href="css/components/_navigation.css">
+    <link rel="stylesheet" href="css/layout/_grid.css">
+    <link rel="stylesheet" href="css/layout/_sections.css">
+    <link rel="stylesheet" href="css/layout/_footer.css">
+    <link rel="stylesheet" href="css/build.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Amiri&display=swap" rel="stylesheet">
+</head>
+<body class="page-transition">
+    <!-- Skip to main content for accessibility -->
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+    
+    <!-- Header -->
+    <header class="header" role="banner">
+        <div class="container">
+            <nav class="nav" role="navigation">
+                <!-- Logo -->
+                <div class="nav__brand">
+                    <a href="index.php" class="nav__logo">
+                        <img src="webuy-logo-transparent.jpg" alt="WeBuy Logo" style="height: 40px; width: auto;">
+                        <span class="nav__logo-text">WeBuy</span>
+                    </a>
+                </div>
+                
+                <!-- Desktop Navigation -->
+                <ul class="nav__list">
+                    <li class="nav__item">
+                        <a href="index.php" class="nav__link nav__link--active">Home</a>
+                    </li>
+                    <li class="nav__item">
+                        <a href="store.php" class="nav__link">Store</a>
+                    </li>
+                    <li class="nav__item">
+                        <a href="faq.php" class="nav__link">FAQ</a>
+                    </li>
+                </ul>
+                
+                <!-- User Actions -->
+                <div class="nav__actions">
+                    <!-- Search -->
+                    <div class="nav__search">
+                        <form action="search_suggest.php" method="GET" class="search-form">
+                            <div class="form__group">
+                                <input type="text" name="q" placeholder="Search products..." 
+                                       class="form__input form__input--search" 
+                                       autocomplete="off">
+                                <button type="submit" class="btn btn--primary btn--sm">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <circle cx="11" cy="11" r="8"></circle>
+                                        <path d="m21 21-4.35-4.35"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                    
+                    <!-- Cart -->
+                    <a href="cart.php" class="nav__cart" aria-label="Shopping Cart">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 22a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"></path>
+                            <path d="M20 22a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"></path>
+                            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                        </svg>
+                        <span class="nav__cart-count">0</span>
+                    </a>
+                </div>
+            </nav>
+        </div>
+    </header>
+    
+    <!-- Flash Messages -->
+    <div class="alert alert--success" id="flashMessage">
+        <div class="container">
+            <p>This is a test message to show the styling is working!</p>
+            <button class="alert__close" onclick="this.parentElement.parentElement.style.display='none'">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+        </div>
+    </div>
+    
+    <!-- Main Content -->
+    <main id="main-content" role="main">
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="container">
+                <div class="hero__content">
+                    <h1 class="hero__title">
+                        Discover Tunisian Talents and Support Local Creativity
+                    </h1>
+                    <p class="hero__subtitle">
+                        WeBuy platform brings together the best products made with love and craftsmanship by individuals with disabilities in Tunisia. Shop, share, and be part of the change!
+                    </p>
+                    <div class="hero__actions">
+                        <a href="#categories" class="btn btn--primary btn--lg">
+                            Browse Categories
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                                <polyline points="12,5 19,12 12,19"></polyline>
+                            </svg>
+                        </a>
+                        <a href="store.php" class="btn btn--secondary btn--lg">
+                            Shop Now
+                        </a>
+                    </div>
+                </div>
+                <div class="hero__image">
+                    <img src="webuy-logo-transparent.jpg" alt="WeBuy Logo" loading="lazy">
+                </div>
+            </div>
+        </section>
+        
+        <!-- Featured Categories -->
+        <section class="section" id="categories">
+            <div class="container">
+                <div class="section__header">
+                    <h2 class="section__title">
+                        Featured Categories
+                    </h2>
+                    <p class="section__subtitle">
+                        Discover a diverse collection of products made with love and craftsmanship
+                    </p>
+                </div>
+                
+                <div class="grid grid--3-cols">
+                    <!-- Category Card 1 -->
+                    <div class="card card--category">
+                        <a href="store.php?category_id=1" class="card__link">
+                            <div class="card__image">
+                                <div class="card__placeholder">
+                                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                        <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                                        <polyline points="21,15 16,10 5,21"></polyline>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="card__content">
+                                <h3 class="card__title">Handmade Crafts</h3>
+                            </div>
+                        </a>
+                    </div>
+                    
+                    <!-- Category Card 2 -->
+                    <div class="card card--category">
+                        <a href="store.php?category_id=2" class="card__link">
+                            <div class="card__image">
+                                <div class="card__placeholder">
+                                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                        <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                                        <polyline points="21,15 16,10 5,21"></polyline>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="card__content">
+                                <h3 class="card__title">Textiles</h3>
+                            </div>
+                        </a>
+                    </div>
+                    
+                    <!-- Category Card 3 -->
+                    <div class="card card--category">
+                        <a href="store.php?category_id=3" class="card__link">
+                            <div class="card__image">
+                                <div class="card__placeholder">
+                                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                        <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                                        <polyline points="21,15 16,10 5,21"></polyline>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="card__content">
+                                <h3 class="card__title">Jewelry</h3>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Featured Products -->
+        <section class="section">
+            <div class="container">
+                <div class="section__header">
+                    <h2 class="section__title">
+                        Featured Products
+                    </h2>
+                    <p class="section__subtitle">
+                        Discover the latest and best products from trusted sellers
+                    </p>
+                </div>
+                
+                <div class="grid grid--4-cols">
+                    <!-- Product Card 1 -->
+                    <div class="card card--product" data-product-id="1">
+                        <div class="card__badge card__badge--new">
+                            New
+                        </div>
+                        
+                        <button class="card__wishlist" data-product-id="1" title="Add to Wishlist">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                            </svg>
+                        </button>
+                        
+                        <a href="product.php?id=1" class="card__link">
+                            <div class="card__image">
+                                <div class="card__placeholder">
+                                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                        <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                                        <polyline points="21,15 16,10 5,21"></polyline>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="card__content">
+                                <h3 class="card__title">Handmade Ceramic Vase</h3>
+                                <p class="card__description">Beautiful handcrafted ceramic vase with traditional Tunisian patterns.</p>
+                                <div class="card__price">45.00 TND</div>
+                            </div>
+                        </a>
+                        
+                        <form action="add_to_cart.php" method="get" class="card__form">
+                            <input type="hidden" name="id" value="1">
+                            <button type="submit" class="btn btn--primary btn--sm">
+                                Add to Cart
+                            </button>
+                        </form>
+                    </div>
+                    
+                    <!-- Product Card 2 -->
+                    <div class="card card--product" data-product-id="2">
+                        <div class="card__badge card__badge--disabled">
+                            Disabled Seller
+                        </div>
+                        
+                        <button class="card__wishlist" data-product-id="2" title="Add to Wishlist">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                            </svg>
+                        </button>
+                        
+                        <a href="product.php?id=2" class="card__link">
+                            <div class="card__image">
+                                <div class="card__placeholder">
+                                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                        <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                                        <polyline points="21,15 16,10 5,21"></polyline>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="card__content">
+                                <h3 class="card__title">Woven Textile Bag</h3>
+                                <p class="card__description">Traditional woven textile bag with modern design elements.</p>
+                                <div class="card__price">28.50 TND</div>
+                            </div>
+                        </a>
+                        
+                        <form action="add_to_cart.php" method="get" class="card__form">
+                            <input type="hidden" name="id" value="2">
+                            <button type="submit" class="btn btn--primary btn--sm">
+                                Add to Cart
+                            </button>
+                        </form>
+                    </div>
+                    
+                    <!-- Product Card 3 -->
+                    <div class="card card--product" data-product-id="3">
+                        <button class="card__wishlist" data-product-id="3" title="Add to Wishlist">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                            </svg>
+                        </button>
+                        
+                        <a href="product.php?id=3" class="card__link">
+                            <div class="card__image">
+                                <div class="card__placeholder">
+                                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                        <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                                        <polyline points="21,15 16,10 5,21"></polyline>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="card__content">
+                                <h3 class="card__title">Silver Jewelry Set</h3>
+                                <p class="card__description">Elegant silver jewelry set with traditional Tunisian motifs.</p>
+                                <div class="card__price">75.00 TND</div>
+                            </div>
+                        </a>
+                        
+                        <form action="add_to_cart.php" method="get" class="card__form">
+                            <input type="hidden" name="id" value="3">
+                            <button type="submit" class="btn btn--primary btn--sm">
+                                Add to Cart
+                            </button>
+                        </form>
+                    </div>
+                    
+                    <!-- Product Card 4 -->
+                    <div class="card card--product" data-product-id="4">
+                        <button class="card__wishlist" data-product-id="4" title="Add to Wishlist">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                            </svg>
+                        </button>
+                        
+                        <a href="product.php?id=4" class="card__link">
+                            <div class="card__image">
+                                <div class="card__placeholder">
+                                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                        <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                                        <polyline points="21,15 16,10 5,21"></polyline>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="card__content">
+                                <h3 class="card__title">Leather Wallet</h3>
+                                <p class="card__description">Handcrafted leather wallet with traditional embroidery.</p>
+                                <div class="card__price">35.00 TND</div>
+                            </div>
+                        </a>
+                        
+                        <form action="add_to_cart.php" method="get" class="card__form">
+                            <input type="hidden" name="id" value="4">
+                            <button type="submit" class="btn btn--primary btn--sm">
+                                Add to Cart
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- About Section -->
+        <section class="section section--highlight">
+            <div class="container">
+                <div class="grid grid--2-cols">
+                    <div class="section__content">
+                        <h2 class="section__title">
+                            About Us
+                        </h2>
+                        <p class="section__text">
+                            WeBuy is an e-commerce platform dedicated to supporting and empowering individuals with disabilities in Tunisia. We help them sell their products and build an independent future.
+                        </p>
+                        <div class="section__actions">
+                            <a href="about.php" class="btn btn--primary">
+                                Learn More
+                            </a>
+                        </div>
+                    </div>
+                    <div class="section__image">
+                        <img src="webuy.jpg" alt="WeBuy Platform" loading="lazy">
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+    
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer__content">
+                <div class="footer__section">
+                    <div class="footer__brand">
+                        <img src="webuy-logo-transparent.jpg" alt="WeBuy Logo" style="height: 40px; width: auto;">
+                        <h3 class="footer__title">WeBuy</h3>
+                        <p class="footer__description">
+                            Supporting and empowering individuals with disabilities in Tunisia through e-commerce.
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="footer__section">
+                    <h4 class="footer__section-title">Quick Links</h4>
+                    <ul class="footer__links">
+                        <li><a href="index.php" class="footer__link">Home</a></li>
+                        <li><a href="store.php" class="footer__link">Store</a></li>
+                        <li><a href="about.php" class="footer__link">About</a></li>
+                        <li><a href="contact.php" class="footer__link">Contact</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer__section">
+                    <h4 class="footer__section-title">Support</h4>
+                    <ul class="footer__links">
+                        <li><a href="faq.php" class="footer__link">FAQ</a></li>
+                        <li><a href="help.php" class="footer__link">Help Center</a></li>
+                        <li><a href="privacy.php" class="footer__link">Privacy Policy</a></li>
+                        <li><a href="terms.php" class="footer__link">Terms of Service</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer__bottom">
+                <div class="footer__bottom-content">
+                    <p class="footer__copyright">
+                        © 2024 WeBuy. All rights reserved.
+                    </p>
+                    <div class="footer__bottom-links">
+                        <a href="privacy.php" class="footer__bottom-link">Privacy</a>
+                        <a href="terms.php" class="footer__bottom-link">Terms</a>
+                        <a href="cookies.php" class="footer__bottom-link">Cookies</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+    
+    <!-- JavaScript -->
+    <script>
+        // Simple JavaScript for testing
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('WeBuy styling test page loaded successfully!');
+            
+            // Test wishlist functionality
+            const wishlistButtons = document.querySelectorAll('.card__wishlist');
+            wishlistButtons.forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const productId = this.getAttribute('data-product-id');
+                    console.log('Wishlist clicked for product:', productId);
+                    
+                    // Toggle wishlist state
+                    const svg = this.querySelector('svg');
+                    if (svg.getAttribute('fill') === 'currentColor') {
+                        svg.setAttribute('fill', 'none');
+                    } else {
+                        svg.setAttribute('fill', 'currentColor');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

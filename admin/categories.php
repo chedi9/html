@@ -17,7 +17,7 @@ if (!isset($_SESSION['admin_id'])) {
 $page_title = 'إدارة التصنيفات';
 $page_subtitle = 'عرض، تعديل، وحذف تصنيفات المنتجات';
 $breadcrumb = [
-    ['title' => 'الرئيسية', 'url' => 'dashboard.php'],
+    ['title' => 'الرئيسية', 'url' => 'unified_dashboard.php'],
     ['title' => 'إدارة التصنيفات']
 ];
 

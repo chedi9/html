@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Theme Visual Test</title>
+    
+    <!-- CSS Files -->
+    <link rel="stylesheet" href="css/base/_variables.css">
+    <link rel="stylesheet" href="css/themes/_light.css">
+    <link rel="stylesheet" href="css/themes/_dark.css">
+    <link rel="stylesheet" href="css/components/_navigation.css">
+    <link rel="stylesheet" href="css/components/_buttons.css">
+    
+    <!-- JavaScript -->
+    <script src="main.js?v=1.4" defer></script>
+    
+    <style>
+        body {
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            background-color: var(--color-background);
+            color: var(--color-text);
+            transition: background-color 0.3s, color 0.3s;
+            min-height: 100vh;
+        }
+        .test-section {
+            background: var(--color-card);
+            padding: 20px;
+            border: 1px solid var(--color-border);
+            border-radius: 8px;
+            margin: 20px 0;
+            transition: all 0.3s;
+        }
+        .header-test {
+            background: var(--header-background, var(--color-white));
+            color: var(--header-text, var(--color-gray-900));
+            border-bottom: 1px solid var(--header-border, var(--color-gray-200));
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+        .nav-test {
+            display: flex;
+            gap: 10px;
+            margin: 10px 0;
+        }
+        .nav-link {
+            padding: 8px 16px;
+            color: var(--nav-text, var(--color-gray-700));
+            text-decoration: none;
+            border-radius: 4px;
+            transition: all 0.3s;
+        }
+        .nav-link:hover {
+            background-color: var(--nav-hover, var(--color-primary-50));
+            color: var(--color-primary-600);
+        }
+        .nav-link.active {
+            background-color: var(--nav-active, var(--color-primary-100));
+            color: var(--color-primary-600);
+        }
+    </style>
+</head>
+<body>
+    <h1>Theme Visual Test</h1>
+    
+    <div class="header-test">
+        <h2>Header Test</h2>
+        <p>This should change color with the theme.</p>
+    </div>
+    
+    <div class="test-section">
+        <h2>Navigation Test</h2>
+        <div class="nav-test">
+            <a href="#" class="nav-link active">Home</a>
+            <a href="#" class="nav-link">Store</a>
+            <a href="#" class="nav-link">About</a>
+        </div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Theme Toggle</h2>
+        <button class="theme-toggle" id="themeToggle" aria-label="Toggle Dark Mode">
+            <svg class="theme-toggle__icon theme-toggle__icon--light" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="5"></circle>
+                <line x1="12" y1="1" x2="12" y2="3"></line>
+                <line x1="12" y1="21" x2="12" y2="23"></line>
+                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                <line x1="1" y1="12" x2="3" y2="12"></line>
+                <line x1="21" y1="12" x2="23" y2="12"></line>
+                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+            </svg>
+            <svg class="theme-toggle__icon theme-toggle__icon--dark" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+            </svg>
+        </button>
+    </div>
+    
+    <div class="test-section">
+        <h2>Button Test</h2>
+        <button class="btn btn--primary">Primary Button</button>
+        <button class="btn btn--secondary">Secondary Button</button>
+    </div>
+    
+    <div class="test-section">
+        <h2>Content Test</h2>
+        <p>This is a test paragraph to see how the theme affects text and background colors.</p>
+        <p>The background should be <strong>white in light mode</strong> and <strong>dark gray in dark mode</strong>.</p>
+        <p>The text should be <strong>dark in light mode</strong> and <strong>light in dark mode</strong>.</p>
+    </div>
+    
+    <script>
+        // Add some debugging
+        console.log('Page loaded with theme:', document.documentElement.getAttribute('data-theme'));
+        console.log('Background color:', getComputedStyle(document.body).backgroundColor);
+        console.log('Text color:', getComputedStyle(document.body).color);
+    </script>
+</body>
+</html>

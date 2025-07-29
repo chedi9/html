@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complete Theme Test</title>
+    
+    <!-- CSS Files -->
+    <link rel="stylesheet" href="css/base/_variables.css">
+    <link rel="stylesheet" href="css/themes/_light.css">
+    <link rel="stylesheet" href="css/themes/_dark.css">
+    <link rel="stylesheet" href="css/components/_navigation.css">
+    <link rel="stylesheet" href="css/components/_buttons.css">
+    <link rel="stylesheet" href="css/components/_cards.css">
+    <link rel="stylesheet" href="css/components/_forms.css">
+    <link rel="stylesheet" href="css/layout/_sections.css">
+    
+    <!-- JavaScript -->
+    <script src="main.js?v=1.4" defer></script>
+    
+    <style>
+        body {
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            background-color: var(--color-background);
+            color: var(--color-text);
+            transition: background-color 0.3s, color 0.3s;
+            min-height: 100vh;
+        }
+        .test-section {
+            background: var(--color-card);
+            padding: 20px;
+            border: 1px solid var(--color-border);
+            border-radius: 8px;
+            margin: 20px 0;
+            transition: all 0.3s;
+        }
+        .hero-test {
+            background: linear-gradient(135deg, var(--color-primary-600) 0%, var(--color-primary-800) 100%);
+            color: var(--color-white);
+            padding: 40px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        .features-test {
+            background-color: var(--color-card-hover, var(--color-gray-50));
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Complete Theme Test</h1>
+    
+    <div class="hero-test">
+        <h2>Hero Section Test</h2>
+        <p>This should have a gradient background that stays the same in both themes.</p>
+    </div>
+    
+    <div class="features-test">
+        <h2>Features Section Test</h2>
+        <p>This should change background color with the theme.</p>
+    </div>
+    
+    <div class="test-section">
+        <h2>Card Test</h2>
+        <div class="card">
+            <div class="card__header">
+                <h3 class="card__title">Card Title</h3>
+                <p class="card__subtitle">Card subtitle</p>
+            </div>
+            <div class="card__body">
+                <p>This is a card body with some content.</p>
+            </div>
+            <div class="card__footer">
+                <button class="btn btn--primary">Primary Button</button>
+                <button class="btn btn--secondary">Secondary Button</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Form Test</h2>
+        <form class="form">
+            <div class="form__group">
+                <label class="form__label" for="test-input">Test Input</label>
+                <input type="text" id="test-input" class="form__input" placeholder="Enter text here">
+            </div>
+            <div class="form__group">
+                <label class="form__label" for="test-textarea">Test Textarea</label>
+                <textarea id="test-textarea" class="form__textarea" placeholder="Enter text here"></textarea>
+            </div>
+        </form>
+    </div>
+    
+    <div class="test-section">
+        <h2>Theme Toggle</h2>
+        <button class="theme-toggle" id="themeToggle" aria-label="Toggle Dark Mode">
+            <svg class="theme-toggle__icon theme-toggle__icon--light" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="5"></circle>
+                <line x1="12" y1="1" x2="12" y2="3"></line>
+                <line x1="12" y1="21" x2="12" y2="23"></line>
+                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                <line x1="1" y1="12" x2="3" y2="12"></line>
+                <line x1="21" y1="12" x2="23" y2="12"></line>
+                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+            </svg>
+            <svg class="theme-toggle__icon theme-toggle__icon--dark" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+            </svg>
+        </button>
+    </div>
+    
+    <div class="test-section">
+        <h2>Content Test</h2>
+        <p>This is a test paragraph to see how the theme affects text and background colors.</p>
+        <p>The background should be <strong>white in light mode</strong> and <strong>dark gray in dark mode</strong>.</p>
+        <p>The text should be <strong>dark in light mode</strong> and <strong>light in dark mode</strong>.</p>
+    </div>
+    
+    <script>
+        // Add some debugging
+        console.log('Complete test page loaded with theme:', document.documentElement.getAttribute('data-theme'));
+        console.log('Background color:', getComputedStyle(document.body).backgroundColor);
+        console.log('Text color:', getComputedStyle(document.body).color);
+    </script>
+</body>
+</html>

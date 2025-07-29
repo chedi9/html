@@ -252,7 +252,7 @@ function sendSellerTipEmail($email, $name, $store_name, $tip_type, $custom_messa
         </div>
         
         <div style="margin-top: 30px;">
-            <a href="dashboard.php" class="btn">العودة للوحة التحكم</a>
+            <a href="unified_dashboard.php" class="btn">العودة للوحة التحكم</a>
         </div>
     </div>
     

@@ -58,8 +58,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['admin_id'], $_POST['r
 $page_title = 'إدارة المدراء';
 $page_subtitle = 'عرض وإدارة حسابات المدراء';
 $breadcrumb = [
-    ['title' => 'الرئيسية', 'url' => 'dashboard.php'],
-    ['title' => 'إدارة المدراء']
+    ['title' => 'الرئيسية', 'url' => 'unified_dashboard.php'],
+    ['title' => 'إدارة المشرفين']
 ];
 
 require 'admin_header.php';
@@ -112,6 +112,7 @@ $role = $current_admin['role'];
                                         case 'superadmin': echo 'مدير عام'; break;
                                         case 'admin': echo 'مدير'; break;
                                         case 'moderator': echo 'مشرف'; break;
+                                        case 'security_personnel': echo 'موظف الأمان'; break;
                                         default: echo htmlspecialchars($admin['role']);
                                     }
                                     ?>
@@ -145,6 +146,7 @@ $role = $current_admin['role'];
                                 <option value="moderator" <?php if ($admin['role'] === 'moderator') echo 'selected'; ?>>مشرف</option>
                                 <option value="admin" <?php if ($admin['role'] === 'admin') echo 'selected'; ?>>مدير</option>
                                 <option value="superadmin" <?php if ($admin['role'] === 'superadmin') echo 'selected'; ?>>مدير عام</option>
+                                <option value="security_personnel" <?php if ($admin['role'] === 'security_personnel') echo 'selected'; ?>>موظف الأمان</option>
                             </select>
                             <button type="submit" class="btn btn-warning btn-sm">
                                 <span class="btn-icon">🔄</span>

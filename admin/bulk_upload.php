@@ -17,7 +17,7 @@ if (!isset($_SESSION['admin_id'])) {
 $page_title = 'رفع المنتجات بالجملة';
 $page_subtitle = 'استيراد منتجات متعددة من ملف CSV';
 $breadcrumb = [
-    ['title' => 'الرئيسية', 'url' => 'dashboard.php'],
+    ['title' => 'الرئيسية', 'url' => 'unified_dashboard.php'],
     ['title' => 'رفع المنتجات بالجملة']
 ];
 

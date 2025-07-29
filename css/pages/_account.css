@@ -1,0 +1,178 @@
+/* Account Page - Theme Aware Styles */
+.account-container {
+  max-width: 900px;
+  margin: 40px auto;
+  background: var(--color-card, #fff);
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+.account-tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 24px;
+}
+.account-tab {
+  background: var(--color-card-hover, #eee);
+  color: var(--color-text, #333);
+  border: none;
+  border-radius: 6px 6px 0 0;
+  padding: 10px 24px;
+  cursor: pointer;
+  font-size: 1em;
+}
+.account-tab.active {
+  background: var(--color-primary-600, #1976d2);
+  color: var(--color-white, #fff);
+}
+.tab-content {
+  background: var(--color-background, #fafafa);
+  border-radius: 0 0 10px 10px;
+  padding: 20px;
+  margin-top: -2px;
+}
+.orders-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+.orders-table th, .orders-table td {
+  padding: 10px;
+  border-bottom: 1px solid var(--color-border, #eee);
+  text-align: center;
+}
+.orders-table th {
+  background: var(--color-card-hover, #f4f4f4);
+}
+.form-group {
+  margin-bottom: 16px;
+}
+label {
+  display: block;
+  margin-bottom: 6px;
+}
+input[type=text], input[type=email], input[type=password] {
+  width: 100%;
+  padding: 8px;
+  border-radius: 5px;
+  border: 1px solid var(--color-border, #ccc);
+  background: var(--color-input, #fff);
+  color: var(--color-text, #333);
+}
+.save-btn {
+  background: var(--color-primary-600, #1976d2);
+  color: var(--color-white, #fff);
+  border: none;
+  border-radius: 6px;
+  padding: 10px 24px;
+  font-size: 1em;
+  cursor: pointer;
+}
+.return-btn {
+  background: var(--color-secondary-500, #FFD600);
+  color: var(--color-white, #fff);
+  padding: 6px 12px;
+  border-radius: 4px;
+  text-decoration: none;
+  font-size: 0.9em;
+}
+.return-status {
+  color: var(--color-text-secondary, #666);
+  font-style: italic;
+  font-size: 0.9em;
+}
+.returns-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.return-item {
+  border: 1px solid var(--color-border, #ddd);
+  border-radius: 8px;
+  padding: 16px;
+  background: var(--color-card-hover, #f9f9f9);
+}
+.return-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+.return-header h4 {
+  margin: 0;
+  color: var(--color-text, #333);
+}
+.return-status.pending { color: #f57c00; }
+.return-status.approved { color: #388e3c; }
+.return-status.rejected { color: #d32f2f; }
+.return-status.completed { color: #1976d2; }
+.return-details p {
+  margin: 8px 0;
+  color: var(--color-text-secondary, #666);
+}
+.notifications-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+.unread-badge {
+  background: var(--color-primary-600, #1976d2);
+  color: var(--color-white, #fff);
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 0.8em;
+}
+.view-all-btn {
+  color: var(--color-primary-600, #1976d2);
+  text-decoration: none;
+  font-weight: 500;
+}
+.view-all-btn:hover {
+  text-decoration: underline;
+}
+.notifications-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.notification-item {
+  border: 1px solid var(--color-border, #eee);
+  border-radius: 6px;
+  padding: 12px;
+  background: var(--color-card, #fff);
+}
+.notification-item.unread {
+  border-left: 4px solid var(--color-primary-600, #1976d2);
+  background: var(--color-card-hover, #f0f8ff);
+}
+.notification-title {
+  font-weight: 600;
+  margin-bottom: 4px;
+  color: var(--color-text, #333);
+}
+.notification-message {
+  color: var(--color-text-secondary, #666);
+  margin-bottom: 8px;
+}
+.notification-time {
+  font-size: 0.8em;
+  color: var(--color-text-secondary, #999);
+}
+.view-all-section {
+  text-align: center;
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--color-border, #eee);
+}
+.profile-image, .avatar {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: var(--color-card-hover, #f5f5f5);
+  border: 2px solid var(--color-border, #e0e0e0);
+  box-shadow: var(--shadow-sm);
+  display: block;
+  margin: 0 auto 16px auto;
+}

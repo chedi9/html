@@ -17,7 +17,7 @@ if (!isset($_SESSION['admin_id'])) {
 $page_title = 'إدارة البائعين ذوي الإعاقة';
 $page_subtitle = 'إضافة وتعديل وحذف البائعين ذوي الإعاقة ومنتجاتهم';
 $breadcrumb = [
-    ['title' => 'الرئيسية', 'url' => 'dashboard.php'],
+            ['title' => 'الرئيسية', 'url' => 'unified_dashboard.php'],
     ['title' => 'إدارة البائعين ذوي الإعاقة']
 ];
 

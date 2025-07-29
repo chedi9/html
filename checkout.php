@@ -6,6 +6,8 @@ header('X-Content-Type-Options: nosniff');
 header("Content-Security-Policy: frame-ancestors 'self'");
 if (session_status() === PHP_SESSION_NONE) session_start();
 require 'db.php';
+require 'payment_gateway_processor.php';
+require 'pci_compliant_payment_handler.php';
 if (!isset($_SESSION['cart']) || empty($_SESSION['cart'])) {
     header('Location: cart.php');
     exit();
@@ -132,9 +134,62 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Store payment details as JSON
     $payment_details_json = json_encode($payment_details, JSON_UNESCAPED_UNICODE);
     
-    $stmt = $pdo->prepare('INSERT INTO orders (user_id, name, address, phone, email, payment_method, payment_details, shipping_method, total) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)');
-    $stmt->execute([$user_id, $name, $address, $phone, $email, $payment, $payment_details_json, $shipping_method_name, $final_total]);
-    $order_id = $pdo->lastInsertId();
+    // Process payment using PCI-compliant payment handler
+    $pci_payment_handler = new PCICompliantPaymentHandler($pdo);
+    
+    try {
+        // Process the payment with PCI compliance
+        $payment_result = $pci_payment_handler->processPayment($payment, $payment_details, $final_total, null);
+        
+        // Create order with PCI compliance data
+        $stmt = $pdo->prepare('INSERT INTO orders (user_id, name, address, phone, email, payment_method, payment_details, payment_token, gateway_transaction_id, payment_gateway, pci_compliant, shipping_method, total, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
+        $stmt->execute([
+            $user_id, 
+            $name, 
+            $address, 
+            $phone, 
+            $email, 
+            $payment, 
+            $payment_result['stored_data'], // Encrypted payment data
+            $payment_result['payment_token'] ?? null,
+            $payment_result['transaction_id'] ?? null,
+            $payment_result['gateway_response']['gateway'] ?? null,
+            1, // PCI compliant
+            $shipping_method_name, 
+            $final_total, 
+            $payment_result['status']
+        ]);
+        $order_id = $pdo->lastInsertId();
+        
+        // Store encrypted payment data separately
+        $stmt = $pdo->prepare('INSERT INTO encrypted_payment_data (order_id, payment_method, encrypted_data, payment_token, transaction_id, gateway, amount, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)');
+        $stmt->execute([
+            $order_id,
+            $payment,
+            $payment_result['stored_data'],
+            $payment_result['payment_token'] ?? null,
+            $payment_result['transaction_id'] ?? null,
+            $payment_result['gateway_response']['gateway'] ?? null,
+            $final_total,
+            $payment_result['status']
+        ]);
+        
+        // Update order with encrypted payment data ID
+        $encrypted_data_id = $pdo->lastInsertId();
+        $stmt = $pdo->prepare('UPDATE orders SET encrypted_payment_data_id = ? WHERE id = ?');
+        $stmt->execute([$encrypted_data_id, $order_id]);
+        
+    } catch (Exception $e) {
+        // Payment failed
+        $error_message = $e->getMessage();
+        $stmt = $pdo->prepare('INSERT INTO orders (user_id, name, address, phone, email, payment_method, payment_details, pci_compliant, shipping_method, total, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
+        $stmt->execute([$user_id, $name, $address, $phone, $email, $payment, json_encode(['error' => $error_message]), 0, $shipping_method_name, $final_total, 'failed']);
+        $order_id = $pdo->lastInsertId();
+        
+        // Log payment error in audit logs
+        $audit_logger = new PaymentAuditLogger($pdo);
+        $audit_logger->logPaymentError($payment, $final_total, $error_message, $order_id);
+    }
     foreach ($cart_items as $item) {
         $prod_name = $item['name_' . $lang] ?? $item['name'];
         // Add variant_key column to order_items if not present

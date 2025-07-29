@@ -2,6 +2,7 @@
 session_start();
 require_once 'db.php';
 require_once 'lang.php';
+require_once 'pci_compliant_payment_handler.php';
 
 // Check if user is logged in
 if (!isset($_SESSION['user_id'])) {
@@ -27,10 +28,23 @@ $stmt = $pdo->prepare("
 $stmt->execute([$order_id, $user_id]);
 $order = $stmt->fetch(PDO::FETCH_ASSOC);
 
-// Parse payment details if available
+// Parse payment details if available (PCI compliant)
 $payment_details = [];
+$pci_payment_handler = new PCICompliantPaymentHandler($pdo);
+
 if (!empty($order['payment_details'])) {
-    $payment_details = json_decode($order['payment_details'], true) ?: [];
+    // Check if this is PCI compliant data (encrypted)
+    if ($order['pci_compliant'] == 1) {
+        try {
+            $payment_details = $pci_payment_handler->getPaymentDisplayData($order['payment_details']);
+        } catch (Exception $e) {
+            // Fallback to old format
+            $payment_details = json_decode($order['payment_details'], true) ?: [];
+        }
+    } else {
+        // Old format (non-PCI compliant)
+        $payment_details = json_decode($order['payment_details'], true) ?: [];
+    }
 }
 
 if (!$order) {

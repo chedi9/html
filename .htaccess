@@ -1,0 +1,2 @@
+php_value date.timezone Africa/Tunis
+php_value display_errors On

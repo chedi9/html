@@ -1,0 +1,157 @@
+# 🧹 UPDATED CLEANUP LIST - Files to Delete or Archive
+# Created: 2025-07-28
+# Updated: 2025-07-28
+# Status: COMPLETED - All temporary files moved to /old directory
+
+## ✅ COMPLETED CLEANUP (Files Already Moved to /old)
+
+### Root Directory - Temporary Files (COMPLETED):
+- ✅ cleanup_runner.php → old/cleanup_runner_new.php
+- ✅ cleanup_log_2025-07-28_20-28-17.txt → old/cleanup_log_2025-07-28_20-28-17.txt
+- ✅ security_testing_framework.php → old/security_testing_framework.php
+- ✅ translation_audit.php → old/translation_audit.php
+- ✅ fix_translations.php → old/fix_translations.php
+
+### Admin Directory - Old Dashboard Files (COMPLETED):
+- ✅ dashboard.php → old/dashboard.php (deleted from root)
+- ✅ enhanced_security_dashboard.php → old/enhanced_security_dashboard.php
+- ✅ comprehensive_security_dashboard.php → old/comprehensive_security_dashboard.php
+- ✅ pci_compliance_dashboard.php → old/pci_compliance_dashboard.php
+- ✅ pci_compliance_dashboard_simple.php → old/pci_compliance_dashboard_simple.php
+
+### Archive Directory - Old SQL Files (COMPLETED):
+- ✅ All old SQL migration files moved to /old directory
+
+## ⚠️ FILES TO KEEP (ESSENTIAL - DO NOT DELETE)
+
+### Root Directory - ESSENTIAL SECURITY FILES:
+- security_feature_checker.php (REQUIRED by security_logs.php and admin pages)
+- security_integration.php (REQUIRED by index.php and client/login.php)
+- security_integration_admin.php (REQUIRED by admin/login.php and security_features.php)
+- web_application_firewall.php (REQUIRED by security_integration.php)
+- enhanced_rate_limiting.php (REQUIRED by security_integration.php and admin pages)
+- setup_security_tables.php (setup script - keep for future use)
+- https_enforcement.php (Essential HTTPS enforcement)
+- pci_compliant_payment_handler.php (Essential PCI-compliant payment processing)
+- pci_compliance_helper.php (Essential PCI compliance helper)
+- security_center.php (Essential security center)
+- fraud_detection.php (Essential fraud detection system)
+
+### Root Directory - ESSENTIAL FUNCTIONALITY:
+- index.php (main website)
+- db.php (database connection)
+- header.php (website header)
+- beta333.css (main stylesheet)
+- main.js (main JavaScript)
+- lang.php (language system)
+- lang/ (language files)
+- uploads/ (user uploads)
+- webuy.jpg, webuy.png, webuy-logo-transparent.jpg (logos)
+- cart.svg, cart-icon.svg (cart icons)
+- google-icon.svg (Google icon)
+- favicon.ico (website favicon)
+- .htaccess (server configuration)
+- robots.txt (SEO)
+- sitemap.xml (SEO)
+- composer.json, composer.lock (dependencies)
+- yarn.lock (dependencies)
+- .gitignore (version control)
+- .rtlcssrc.json (RTL configuration)
+- database.txt (Useful database documentation)
+- tunisia_addresses.php (Essential address data)
+- tunisia_addresses_correct.php (Essential address data)
+- get_wallet_balance.php (Essential wallet functionality)
+- search_suggest.php (Essential search functionality)
+- faq.php (Essential user-facing FAQ)
+- my_orders.php (Essential user order management)
+
+### Client Directory - ESSENTIAL USER FUNCTIONALITY:
+- client/login.php (user login)
+- client/register.php (user registration)
+- client/account.php (user account management)
+- client/logout.php (user logout)
+- client/verify.php (email verification)
+- client/forgot_password.php (password reset)
+- client/change_password.php (password change)
+- client/update_credentials.php (credential updates)
+- client/manage_addresses.php (address management)
+- client/manage_payment_methods.php (payment method management)
+- client/orders.php (user orders)
+- client/notifications.php (user notifications)
+- client/user_notifications.php (user notification system)
+- client/seller_dashboard.php (seller dashboard)
+- client/add_product.php (add products)
+- client/bulk_upload.php (bulk upload)
+- client/download_template.php (download templates)
+- client/export_orders.php (export orders)
+- client/mailer.php (email functionality)
+- client/make_thumbnail.php (image processing)
+- client/remove_from_wishlist.php (wishlist management)
+- client/request_return.php (return requests)
+- client/seller_help.php (seller help)
+- client/update_address.php (address updates)
+- client/google_login.php (Google login)
+- client/google_callback.php (Google callback)
+
+### Admin Directory - ESSENTIAL:
+- unified_dashboard.php (main admin dashboard)
+- login.php (admin login)
+- logout.php (admin logout)
+- products.php (product management)
+- orders.php (order management)
+- categories.php (category management)
+- admins.php (admin management)
+- add_product.php (add products)
+- add_category.php (add categories)
+- add_admin.php (add admins)
+- edit_product.php (edit products)
+- edit_category.php (edit categories)
+- bulk_upload.php (bulk upload)
+- download_csv_template.php (CSV template)
+- security_logs.php (security logs)
+- security_features.php (security features management)
+- security_dashboard.php (security dashboard)
+- security_personnel.php (security personnel management)
+- advanced_security_monitoring.php (security monitoring)
+- newsletter.php (newsletter)
+- email_campaigns.php (email campaigns)
+- seller_tips.php (seller tips)
+- seller_analytics.php (seller analytics)
+- payment_settings.php (payment settings)
+- payment_analytics.php (payment analytics)
+- automated_reports.php (automated reports)
+- returns.php (returns management)
+- activity.php (activity logs)
+- reviews.php (reviews management)
+- reviews_management.php (reviews management)
+- disabled_sellers.php (disabled sellers)
+- admin_header.php (admin header)
+- admin_footer.php (admin footer)
+- forgot_admin_password.php (password reset)
+- reset_admin_password.php (password reset)
+
+### Other Directories - ESSENTIAL:
+- data/ (data files)
+- webhooks/ (webhook files)
+- archive/ (keep this directory structure)
+
+## 🎯 SUMMARY:
+- ✅ COMPLETED: 5 temporary files moved to /old
+- ✅ COMPLETED: All old dashboard files archived
+- ✅ COMPLETED: All old SQL files archived
+- ✅ PRESERVED: All essential functionality files
+- ✅ PRESERVED: All security files
+- ✅ PRESERVED: All payment processing files
+- ✅ PRESERVED: All user-facing files
+- ✅ PRESERVED: All admin functionality files
+
+## ✅ SAFETY CHECK:
+- All essential security files: PRESERVED
+- All payment processing files: PRESERVED
+- All user functionality files: PRESERVED
+- All admin functionality files: PRESERVED
+- All configuration files: PRESERVED
+- All documentation files: PRESERVED
+
+## 🎉 CLEANUP STATUS: COMPLETED
+The workspace is now clean, organized, and production-ready! 

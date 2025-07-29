@@ -17,8 +17,8 @@ if (!isset($_SESSION['admin_id'])) {
 $page_title = 'سجل النشاطات';
 $page_subtitle = 'عرض سجل جميع النشاطات الإدارية';
 $breadcrumb = [
-    ['title' => 'الرئيسية', 'url' => 'dashboard.php'],
-    ['title' => 'سجل النشاطات']
+    ['title' => 'الرئيسية', 'url' => 'unified_dashboard.php'],
+    ['title' => 'سجل الأنشطة']
 ];
 
 require '../db.php';

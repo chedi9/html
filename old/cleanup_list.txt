@@ -1,0 +1,146 @@
+# 🧹 CLEANUP LIST - Files to Delete or Archive
+# Created: 2025-07-28
+# Status: SAFE TO DELETE/ARCHIVE
+
+## 📁 FILES TO DELETE (Temporary/Test Files)
+
+### Root Directory - Temporary Files:
+- check_timezone.php (timezone fix verification - no longer needed)
+- cleanup_conservative.php (cleanup script - no longer needed)
+- cleanup_server.php (cleanup script - no longer needed)
+- demo_security_features.php (demo page - no longer needed)
+- fix_waf_patterns_table.php (WAF fix script - no longer needed)
+- test_admin_login.php (test file - no longer needed)
+- test_rate_limiting.php (test file - no longer needed)
+- test_security_features.php (test file - no longer needed)
+- verify_security_system.php (verification script - no longer needed)
+
+### Admin Directory - Temporary Files:
+- dashboard_redirect.php (redirect file - no longer needed)
+- enhanced_security_dashboard.php (replaced by unified_dashboard.php)
+- comprehensive_security_dashboard.php (replaced by unified_dashboard.php)
+- pci_compliance_dashboard.php (replaced by unified_dashboard.php)
+- pci_compliance_dashboard_simple.php (replaced by unified_dashboard.php)
+
+### Archive Directory - Old SQL Files:
+- add_flouci_payment_method.sql (old migration)
+- add_gender_to_users.sql (old migration)
+- add_payment_details_to_orders.sql (old migration)
+- add_sample_shipping_methods.sql (old migration)
+- add_wishlist_created_at.sql (old migration)
+- create_payment_logs_table.sql (old migration)
+- create_payment_settings_table.sql (old migration)
+- create_returns_tables.sql (old migration)
+- create_security_tables.sql (old migration)
+- create_user_tables.sql (old migration)
+- security_fraud_tables.sql (old migration)
+- wallet_promo_tables.sql (old migration)
+
+## ⚠️ FILES TO KEEP (ESSENTIAL - DO NOT DELETE)
+
+### Root Directory - ESSENTIAL SECURITY FILES:
+- security_feature_checker.php (REQUIRED by security_logs.php and admin pages)
+- security_integration.php (REQUIRED by index.php and client/login.php)
+- security_integration_admin.php (REQUIRED by admin/login.php and security_features.php)
+- web_application_firewall.php (REQUIRED by security_integration.php)
+- enhanced_rate_limiting.php (REQUIRED by security_integration.php and admin pages)
+- setup_security_tables.php (setup script - keep for future use)
+
+## 📦 FILES TO ARCHIVE (Keep for Reference)
+
+### Admin Directory - Archive These:
+- dashboard.php (old dashboard - archive for reference)
+- security_dashboard.php (security dashboard - archive for reference)
+- security_personnel.php (security personnel - archive for reference)
+- security_features.php (security features - archive for reference)
+- advanced_security_monitoring.php (security monitoring - archive for reference)
+
+## ⚠️ FILES TO KEEP (ESSENTIAL - DO NOT DELETE)
+
+### Root Directory - ESSENTIAL:
+- index.php (main website)
+- db.php (database connection)
+- header.php (website header)
+- beta333.css (main stylesheet)
+- main.js (main JavaScript)
+- lang.php (language system)
+- lang/ (language files)
+- uploads/ (user uploads)
+- webuy.jpg, webuy.png, webuy-logo-transparent.jpg (logos)
+- cart.svg, cart-icon.svg (cart icons)
+- google-icon.svg (Google icon)
+- favicon.ico (website favicon)
+- .htaccess (server configuration)
+- robots.txt (SEO)
+- sitemap.xml (SEO)
+- composer.json, composer.lock (dependencies)
+- package.json, yarn.lock (dependencies)
+- .gitignore (version control)
+- .rtlcssrc.json (RTL configuration)
+- security_feature_checker.php (REQUIRED by security_logs.php and admin pages)
+- security_integration.php (REQUIRED by index.php and client/login.php)
+- security_integration_admin.php (REQUIRED by admin/login.php and security_features.php)
+- web_application_firewall.php (REQUIRED by security_integration.php)
+- enhanced_rate_limiting.php (REQUIRED by security_integration.php and admin pages)
+- setup_security_tables.php (setup script - keep for future use)
+
+### Admin Directory - ESSENTIAL:
+- unified_dashboard.php (main admin dashboard)
+- login.php (admin login)
+- logout.php (admin logout)
+- products.php (product management)
+- orders.php (order management)
+- categories.php (category management)
+- admins.php (admin management)
+- add_product.php (add products)
+- add_category.php (add categories)
+- add_admin.php (add admins)
+- edit_product.php (edit products)
+- edit_category.php (edit categories)
+- bulk_upload.php (bulk upload)
+- download_csv_template.php (CSV template)
+- security_logs.php (security logs)
+- newsletter.php (newsletter)
+- email_campaigns.php (email campaigns)
+- seller_tips.php (seller tips)
+- seller_analytics.php (seller analytics)
+- payment_settings.php (payment settings)
+- payment_analytics.php (payment analytics)
+- automated_reports.php (automated reports)
+- returns.php (returns management)
+- activity.php (activity logs)
+- reviews.php (reviews management)
+- reviews_management.php (reviews management)
+- disabled_sellers.php (disabled sellers)
+- admin_header.php (admin header)
+- admin_footer.php (admin footer)
+- forgot_admin_password.php (password reset)
+- reset_admin_password.php (password reset)
+
+### Client Directory - ESSENTIAL:
+- All files in client/ directory (user-facing functionality)
+
+### Other Directories - ESSENTIAL:
+- data/ (data files)
+- js/ (JavaScript files)
+- libraries/ (library files)
+- PHPMailer/ (email library)
+- templates/ (template files)
+- themes/ (theme files)
+- vendor/ (vendor files)
+- webhooks/ (webhook files)
+- archive/ (keep this directory structure)
+
+## 🎯 SUMMARY:
+- DELETE: 9 temporary/test files from root
+- DELETE: 5 old dashboard files from admin
+- DELETE: 12 old SQL files from archive
+- ARCHIVE: 5 old dashboard files from admin
+- KEEP: All essential functionality files including security files
+
+## ✅ SAFETY CHECK:
+- priority_products_helper.php: KEEP (essential for homepage)
+- All images/icons: KEEP (essential for website)
+- All database files: KEEP (essential for functionality)
+- All user-facing files: KEEP (essential for users)
+- All admin functionality: KEEP (essential for admin) 

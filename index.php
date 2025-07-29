@@ -1,38 +1,35 @@
 <?php
-// Security and compatibility headers
-header('Content-Type: text/html; charset=utf-8');
-header('Cache-Control: public, max-age=3600');
-header('X-Content-Type-Options: nosniff');
-header("Content-Security-Policy: frame-ancestors 'self'");
+// Initialize session if not already started
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+// Set default language if not defined
+if (!isset($lang)) {
+    $lang = $_GET['lang'] ?? $_SESSION['lang'] ?? 'en';
+}
+
+// Include language file if not already included
+if (!function_exists('__')) {
+    require_once 'lang.php';
+}
+
 require 'db.php';
-require 'lang.php';
-// Update product query:
+
+// Fetch products
 $products = $pdo->query("SELECT p.*, s.is_disabled FROM products p LEFT JOIN sellers s ON p.seller_id = s.id WHERE p.approved = 1 ORDER BY s.is_disabled DESC, p.created_at DESC LIMIT 8")->fetchAll();
-// Fetch average ratings for all products
-$ratings = [];
-$stmt = $pdo->query("SELECT product_id, AVG(rating) as avg_rating, COUNT(*) as review_count FROM reviews GROUP BY product_id");
-while ($row = $stmt->fetch()) {
-    $ratings[$row['product_id']] = [
-        'avg' => round($row['avg_rating'], 1),
-        'count' => $row['review_count']
-    ];
-}
+
+// Fetch categories
 $categories = $pdo->query("SELECT * FROM categories ORDER BY id ASC")->fetchAll();
-if (session_status() === PHP_SESSION_NONE) session_start();
-if (!isset($_SESSION['is_mobile'])) {
-    $is_mobile = preg_match('/android|iphone|ipad|ipod|blackberry|windows phone|opera mini|mobile/i', $_SERVER['HTTP_USER_AGENT']);
-    $_SESSION['is_mobile'] = $is_mobile ? true : false;
-}
-$lang = $_GET['lang'] ?? $_SESSION['lang'] ?? 'ar';
+
+// Fetch recently viewed products
 $recently_viewed = [];
 if (!empty($_SESSION['viewed_products'])) {
     $ids = array_reverse($_SESSION['viewed_products']);
     $placeholders = implode(',', array_fill(0, count($ids), '?'));
     $stmt = $pdo->prepare("SELECT p.*, s.is_disabled FROM products p LEFT JOIN sellers s ON p.seller_id = s.id WHERE p.id IN ($placeholders)");
     $stmt->execute($ids);
-    // Keep order as in $ids
     $all = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    $recently_viewed = [];
     foreach ($ids as $id) {
         foreach ($all as $prod) {
             if ($prod['id'] == $id) {
@@ -42,494 +39,337 @@ if (!empty($_SESSION['viewed_products'])) {
         }
     }
 }
+
+// Get priority products
+require_once 'priority_products_helper.php';
+$priority_products = getPriorityProducts(6);
 ?>
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="<?php echo $lang; ?>" dir="<?php echo $lang === 'ar' ? 'rtl' : 'ltr'; ?>" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WeBuy - نجوم تونس</title>
-    <link rel="stylesheet" href="beta333.css?v=1.2">
-    <?php if (!empty($_SESSION['is_mobile'])): ?>
-    <link rel="stylesheet" href="mobile.css?v=1.2">
-    <?php endif; ?>
-
+    <title>WeBuy - Online Shopping Platform</title>
+    
+    <!-- CSS Files - Load in correct order -->
+    <link rel="stylesheet" href="css/base/_variables.css">
+    <link rel="stylesheet" href="css/base/_reset.css">
+    <link rel="stylesheet" href="css/base/_typography.css">
+    <link rel="stylesheet" href="css/base/_utilities.css">
+    <link rel="stylesheet" href="css/components/_buttons.css">
+    <link rel="stylesheet" href="css/components/_forms.css">
+    <link rel="stylesheet" href="css/components/_cards.css">
+    <link rel="stylesheet" href="css/components/_navigation.css">
+    <link rel="stylesheet" href="css/layout/_grid.css">
+    <link rel="stylesheet" href="css/layout/_sections.css">
+    <link rel="stylesheet" href="css/layout/_footer.css">
+    <link rel="stylesheet" href="css/themes/_light.css">
+    <link rel="stylesheet" href="css/themes/_dark.css">
+    <link rel="stylesheet" href="css/build.css">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    
+    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Amiri&display=swap" rel="stylesheet">
-    <!-- ... meta tags ... -->
 </head>
-<body>
-<div id="pageContent">
-    <div id="cookieBanner" style="display:none;position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:#fff;border:1.5px solid var(--accent-color);box-shadow:0 2px 8px rgba(0,191,174,0.10);border-radius:14px;padding:18px 32px;z-index:5000;min-width:260px;max-width:95vw;text-align:center;font-size:1.08em;">
-        <span>يستخدم هذا الموقع الكوكيز لتحسين تجربتك. <a href="cookies.php" style="color:var(--accent-color);text-decoration:underline;">اعرف المزيد</a></span>
-        <button id="acceptCookiesBtn" style="margin-right:18px;background:var(--accent-color);color:#fff;border:none;border-radius:8px;padding:8px 22px;font-weight:bold;cursor:pointer;">موافق</button>
-        <button id="rejectCookiesBtn" style="background:#eee;color:#1A237E;border:none;border-radius:8px;padding:8px 22px;font-weight:bold;cursor:pointer;">رفض</button>
-    </div>
+<body class="page-transition">
+    <!-- Skip to main content for accessibility -->
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+    
     <?php include 'header.php'; ?>
-
-<!-- Header Banner Zone: flex column for vertical centering -->
-<div class="header-banner-zone">
-  <div id="promoBanner" class="promo-banner">
-    <span class="promo-message" style="font-family:'Amiri',serif;font-weight:700;letter-spacing:0.5px;direction:rtl;">
-      <?php echo __('promo_banner', ['countdown' => '<span id="promoCountdown"></span>']); ?>
-    </span>
-    <button class="promo-close" aria-label="Close">&times;</button>
-  </div>
-</div>
+    
+    <!-- Flash Messages -->
     <?php if (isset($_SESSION['flash_message'])): ?>
-        <div class="alert-success" id="cartAlert">
-            <?php echo $_SESSION['flash_message']; unset($_SESSION['flash_message']); ?>
-            <button class="close-btn" onclick="document.getElementById('cartAlert').style.display='none'">&times;</button>
+        <div class="alert alert--success" id="flashMessage">
+            <div class="container">
+                <p><?php echo $_SESSION['flash_message']; unset($_SESSION['flash_message']); ?></p>
+                <button class="alert__close" onclick="this.parentElement.parentElement.style.display='none'">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
         </div>
     <?php endif; ?>
-    <header>
-        <div class="header-top-row">
-                <div class="header-logo">
-                    <img src="webuy.jpg" alt="WeBuy Logo" class="logo" loading="lazy">
-                <span class="logo-text" style="font-size:1.5em;font-weight:bold;color:#FFD600;margin-right:12px;letter-spacing:1.5px;text-shadow:0 2px 8px rgba(0,191,174,0.10);">WeBuy نجوم تونس</span>
-            </div>
-            <div class="header-actions-group">
-                <!-- Header actions are now handled by header.php include -->
-            </div>
-        </div>
-        <div class="header-mega-menu-row">
-            <nav class="mega-menu" aria-label="Mega Menu">
-              <ul class="mega-menu-list">
-                <?php foreach ($categories as $category): ?>
-                  <?php $cat_name = $category['name_' . $lang] ?? $category['name']; ?>
-                  <li class="mega-menu-item">
-                    <a href="search.php?category_id=<?php echo $category['id']; ?>">
-                      <span class="mega-menu-icon">
-                        <?php if (!empty($category['icon'])): ?>
-                          <img src="uploads/<?php echo htmlspecialchars($category['icon']); ?>" alt="<?php echo htmlspecialchars($cat_name); ?>" style="width:28px;height:28px;object-fit:cover;border-radius:50%;background:#fff;">
-                        <?php elseif (!empty($category['image'])): ?>
-                          <img src="uploads/<?php echo htmlspecialchars($category['image']); ?>" alt="<?php echo htmlspecialchars($cat_name); ?>" style="width:28px;height:28px;object-fit:cover;border-radius:50%;background:#fff;">
-                    <?php else: ?>
-                          <svg width="28" height="28" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <rect x="6" y="14" width="36" height="24" rx="8" fill="#00BFAE"/>
-                            <rect x="14" y="6" width="20" height="20" rx="6" fill="#FFD600"/>
-                            <circle cx="24" cy="24" r="6" fill="#1A237E"/>
-                          </svg>
-                    <?php endif; ?>
-                </span>
-                      <span class="mega-menu-label"><?php echo htmlspecialchars($cat_name); ?></span>
-                    </a>
-                  </li>
-                <?php endforeach; ?>
-              </ul>
-            </nav>
+    
+    <!-- Main Content -->
+    <main id="main-content" role="main">
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="container">
+                <div class="hero__content">
+                    <h1 class="hero__title">
+                        <?php echo $lang === 'ar' ? 'اكتشف مواهب تونس وادعم الإبداع المحلي' : 'Discover Tunisian Talents and Support Local Creativity'; ?>
+                    </h1>
+                    <p class="hero__subtitle">
+                        <?php echo $lang === 'ar' ? 'منصة WeBuy تجمع أفضل المنتجات المصنوعة بحب وإتقان من قبل أفراد ذوي إعاقة في تونس. تسوق، شارك، وكن جزءًا من التغيير!' : 'WeBuy platform brings together the best products made with love and craftsmanship by individuals with disabilities in Tunisia. Shop, share, and be part of the change!'; ?>
+                    </p>
+                    <div class="hero__actions">
+                        <a href="#categories" class="btn btn--primary btn--lg">
+                            <?php echo $lang === 'ar' ? 'تصفح التصنيفات' : 'Browse Categories'; ?>
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                                <polyline points="12,5 19,12 12,19"></polyline>
+                            </svg>
+                        </a>
+                        <a href="store.php" class="btn btn--secondary btn--lg">
+                            <?php echo $lang === 'ar' ? 'تسوق الآن' : 'Shop Now'; ?>
+                        </a>
+                    </div>
                 </div>
-        <div class="header-search-row">
-            <div class="central-search-bar">
-              <input type="text" id="liveSearchInput" placeholder="<?= __('search_placeholder') ?>" autocomplete="search">
-            </div>
-        </div>
-        <div class="header-nav-row">
-            <div class="lang-switcher" style="margin-right:18px;">
-                <form method="get" id="langForm" style="display:inline;">
-                    <label for="langSelect" class="sr-only" style="position:absolute;left:-9999px;">Language</label>
-                    <select name="lang" id="langSelect" title="Language" style="padding:4px 12px;border-radius:8px;border:1.5px solid #00BFAE;font-size:1em;">
-                        <option value="ar" <?php if(($_GET['lang'] ?? $_SESSION['lang'] ?? 'ar')=='ar') echo 'selected'; ?>><?= __('arabic_language') ?></option>
-                        <option value="fr" <?php if(($_GET['lang'] ?? $_SESSION['lang'] ?? 'ar')=='fr') echo 'selected'; ?>>Français</option>
-                        <option value="en" <?php if(($_GET['lang'] ?? $_SESSION['lang'] ?? 'ar')=='en') echo 'selected'; ?>>English</option>
-                    </select>
-                </form>
-            </div>
-            <nav aria-label="Main Navigation">
-                <ul>
-                    <li><a href="#welcome" aria-label="<?= __('welcome') ?>" class="active"><?= __('welcome') ?></a></li>
-                    <li><a href="#services" aria-label="<?= __('services') ?>"><?= __('services') ?></a></li>
-                    <?php if (!empty($categories)): ?>
-                        <li><a href="search.php?category_id=<?php echo $categories[0]['id']; ?>" aria-label="<?= __('categories') ?>"><?= __('categories') ?></a></li>
-                    <?php else: ?>
-                        <li><a href="search.php" aria-label="<?= __('categories') ?>"><?= __('categories') ?></a></li>
-                    <?php endif; ?>
-                    <li><a href="#about" aria-label="<?= __('about') ?>"><?= __('about') ?></a></li>
-                    <li><a href="#contact" aria-label="<?= __('contact') ?>"><?= __('contact') ?></a></li>
-                    <li><a href="search.php" aria-label="<?= __('search') ?>"><?= __('search') ?></a></li>
-                    <li><a href="faq.php" aria-label="<?= __('faq') ?>"><?= __('faq') ?></a></li>
-                </ul>
-            </nav>
-        </div>
-    </header>
-    <!-- Hero Carousel -->
-    <section class="hero-banner">
-      <div class="hero-carousel" id="heroCarousel">
-        <div class="hero-slide active" style="background:#1A237E url('webuy.jpg') center/cover no-repeat;">
-          <div class="hero-overlay"></div>
-          <div class="hero-content">
-            <h1 class="hero-title">اكتشف مواهب تونس وادعم الإبداع المحلي</h1>
-            <p class="hero-subtitle">منصة WeBuy تجمع أفضل المنتجات المصنوعة بحب وإتقان من قبل أفراد ذوي إعاقة في تونس. تسوق، شارك، وكن جزءًا من التغيير!</p>
-            <a href="#categories" class="hero-cta">تصفح التصنيفات <span class="arrow">→</span></a>
-          </div>
-        </div>
-        <div class="hero-slide" style="background:#FFD600 url('webuy-logo-transparent.jpg') center/contain no-repeat;">
-          <div class="hero-overlay"></div>
-          <div class="hero-content">
-            <h1 class="hero-title">عروض الصيف: خصومات تصل إلى 50%</h1>
-            <p class="hero-subtitle">استفد من التخفيضات على مختاراتنا لفترة محدودة. تسوق الآن!</p>
-            <a href="search.php?sort=price_asc" class="hero-cta">تسوق العروض <span class="arrow">→</span></a>
-          </div>
-        </div>
-        <div class="hero-slide" style="background:#00BFAE;">
-          <div class="hero-overlay"></div>
-          <div class="hero-content">
-            <h1 class="hero-title">ادعم الحرفيين المحليين</h1>
-            <p class="hero-subtitle">كل عملية شراء تساهم في تمكين المواهب التونسية وتحقيق الاستقلالية المالية.</p>
-            <a href="#about" class="hero-cta">تعرف على رسالتنا <span class="arrow">→</span></a>
-          </div>
-        </div>
-        <button class="hero-arrow left" id="heroArrowLeft">&#8592;</button>
-        <button class="hero-arrow right" id="heroArrowRight">&#8594;</button>
-        <div class="hero-dots" id="heroDots"></div>
-      </div>
-    </section>
-    <!-- Product Carousel -->
-    <section class="product-carousel-section container">
-      <h2 style="margin-bottom:18px;color:var(--primary-color);font-size:1.18em;">منتجات مختارة</h2>
-      <div class="product-carousel" id="productCarousel">
-        <?php foreach (array_slice($products, 0, 8) as $prod): ?>
-          <?php $prod_name = $prod['name_' . $lang] ?? $prod['name']; ?>
-          <div class="product-carousel-card">
-            <a href="product.php?id=<?= $prod['id'] ?>">
-              <img src="uploads/<?= htmlspecialchars($prod['image']) ?>" alt="<?= htmlspecialchars($prod_name) ?>" style="width:100%;height:110px;object-fit:cover;border-radius:8px;">
-              <div class="product-name" style="font-weight:bold;font-size:1.08em;"> <?= htmlspecialchars($prod_name) ?> </div>
-              <div class="product-price" style="color:#00BFAE;font-weight:bold;"> <?= $prod['price'] ?> د.ت </div>
-            </a>
-          </div>
-        <?php endforeach; ?>
-        <button class="carousel-arrow left" id="productArrowLeft">&#8592;</button>
-        <button class="carousel-arrow right" id="productArrowRight">&#8594;</button>
-        <div class="carousel-dots" id="productDots"></div>
-      </div>
-    </section>
-    <!-- Category Carousel -->
-    <section class="category-carousel-section container">
-      <h2 style="margin-bottom:18px;color:var(--primary-color);font-size:1.18em;">تصفح التصنيفات</h2>
-      <div class="category-carousel" id="categoryCarousel">
-        <?php foreach ($categories as $cat): ?>
-          <?php $cat_name = $cat['name_' . $lang] ?? $cat['name']; ?>
-          <div class="category-carousel-card">
-            <a href="search.php?category_id=<?= $cat['id'] ?>">
-              <?php if (!empty($cat['image'])): ?>
-                <img src="uploads/<?= htmlspecialchars($cat['image']) ?>" alt="<?= htmlspecialchars($cat_name) ?>" style="width:80px;height:80px;object-fit:cover;border-radius:12px;margin-bottom:10px;">
-              <?php elseif (!empty($cat['icon'])): ?>
-                <img src="uploads/<?= htmlspecialchars($cat['icon']) ?>" alt="<?= htmlspecialchars($cat_name) ?>" style="width:80px;height:80px;object-fit:cover;border-radius:12px;margin-bottom:10px;">
-              <?php else: ?>
-                <svg width="80" height="80" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin-bottom:10px;"><rect x="6" y="14" width="36" height="24" rx="8" fill="#00BFAE"/><rect x="14" y="6" width="20" height="20" rx="6" fill="#FFD600"/><circle cx="24" cy="24" r="6" fill="#1A237E"/></svg>
-              <?php endif; ?>
-              <div class="category-name" style="font-weight:bold;font-size:1.08em;"> <?= htmlspecialchars($cat_name) ?> </div>
-            </a>
-          </div>
-        <?php endforeach; ?>
-        <button class="carousel-arrow left" id="categoryArrowLeft">&#8592;</button>
-        <button class="carousel-arrow right" id="categoryArrowRight">&#8594;</button>
-        <div class="carousel-dots" id="categoryDots"></div>
-      </div>
-    </section>
-    <section class="featured-categories container">
-        <h2>الأقسام المميزة</h2>
-        <div class="category-grid">
-            <?php foreach (array_slice($categories, 0, 6) as $cat): ?>
-                <?php $cat_name = $cat['name_' . $lang] ?? $cat['name']; ?>
-                <a href="search.php?category_id=<?= $cat['id'] ?>" class="category-item">
-                    <?php if (!empty($cat['image'])): ?>
-                        <img src="uploads/<?= htmlspecialchars($cat['image']) ?>" alt="<?= htmlspecialchars($cat_name) ?>" style="width:100px;height:100px;object-fit:cover;border-radius:12px;margin-bottom:10px;">
-                    <?php elseif (!empty($cat['icon'])): ?>
-                        <img src="uploads/<?= htmlspecialchars($cat['icon']) ?>" alt="<?= htmlspecialchars($cat_name) ?>" style="width:100px;height:100px;object-fit:cover;border-radius:12px;margin-bottom:10px;">
-                    <?php else: ?>
-                        <svg width="100" height="100" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin-bottom:10px;"><rect x="6" y="14" width="36" height="24" rx="8" fill="#00BFAE"/><rect x="14" y="6" width="20" height="20" rx="6" fill="#FFD600"/><circle cx="24" cy="24" r="6" fill="#1A237E"/></svg>
-                    <?php endif; ?>
-                    <div class="category-name" style="font-weight:bold;font-size:1.1em;"> <?= htmlspecialchars($cat_name) ?> </div>
-                </a>
-            <?php endforeach; ?>
+                <div class="hero__image">
+                    <img src="webuy-logo-transparent.jpg" alt="WeBuy Logo" loading="lazy">
+                </div>
             </div>
         </section>
-    <main>
-        <section id="welcome" class="container">
-            <h2><?= __('welcome') ?></h2>
-            <p><?= __('welcome_paragraph') ?></p>
+        
+        <!-- Featured Categories -->
+        <section class="section" id="categories">
+            <div class="container">
+                <div class="section__header">
+                    <h2 class="section__title">
+                        <?php echo $lang === 'ar' ? 'التصنيفات المميزة' : 'Featured Categories'; ?>
+                    </h2>
+                    <p class="section__subtitle">
+                        <?php echo $lang === 'ar' ? 'اكتشف مجموعة متنوعة من المنتجات المصنوعة بحب وإتقان' : 'Discover a diverse collection of products made with love and craftsmanship'; ?>
+                    </p>
+                </div>
+                
+                <div class="grid grid--3-cols">
+                    <?php foreach (array_slice($categories, 0, 6) as $category): ?>
+                        <?php $cat_name = $category['name_' . $lang] ?? $category['name']; ?>
+                        <div class="card card--category">
+                            <a href="store.php?category_id=<?php echo $category['id']; ?>" class="card__link">
+                                <div class="card__image">
+                                    <?php if (!empty($category['image'])): ?>
+                                        <img src="uploads/<?php echo htmlspecialchars($category['image']); ?>" 
+                                             alt="<?php echo htmlspecialchars($cat_name); ?>" loading="lazy">
+                                    <?php elseif (!empty($category['icon'])): ?>
+                                        <img src="uploads/<?php echo htmlspecialchars($category['icon']); ?>" 
+                                             alt="<?php echo htmlspecialchars($cat_name); ?>" loading="lazy">
+                                    <?php else: ?>
+                                        <div class="card__placeholder">
+                                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                                <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                                                <polyline points="21,15 16,10 5,21"></polyline>
+                                            </svg>
+                                        </div>
+                                    <?php endif; ?>
+                                </div>
+                                <div class="card__content">
+                                    <h3 class="card__title"><?php echo htmlspecialchars($cat_name); ?></h3>
+                                </div>
+                            </a>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+            </div>
         </section>
         
-        <!-- Disabled Sellers Showcase Section -->
-        <?php
-        require_once 'priority_products_helper.php';
-        $priority_products = getPriorityProducts(6);
-        
-        if (!empty($priority_products)):
-        ?>
-        <section id="disabled-sellers-showcase" class="container" style="background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%); padding: 30px; border-radius: 15px; margin: 30px auto; border: 2px solid #ffc107;">
-            <div style="text-align: center; margin-bottom: 30px;">
-                <h2 style="color: #856404; margin-bottom: 10px;">🌟 منتجات البائعين ذوي الإعاقة</h2>
-                <p style="color: #856404; font-size: 1.1em; margin: 0;">نساند وندعم البائعين ذوي الإعاقة في رحلتهم نحو النجاح</p>
-            </div>
-            
-            <div class="product-grid">
-                <?php foreach ($priority_products as $product): ?>
-                <div class="product-card" data-id="<?php echo $product['id']; ?>" data-name="<?php echo htmlspecialchars($product['name']); ?>" data-price="<?php echo htmlspecialchars($product['price']); ?>" data-image="uploads/<?php echo htmlspecialchars($product['image']); ?>" data-description="<?php echo htmlspecialchars($product['description']); ?>">
-                    <span class="product-badge" style="background: #FFD600; color: #1A237E; left: auto; right: 12px; top: 12px; position: absolute; z-index: 4; font-weight: bold;">
-                        🌟 بائع ذو إعاقة
-                    </span>
-                    <button class="wishlist-btn" data-product-id="<?php echo $product['id']; ?>" title="<?= __('add_to_favorites') ?>" style="position: absolute; top: 12px; left: 12px; z-index: 3; background: none; border: none; cursor: pointer; outline: none;">
-                        <?php if (!empty($_SESSION['wishlist']) && in_array($product['id'], $_SESSION['wishlist'])): ?>
-                            <span style="font-size: 1.5em; color: #e74c3c;">&#10084;</span>
-                        <?php else: ?>
-                            <span style="font-size: 1.5em; color: #bbb;">&#9825;</span>
-                        <?php endif; ?>
-                    </button>
-                    <a href="product.php?id=<?php echo $product['id']; ?>">
-                        <div class="product-img-wrap">
-                            <img src="uploads/<?php echo htmlspecialchars($product['image']); ?>" alt="<?php echo htmlspecialchars($product['name']); ?>" loading="lazy" width="300" height="300">
-                        </div>
-                        <h3><?php echo htmlspecialchars($product['name']); ?></h3>
-                        <p><?php echo htmlspecialchars($product['description']); ?></p>
-                        <p class="price"><?php echo htmlspecialchars($product['price']); ?> <?= __('currency') ?></p>
-                        
-                        <!-- Disabled Seller Info -->
-                        <?php if (!empty($product['disabled_seller_name'])): ?>
-                        <div style="background: rgba(255, 193, 7, 0.1); padding: 10px; border-radius: 8px; margin-top: 10px; border-left: 3px solid #ffc107;">
-                            <p style="margin: 0; font-size: 0.9em; color: #856404;">
-                                <strong>البائع:</strong> <?php echo htmlspecialchars($product['disabled_seller_name']); ?><br>
-                                <strong>نوع الإعاقة:</strong> <?php echo htmlspecialchars($product['disability_type']); ?>
-                            </p>
-                        </div>
-                        <?php endif; ?>
-                    </a>
-                    <form action="add_to_cart.php" method="get" class="add-to-cart-form" style="margin-top: 10px;">
-                        <input type="hidden" name="id" value="<?php echo $product['id']; ?>">
-                        <button type="submit" class="add-cart-btn"><?= __('add_to_cart') ?></button>
-                    </form>
-                    <button class="quick-view-btn" type="button">👁️ <?= __('quick_view') ?></button>
+        <!-- Priority Products Section -->
+        <?php if (!empty($priority_products)): ?>
+        <section class="section section--highlight">
+            <div class="container">
+                <div class="section__header">
+                    <h2 class="section__title">
+                        <?php echo $lang === 'ar' ? '🌟 منتجات البائعين ذوي الإعاقة' : '🌟 Products from Sellers with Disabilities'; ?>
+                    </h2>
+                    <p class="section__subtitle">
+                        <?php echo $lang === 'ar' ? 'نساند وندعم البائعين ذوي الإعاقة في رحلتهم نحو النجاح' : 'We support and empower sellers with disabilities in their journey to success'; ?>
+                    </p>
                 </div>
-                <?php endforeach; ?>
-            </div>
-            
-            <div style="text-align: center; margin-top: 30px;">
-                <a href="search.php?priority=disabled_sellers" style="background: #ffc107; color: #1A237E; padding: 12px 30px; border-radius: 8px; text-decoration: none; font-weight: bold; display: inline-block;">
-                    عرض جميع منتجات البائعين ذوي الإعاقة
-                </a>
+                
+                <div class="grid grid--3-cols">
+                    <?php foreach ($priority_products as $product): ?>
+                        <div class="card card--product" data-product-id="<?php echo $product['id']; ?>">
+                            <div class="card__badge card__badge--priority">
+                                <?php echo $lang === 'ar' ? '🌟 بائع ذو إعاقة' : '🌟 Disabled Seller'; ?>
+                            </div>
+                            
+                            <button class="card__wishlist" data-product-id="<?php echo $product['id']; ?>" 
+                                    title="<?php echo $lang === 'ar' ? 'إضافة إلى المفضلة' : 'Add to Wishlist'; ?>">
+                                <?php if (!empty($_SESSION['wishlist']) && in_array($product['id'], $_SESSION['wishlist'])): ?>
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2">
+                                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                                    </svg>
+                                <?php else: ?>
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                                    </svg>
+                                <?php endif; ?>
+                            </button>
+                            
+                            <a href="product.php?id=<?php echo $product['id']; ?>" class="card__link">
+                                <div class="card__image">
+                                    <img src="uploads/<?php echo htmlspecialchars($product['image']); ?>" 
+                                         alt="<?php echo htmlspecialchars($product['name']); ?>" loading="lazy">
+                                </div>
+                                <div class="card__content">
+                                    <h3 class="card__title"><?php echo htmlspecialchars($product['name']); ?></h3>
+                                    <p class="card__description"><?php echo htmlspecialchars($product['description']); ?></p>
+                                    <div class="card__price"><?php echo htmlspecialchars($product['price']); ?> <?php echo $lang === 'ar' ? 'د.ت' : 'TND'; ?></div>
+                                </div>
+                            </a>
+                            
+                            <form action="add_to_cart.php" method="get" class="card__form">
+                                <input type="hidden" name="id" value="<?php echo $product['id']; ?>">
+                                <button type="submit" class="btn btn--primary btn--sm">
+                                    <?php echo $lang === 'ar' ? 'إضافة إلى السلة' : 'Add to Cart'; ?>
+                                </button>
+                            </form>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+                
+                <div class="section__footer">
+                    <a href="store.php?priority=disabled_sellers" class="btn btn--secondary">
+                        <?php echo $lang === 'ar' ? 'عرض جميع منتجات البائعين ذوي الإعاقة' : 'View All Products from Disabled Sellers'; ?>
+                    </a>
+                </div>
             </div>
         </section>
         <?php endif; ?>
-        <section id="showcase" class="container">
-            <h2><?= __('showcase') ?></h2>
-            <div class="product-grid">
-                <?php foreach ($products as $i => $product): ?>
-                <div class="product-card" data-id="<?php echo $product['id']; ?>" data-name="<?php echo htmlspecialchars($product['name']); ?>" data-price="<?php echo htmlspecialchars($product['price']); ?>" data-image="uploads/<?php echo htmlspecialchars($product['image']); ?>" data-description="<?php echo htmlspecialchars($product['description']); ?>">
-                    <?php if ($i < 3): ?>
-                        <span class="product-badge new"><?= __('new') ?></span>
-                    <?php endif; ?>
-                    <?php if (!empty($product['is_disabled'])): ?>
-                        <span class="product-badge" style="background:#FFD600;color:#1A237E;left:auto;right:12px;top:12px;position:absolute;z-index:4;">Disabled Seller</span>
-                    <?php endif; ?>
-                    <button class="wishlist-btn" data-product-id="<?php echo $product['id']; ?>" title="<?= __('add_to_favorites') ?>" style="position:absolute;top:12px;left:12px;z-index:3;background:none;border:none;cursor:pointer;outline:none;">
-                            <?php if (!empty($_SESSION['wishlist']) && in_array($product['id'], $_SESSION['wishlist'])): ?>
-                                <span style="font-size:1.5em;color:#e74c3c;">&#10084;</span>
-                            <?php else: ?>
-                                <span style="font-size:1.5em;color:#bbb;">&#9825;</span>
-                            <?php endif; ?>
-                        </button>
-                    <a href="product.php?id=<?php echo $product['id']; ?>">
-                        <div class="product-img-wrap">
-                            <?php 
-                            $image_path = "uploads/" . htmlspecialchars($product['image']);
-                            $thumb_path = "uploads/thumbnails/" . pathinfo($product['image'], PATHINFO_FILENAME) . "_thumb.jpg";
-                            $final_image = file_exists($thumb_path) ? $thumb_path : $image_path;
-                            ?>
-                            <img src="<?php echo $final_image; ?>" alt="<?php echo htmlspecialchars($product['name']); ?>" loading="lazy" width="300" height="300">
-                        </div>
-                        <h3><?php echo htmlspecialchars($product['name']); ?></h3>
-                        <p><?php echo htmlspecialchars($product['description']); ?></p>
-                        <p class="price"><?php echo htmlspecialchars($product['price']); ?> <?= __('currency') ?></p>
-                    </a>
-                    <form action="add_to_cart.php" method="get" class="add-to-cart-form" style="margin-top:10px;">
-                        <input type="hidden" name="id" value="<?php echo $product['id']; ?>">
-                        <button type="submit" class="add-cart-btn"><?= __('add_to_cart') ?></button>
-                    </form>
-                    <button class="quick-view-btn" type="button">👁️ <?= __('quick_view') ?></button>
+        
+        <!-- Featured Products -->
+        <section class="section">
+            <div class="container">
+                <div class="section__header">
+                    <h2 class="section__title">
+                        <?php echo $lang === 'ar' ? 'المنتجات المميزة' : 'Featured Products'; ?>
+                    </h2>
+                    <p class="section__subtitle">
+                        <?php echo $lang === 'ar' ? 'اكتشف أحدث وأفضل المنتجات من بائعين موثوقين' : 'Discover the latest and best products from trusted sellers'; ?>
+                    </p>
                 </div>
-                <?php endforeach; ?>
+                
+                <div class="grid grid--4-cols">
+                    <?php foreach ($products as $i => $product): ?>
+                        <div class="card card--product" data-product-id="<?php echo $product['id']; ?>">
+                            <?php if ($i < 3): ?>
+                                <div class="card__badge card__badge--new">
+                                    <?php echo $lang === 'ar' ? 'جديد' : 'New'; ?>
+                                </div>
+                            <?php endif; ?>
+                            
+                            <?php if (!empty($product['is_disabled'])): ?>
+                                <div class="card__badge card__badge--disabled">
+                                    <?php echo $lang === 'ar' ? 'بائع ذو إعاقة' : 'Disabled Seller'; ?>
+                                </div>
+                            <?php endif; ?>
+                            
+                            <button class="card__wishlist" data-product-id="<?php echo $product['id']; ?>" 
+                                    title="<?php echo $lang === 'ar' ? 'إضافة إلى المفضلة' : 'Add to Wishlist'; ?>">
+                                <?php if (!empty($_SESSION['wishlist']) && in_array($product['id'], $_SESSION['wishlist'])): ?>
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2">
+                                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                                    </svg>
+                                <?php else: ?>
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                                    </svg>
+                                <?php endif; ?>
+                            </button>
+                            
+                            <a href="product.php?id=<?php echo $product['id']; ?>" class="card__link">
+                                <div class="card__image">
+                                    <img src="uploads/<?php echo htmlspecialchars($product['image']); ?>" 
+                                         alt="<?php echo htmlspecialchars($product['name']); ?>" loading="lazy">
+                                </div>
+                                <div class="card__content">
+                                    <h3 class="card__title"><?php echo htmlspecialchars($product['name']); ?></h3>
+                                    <p class="card__description"><?php echo htmlspecialchars($product['description']); ?></p>
+                                    <div class="card__price"><?php echo htmlspecialchars($product['price']); ?> <?php echo $lang === 'ar' ? 'د.ت' : 'TND'; ?></div>
+                                </div>
+                            </a>
+                            
+                            <form action="add_to_cart.php" method="get" class="card__form">
+                                <input type="hidden" name="id" value="<?php echo $product['id']; ?>">
+                                <button type="submit" class="btn btn--primary btn--sm">
+                                    <?php echo $lang === 'ar' ? 'إضافة إلى السلة' : 'Add to Cart'; ?>
+                                </button>
+                            </form>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
             </div>
         </section>
-        <?php if ($recently_viewed): ?>
-<section class="recently-viewed container">
-    <h2 style="margin-top:36px;">المنتجات التي شاهدتها مؤخرًا</h2>
-    <div class="product-grid">
-        <?php foreach ($recently_viewed as $prod): ?>
-            <?php $prod_name = $prod['name_' . $lang] ?? $prod['name']; ?>
-            <div class="product-card">
-                <?php if (!empty($prod['is_disabled'])): ?>
-                    <span class="product-badge" style="background:#FFD600;color:#1A237E;left:auto;right:12px;top:12px;position:absolute;z-index:4;">Disabled Seller</span>
-                <?php endif; ?>
-                <a href="product.php?id=<?= $prod['id'] ?>">
-                    <img src="uploads/<?= htmlspecialchars($prod['image']) ?>" alt="<?= htmlspecialchars($prod_name) ?>" style="width:100%;height:120px;object-fit:cover;border-radius:10px;">
-                    <div class="product-name" style="font-weight:bold;font-size:1.08em;"> <?= htmlspecialchars($prod_name) ?> </div>
-                    <div class="product-price" style="color:#00BFAE;font-weight:bold;"> <?= $prod['price'] ?> د.ت </div>
-                </a>
+        
+        <!-- Recently Viewed Products -->
+        <?php if (!empty($recently_viewed)): ?>
+        <section class="section">
+            <div class="container">
+                <div class="section__header">
+                    <h2 class="section__title">
+                        <?php echo $lang === 'ar' ? 'المنتجات التي شاهدتها مؤخرًا' : 'Recently Viewed Products'; ?>
+                    </h2>
+                </div>
+                
+                <div class="grid grid--4-cols">
+                    <?php foreach ($recently_viewed as $product): ?>
+                        <?php $prod_name = $product['name_' . $lang] ?? $product['name']; ?>
+                        <div class="card card--product">
+                            <?php if (!empty($product['is_disabled'])): ?>
+                                <div class="card__badge card__badge--disabled">
+                                    <?php echo $lang === 'ar' ? 'بائع ذو إعاقة' : 'Disabled Seller'; ?>
+                                </div>
+                            <?php endif; ?>
+                            
+                            <a href="product.php?id=<?php echo $product['id']; ?>" class="card__link">
+                                <div class="card__image">
+                                    <img src="uploads/<?php echo htmlspecialchars($product['image']); ?>" 
+                                         alt="<?php echo htmlspecialchars($prod_name); ?>" loading="lazy">
+                                </div>
+                                <div class="card__content">
+                                    <h3 class="card__title"><?php echo htmlspecialchars($prod_name); ?></h3>
+                                    <div class="card__price"><?php echo htmlspecialchars($product['price']); ?> <?php echo $lang === 'ar' ? 'د.ت' : 'TND'; ?></div>
+                                </div>
+                            </a>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
             </div>
-        <?php endforeach; ?>
-    </div>
-</section>
-<?php endif; ?>
-        <!-- Skeleton loader for product grid -->
-        <div class="skeleton-grid" id="skeletonGrid" style="display:none;">
-          <?php for ($i=0; $i<6; $i++): ?>
-            <div class="skeleton-card">
-              <div class="skeleton-img"></div>
-              <div class="skeleton-line long"></div>
-              <div class="skeleton-line medium"></div>
-              <div class="skeleton-line short"></div>
+        </section>
+        <?php endif; ?>
+        
+        <!-- About Section -->
+        <section class="section section--highlight">
+            <div class="container">
+                <div class="grid grid--2-cols">
+                    <div class="section__content">
+                        <h2 class="section__title">
+                            <?php echo $lang === 'ar' ? 'من نحن' : 'About Us'; ?>
+                        </h2>
+                        <p class="section__text">
+                            <?php echo $lang === 'ar' ? 'منصة WeBuy هي منصة تسوق إلكتروني مخصصة لدعم وتمكين الأفراد ذوي الإعاقة في تونس. نساعدهم على بيع منتجاتهم وبناء مستقبل مستقل.' : 'WeBuy is an e-commerce platform dedicated to supporting and empowering individuals with disabilities in Tunisia. We help them sell their products and build an independent future.'; ?>
+                        </p>
+                        <div class="section__actions">
+                            <a href="about.php" class="btn btn--primary">
+                                <?php echo $lang === 'ar' ? 'تعرف على المزيد' : 'Learn More'; ?>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="section__image">
+                        <img src="webuy.jpg" alt="WeBuy Platform" loading="lazy">
+                    </div>
+                </div>
             </div>
-          <?php endfor; ?>
-        </div>
-        <!-- ... rest of main content ... -->
+        </section>
     </main>
-    <section id="services" class="container">
-        <h2><?= __('services') ?></h2>
-        <ul style="font-size:1.1em;line-height:2;list-style:disc inside;margin:18px 0 0 0;color:var(--primary-color);">
-            <li><?= __('service_marketing') ?></li>
-            <li><?= __('service_support') ?></li>
-            <li><?= __('service_payment') ?></li>
-            <li><?= __('service_customer') ?></li>
-            <li><?= __('service_delivery') ?></li>
-        </ul>
-    </section>
-    <section id="about" class="container">
-        <h2><?= __('about') ?></h2>
-        <p style="font-size:1.1em;line-height:2;color:var(--text-color);"><?= __('about_paragraph') ?></p>
-    </section>
-    <section id="contact" class="container">
-        <h2><?= __('contact') ?></h2>
-        <form method="post" action="#" style="max-width:420px;margin:0 auto;">
-            <div class="form-group">
-                <input type="text" id="contact-name" name="name" required placeholder=" " autocomplete="name">
-                <label for="contact-name"><?= __('full_name') ?></label>
-            </div>
-            <div class="form-group">
-                <input type="email" id="contact-email" name="email" required placeholder=" " autocomplete="email">
-                <label for="contact-email"><?= __('email') ?></label>
-            </div>
-            <div class="form-group">
-                <textarea id="contact-message" name="message" rows="4" required placeholder=" " autocomplete="off"></textarea>
-                <label for="contact-message"><?= __('your_message') ?></label>
-            </div>
-            <button type="submit" class="checkout-btn"><?= __('send') ?></button>
-        </form>
-        <div style="text-align:center;margin-top:18px;color:var(--primary-color);font-size:1.08em;">
-            <?= __('or_email') ?> <a href="mailto:webuytn0@gmail.com" style="color:var(--accent-color);">webuytn0@gmail.com</a>
-        </div>
-    </section>
-    <footer>
-        <p><?= __('contact') ?>: <a href="mailto:webuytn0@gmail.com" style="color:#FFD600;">webuytn0@gmail.com</a></p>
-        <p>&copy; <?php echo date('Y'); ?> WeBuy. <?= __('all_rights_reserved') ?></p>
-        <p style="margin-top:10px;font-size:0.98em;">
-            <a href="privacy.php" style="color:var(--accent-color);margin-left:18px;"><?= __('privacy_policy') ?></a>
-            |
-            <a href="cookies.php" style="color:var(--accent-color);margin-right:18px;"><?= __('cookies_policy') ?></a>
-        </p>
-    </footer>
-    <!-- Quick View Modal -->
-    <div id="quickViewModal" class="quick-view-modal" style="display:none;">
-        <div class="quick-view-content">
-            <button class="quick-view-close" onclick="closeQuickView()">&times; <?= __('close') ?></button>
-            <img id="quickViewImg" src="" alt="<?= __('product_image') ?>">
-            <h3 id="quickViewName"></h3>
-            <div class="price" id="quickViewPrice"></div>
-            <p id="quickViewDesc"></p>
-            <form action="add_to_cart.php" method="get" class="add-to-cart-form">
-                <input type="hidden" name="id" id="quickViewProductId">
-                <button type="submit" class="add-cart-btn"><?= __('add_to_cart') ?></button>
-            </form>
-        </div>
-    </div>
+    
+    <?php include 'footer.php'; ?>
+    
+    <!-- Optimized JavaScript -->
+    <script src="js/optimized/main.min.js" defer></script>
+    
+    <!-- Performance monitoring -->
     <script>
-    function toggleMenu() {
-        var nav = document.querySelector('nav ul');
-        nav.classList.toggle('active');
-    }
-    </script>
-    <script>
-    // Show cookie banner if not accepted
-    if (!localStorage.getItem('cookiesAccepted')) {
-      document.getElementById('cookieBanner').style.display = 'block';
-    }
-    document.getElementById('acceptCookiesBtn').onclick = function() {
-      localStorage.setItem('cookiesAccepted', '1');
-      document.getElementById('cookieBanner').style.display = 'none';
-    };
-    </script>
-    <script>
-    // Google Analytics loader (only after consent)
-    function loadAnalytics() {
-      if (window.analyticsLoaded) return;
-      window.analyticsLoaded = true;
-      var s = document.createElement('script');
-      s.src = 'https://www.googletagmanager.com/gtag/js?id=G-PVP8CCFQPL';
-      s.async = true;
-      document.head.appendChild(s);
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-      window.gtag = gtag;
-  gtag('js', new Date());
-  gtag('config', 'G-PVP8CCFQPL');
-}
-    // Cookie consent logic
-    document.addEventListener('DOMContentLoaded', function() {
-      var consent = localStorage.getItem('cookieConsent');
-      var banner = document.getElementById('cookieBanner');
-      if (consent === 'accepted') {
-        loadAnalytics();
-        if (banner) banner.style.display = 'none';
-      } else if (consent === 'rejected') {
-        if (banner) banner.style.display = 'none';
-      } else {
-        if (banner) banner.style.display = 'block';
-      }
-var acceptBtn = document.getElementById('acceptCookiesBtn');
-      var rejectBtn = document.getElementById('rejectCookiesBtn');
-if (acceptBtn) {
-  acceptBtn.addEventListener('click', function() {
-          localStorage.setItem('cookieConsent', 'accepted');
-          loadAnalytics();
-          if (banner) banner.style.display = 'none';
+        window.addEventListener('load', function() {
+            const loadTime = performance.now();
+            console.log('Page load time:', loadTime.toFixed(2), 'ms');
         });
-      }
-      if (rejectBtn) {
-        rejectBtn.addEventListener('click', function() {
-          localStorage.setItem('cookieConsent', 'rejected');
-          if (banner) banner.style.display = 'none';
-        });
-      }
-    });
-</script>
-<script>
-document.getElementById('langSelect').addEventListener('change', function() {
-  document.getElementById('langForm').submit();
-});
-</script>
-<script>
-window.addEventListener('scroll', function() {
-  var header = document.querySelector('header');
-  if (window.scrollY > 24) {
-    header.classList.add('header-scrolled');
-  } else {
-    header.classList.remove('header-scrolled');
-  }
-});
-</script>
-<script>
-    // Auto-hide alert-success after 2.5s
-    document.addEventListener('DOMContentLoaded', function() {
-      var alert = document.querySelector('.alert-success');
-      if (alert) {
-        setTimeout(function() {
-          alert.style.transition = 'opacity 0.5s';
-          alert.style.opacity = '0';
-          setTimeout(function() { alert.style.display = 'none'; }, 500);
-        }, 2500);
-  }
-});
-</script>
-</div>
-<script src="main.js?v=1.2"></script>
+    </script>
 </body>
 </html> 

@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Theme Debug Test</title>
+    
+    <!-- CSS Files -->
+    <link rel="stylesheet" href="css/base/_variables.css">
+    <link rel="stylesheet" href="css/themes/_light.css">
+    <link rel="stylesheet" href="css/themes/_dark.css">
+    <link rel="stylesheet" href="css/components/_navigation.css">
+    
+    <!-- JavaScript -->
+    <script src="main.js?v=1.4" defer></script>
+    
+    <style>
+        body {
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            background-color: var(--color-background);
+            color: var(--color-text);
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .debug-info {
+            background: var(--color-card);
+            padding: 20px;
+            border: 1px solid var(--color-border);
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        .theme-button {
+            padding: 10px 20px;
+            margin: 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            background: var(--btn-primary-bg);
+            color: var(--btn-primary-text);
+        }
+    </style>
+</head>
+<body>
+    <h1>Theme Debug Test</h1>
+    
+    <div class="debug-info">
+        <h2>Theme Toggle Button</h2>
+        <button class="theme-toggle" id="themeToggle" aria-label="Toggle Dark Mode">
+            <svg class="theme-toggle__icon theme-toggle__icon--light" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="5"></circle>
+                <line x1="12" y1="1" x2="12" y2="3"></line>
+                <line x1="12" y1="21" x2="12" y2="23"></line>
+                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                <line x1="1" y1="12" x2="3" y2="12"></line>
+                <line x1="21" y1="12" x2="23" y2="12"></line>
+                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+            </svg>
+            <svg class="theme-toggle__icon theme-toggle__icon--dark" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+            </svg>
+        </button>
+    </div>
+    
+    <div class="debug-info">
+        <h2>Debug Information</h2>
+        <p><strong>Current Theme:</strong> <span id="currentTheme">loading...</span></p>
+        <p><strong>data-theme attribute:</strong> <span id="dataTheme">loading...</span></p>
+        <p><strong>Background Color:</strong> <span id="bgColor">loading...</span></p>
+        <p><strong>Text Color:</strong> <span id="textColor">loading...</span></p>
+        <p><strong>localStorage theme:</strong> <span id="localStorageTheme">loading...</span></p>
+    </div>
+    
+    <div class="debug-info">
+        <h2>Test Content</h2>
+        <p>This is a test paragraph to see how the theme affects the page.</p>
+        <button class="theme-button">Test Button</button>
+    </div>
+    
+    <script>
+        // Update debug info
+        function updateDebugInfo() {
+            const theme = document.documentElement.getAttribute('data-theme');
+            const bgColor = getComputedStyle(document.body).backgroundColor;
+            const textColor = getComputedStyle(document.body).color;
+            const localStorageTheme = localStorage.getItem('theme');
+            
+            document.getElementById('currentTheme').textContent = theme;
+            document.getElementById('dataTheme').textContent = document.documentElement.getAttribute('data-theme');
+            document.getElementById('bgColor').textContent = bgColor;
+            document.getElementById('textColor').textContent = textColor;
+            document.getElementById('localStorageTheme').textContent = localStorageTheme;
+        }
+        
+        // Update on page load
+        setTimeout(updateDebugInfo, 100);
+        
+        // Update when theme changes
+        const observer = new MutationObserver(function(mutations) {
+            mutations.forEach(function(mutation) {
+                if (mutation.type === 'attributes' && mutation.attributeName === 'data-theme') {
+                    setTimeout(updateDebugInfo, 50);
+                }
+            });
+        });
+        
+        observer.observe(document.documentElement, {
+            attributes: true,
+            attributeFilter: ['data-theme']
+        });
+        
+        // Manual theme buttons for testing
+        document.addEventListener('DOMContentLoaded', function() {
+            const lightBtn = document.createElement('button');
+            lightBtn.textContent = 'Force Light Mode';
+            lightBtn.className = 'theme-button';
+            lightBtn.onclick = function() {
+                document.documentElement.setAttribute('data-theme', 'light');
+                localStorage.setItem('theme', 'light');
+                updateDebugInfo();
+            };
+            
+            const darkBtn = document.createElement('button');
+            darkBtn.textContent = 'Force Dark Mode';
+            darkBtn.className = 'theme-button';
+            darkBtn.onclick = function() {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                localStorage.setItem('theme', 'dark');
+                updateDebugInfo();
+            };
+            
+            document.querySelector('.debug-info').appendChild(lightBtn);
+            document.querySelector('.debug-info').appendChild(darkBtn);
+        });
+    </script>
+</body>
+</html>

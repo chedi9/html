@@ -34,49 +34,21 @@ $orders = $orders->fetchAll();
     <meta charset="UTF-8">
     <title><?= __('my_account') ?></title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../beta333.css">
-    <style>
-        .account-container { max-width: 900px; margin: 40px auto; background: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-        .account-tabs { display: flex; gap: 10px; margin-bottom: 24px; }
-        .account-tab { background: #eee; color: #333; border: none; border-radius: 6px 6px 0 0; padding: 10px 24px; cursor: pointer; font-size: 1em; }
-        .account-tab.active { background: var(--primary-color); color: #fff; }
-        .tab-content { background: #fafafa; border-radius: 0 0 10px 10px; padding: 20px; margin-top: -2px; }
-        .orders-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        .orders-table th, .orders-table td { padding: 10px; border-bottom: 1px solid #eee; text-align: center; }
-        .orders-table th { background: #f4f4f4; }
-        .form-group { margin-bottom: 16px; }
-        label { display: block; margin-bottom: 6px; }
-        input[type=text], input[type=email], input[type=password] { width: 100%; padding: 8px; border-radius: 5px; border: 1px solid #ccc; }
-        .save-btn { background: var(--primary-color); color: #fff; border: none; border-radius: 6px; padding: 10px 24px; font-size: 1em; cursor: pointer; }
-        
-        /* Returns and notifications styles */
-        .return-btn { background: var(--secondary-color); color: #fff; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-size: 0.9em; }
-        .return-status { color: #666; font-style: italic; font-size: 0.9em; }
-        
-        .returns-list { display: flex; flex-direction: column; gap: 16px; }
-        .return-item { border: 1px solid #ddd; border-radius: 8px; padding: 16px; background: #f9f9f9; }
-        .return-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-        .return-header h4 { margin: 0; color: #333; }
-        .return-status.pending { color: #f57c00; }
-        .return-status.approved { color: #388e3c; }
-        .return-status.rejected { color: #d32f2f; }
-        .return-status.completed { color: #1976d2; }
-        .return-details p { margin: 8px 0; color: #666; }
-        
-        .notifications-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
-        .unread-badge { background: var(--primary-color); color: white; padding: 4px 8px; border-radius: 12px; font-size: 0.8em; }
-        .view-all-btn { color: var(--primary-color); text-decoration: none; font-weight: 500; }
-        .view-all-btn:hover { text-decoration: underline; }
-        
-        .notifications-list { display: flex; flex-direction: column; gap: 12px; }
-        .notification-item { border: 1px solid #eee; border-radius: 6px; padding: 12px; background: white; }
-        .notification-item.unread { border-left: 4px solid var(--primary-color); background: #f0f8ff; }
-        .notification-title { font-weight: 600; margin-bottom: 4px; color: #333; }
-        .notification-message { color: #666; margin-bottom: 8px; }
-        .notification-time { font-size: 0.8em; color: #999; }
-        
-        .view-all-section { text-align: center; margin-top: 20px; padding-top: 16px; border-top: 1px solid #eee; }
-    </style>
+    <link rel="stylesheet" href="../css/base/_variables.css">
+    <link rel="stylesheet" href="../css/base/_reset.css">
+    <link rel="stylesheet" href="../css/base/_typography.css">
+    <link rel="stylesheet" href="../css/base/_utilities.css">
+    <link rel="stylesheet" href="../css/components/_buttons.css">
+    <link rel="stylesheet" href="../css/components/_forms.css">
+    <link rel="stylesheet" href="../css/components/_cards.css">
+    <link rel="stylesheet" href="../css/components/_navigation.css">
+    <link rel="stylesheet" href="../css/layout/_grid.css">
+    <link rel="stylesheet" href="../css/layout/_sections.css">
+    <link rel="stylesheet" href="../css/layout/_footer.css">
+    <link rel="stylesheet" href="../css/themes/_light.css">
+    <link rel="stylesheet" href="../css/themes/_dark.css">
+    <link rel="stylesheet" href="../css/build.css">
+    <link rel="stylesheet" href="../css/pages/_account.css">
     <script>
     function showTab(tab) {
         // Remove active class from all tabs
@@ -475,7 +447,7 @@ $orders = $orders->fetchAll();
         </div>
         <?php endif; ?>
     </div>
-    <script src="../main.js"></script>
+    <script src="../main.js?v=1.3" defer></script>
     <script>
 if (!localStorage.getItem('cookiesAccepted')) {
   // do nothing, wait for accept
