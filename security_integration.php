@@ -10,11 +10,14 @@ define('SECURITY_DEBUG', false);
 // Include security headers first (before session start)
 require_once 'security_headers.php';
 
-// Set secure cookie parameters before starting session
-SecurityHeaders::setSecureCookieParams();
+// Set security headers immediately (only if headers haven't been sent)
+if (!headers_sent()) {
+    SecurityHeaders::setSecurityHeaders();
+}
 
-// Start session if not already started
+// Set secure cookie parameters before starting session
 if (session_status() === PHP_SESSION_NONE) {
+    SecurityHeaders::setSecureCookieParams();
     session_start();
 }
 

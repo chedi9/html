@@ -1,5 +1,8 @@
 <?php
 // Security and compatibility headers
+require_once 'security_integration.php';
+
+// Security and compatibility headers
 header('Content-Type: text/html; charset=utf-8');
 header('Cache-Control: public, max-age=3600');
 header('X-Content-Type-Options: nosniff');
@@ -7,6 +10,7 @@ header("Content-Security-Policy: frame-ancestors 'self'");
 session_start();
 require 'db.php';
 require 'lang.php';
+require_once 'includes/thumbnail_helper.php';
 
 // Get filter parameters
 $name = isset($_GET['name']) ? trim($_GET['name']) : '';
@@ -96,38 +100,79 @@ if ($rating) {
     $params[] = $rating;
 }
 
-// Always prioritize disabled sellers and priority products
-if ($sort === 'price_asc') {
-    $sql .= ' ORDER BY p.is_priority_product DESC, ds.priority_level DESC, p.price ASC';
-} elseif ($sort === 'price_desc') {
-    $sql .= ' ORDER BY p.is_priority_product DESC, ds.priority_level DESC, p.price DESC';
-} elseif ($sort === 'newest') {
-    $sql .= ' ORDER BY p.is_priority_product DESC, ds.priority_level DESC, p.created_at DESC';
-} elseif ($sort === 'rating') {
-    $sql .= ' ORDER BY p.is_priority_product DESC, ds.priority_level DESC, avg_rating DESC, review_count DESC';
-} elseif ($sort === 'popularity') {
-    $sql .= ' ORDER BY s.is_disabled DESC, review_count DESC, avg_rating DESC';
-} else {
-    $sql .= ' ORDER BY s.is_disabled DESC, p.created_at DESC';
+// Add sorting
+switch ($sort) {
+    case 'price_low':
+        $sql .= ' ORDER BY p.price ASC';
+        break;
+    case 'price_high':
+        $sql .= ' ORDER BY p.price DESC';
+        break;
+    case 'name':
+        $sql .= ' ORDER BY p.name ASC';
+        break;
+    case 'rating':
+        $sql .= ' ORDER BY avg_rating DESC';
+        break;
+    default:
+        $sql .= ' ORDER BY p.created_at DESC';
 }
 
+// Execute query
 $stmt = $pdo->prepare($sql);
 $stmt->execute($params);
 $products = $stmt->fetchAll();
 
-// AJAX: Only output product grid if requested
-if (isset($_GET['ajax']) && $_GET['ajax'] == '1') {
+// Handle AJAX requests for live search
+if (isset($_GET['ajax']) && $_GET['ajax'] === '1') {
+    header('Content-Type: application/json');
+    $results = [];
+    foreach ($products as $product) {
+        $prod_name = $product['name'];
+        if ($lang === 'ar' && !empty($product['name_ar'])) $prod_name = $product['name_ar'];
+        elseif ($lang === 'en' && !empty($product['name_en'])) $prod_name = $product['name_en'];
+        elseif ($lang === 'fr' && !empty($product['name_fr'])) $prod_name = $product['name_fr'];
+        
+        $results[] = [
+            'id' => $product['id'],
+            'name' => $prod_name,
+            'price' => $product['price'],
+            'image' => $product['image'],
+            'avg_rating' => $product['avg_rating'],
+            'review_count' => $product['review_count'],
+            'stock' => $product['stock'],
+            'disabled_seller_name' => $product['disabled_seller_name'],
+            'is_priority_product' => !empty($product['disabled_seller_id'])
+        ];
+    }
+    echo json_encode($results);
+    exit;
+}
+
+// Check if user is logged in for wishlist functionality
+$user_id = $_SESSION['user_id'] ?? null;
+$wishlist_items = [];
+if ($user_id) {
+    $wishlist_stmt = $pdo->prepare("SELECT product_id FROM wishlist WHERE user_id = ?");
+    $wishlist_stmt->execute([$user_id]);
+    $wishlist_items = $wishlist_stmt->fetchAll(PDO::FETCH_COLUMN);
+}
+
+// Handle AJAX results display
+if (isset($_GET['display_results']) && $_GET['display_results'] === '1') {
     ?>
     <div class="product-grid">
-        <?php if ($products): foreach ($products as $product): ?>
-        <?php $prod_name = $product['name_' . $lang] ?? $product['name']; ?>
+        <?php if (!empty($products)): ?>
+        <?php foreach ($products as $product): ?>
+        <?php 
+        $prod_name = $product['name'];
+        if ($lang === 'ar' && !empty($product['name_ar'])) $prod_name = $product['name_ar'];
+        elseif ($lang === 'en' && !empty($product['name_en'])) $prod_name = $product['name_en'];
+        elseif ($lang === 'fr' && !empty($product['name_fr'])) $prod_name = $product['name_fr'];
+        ?>
         <div class="product-card">
-            <?php if (isset($_SESSION['user_id'])): 
-                // Check if product is in user's wishlist
-                $wishlist_check = $pdo->prepare('SELECT 1 FROM wishlist WHERE user_id = ? AND product_id = ?');
-                $wishlist_check->execute([$_SESSION['user_id'], $product['id']]);
-                $in_wishlist = $wishlist_check->fetch();
-            ?>
+            <?php if ($user_id): ?>
+                <?php $in_wishlist = in_array($product['id'], $wishlist_items); ?>
                 <button class="wishlist-btn" data-product-id="<?php echo $product['id']; ?>" title="<?= __('add_to_favorites') ?>" style="position: absolute; top: 12px; left: 12px; z-index: 3; background: none; border: none; cursor: pointer; font-size: 1.5em; color: <?= $in_wishlist ? '#F44336' : '#FFD600' ?>;"><?= $in_wishlist ? '★' : '☆' ?></button>
             <?php endif; ?>
             <?php if (!empty($product['disabled_seller_name'])): ?>
@@ -141,7 +186,17 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == '1') {
             <?php endif; ?>
             <a href="product.php?id=<?php echo $product['id']; ?>">
             <?php if ($product['image']): ?>
-                <img src="uploads/<?php echo htmlspecialchars($product['image']); ?>" alt="<?= __('product_image') ?>" loading="lazy">
+                <?php 
+                $optimized_image = get_optimized_image('uploads/' . $product['image'], 'card');
+                ?>
+                <img src="<?php echo $optimized_image['src']; ?>" 
+                     srcset="<?php echo $optimized_image['srcset']; ?>" 
+                     sizes="<?php echo $optimized_image['sizes']; ?>"
+                     alt="<?= __('product_image') ?>" 
+                     loading="lazy"
+                     width="220" 
+                     height="140"
+                     onload="this.classList.add('loaded');">
             <?php endif; ?>
             <h3><?php echo htmlspecialchars($prod_name); ?></h3>
             </a>
@@ -179,8 +234,33 @@ $brands = $pdo->query("SELECT DISTINCT s.store_name FROM sellers s JOIN products
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= __('advanced_search') ?></title>
-    <link rel="stylesheet" href="beta333.css">
+    <title>البحث في المنتجات</title>
+    
+    <!-- CSS Files - Load in correct order -->
+    <link rel="stylesheet" href="css/base/_variables.css">
+    <link rel="stylesheet" href="css/base/_reset.css">
+    <link rel="stylesheet" href="css/base/_typography.css">
+    <link rel="stylesheet" href="css/base/_utilities.css">
+    <link rel="stylesheet" href="css/components/_buttons.css">
+    <link rel="stylesheet" href="css/components/_forms.css">
+    <link rel="stylesheet" href="css/components/_cards.css">
+    <link rel="stylesheet" href="css/components/_navigation.css">
+    <link rel="stylesheet" href="css/layout/_grid.css">
+    <link rel="stylesheet" href="css/layout/_sections.css">
+    <link rel="stylesheet" href="css/layout/_footer.css">
+    <link rel="stylesheet" href="css/themes/_light.css">
+    <link rel="stylesheet" href="css/themes/_dark.css">
+    <link rel="stylesheet" href="css/build.css">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Amiri&display=swap" rel="stylesheet">
+    
+    <!-- JavaScript -->
+    <script src="main.js?v=1.4" defer></script>
+    
     <?php if (!empty($_SESSION['is_mobile'])): ?>
     <link rel="stylesheet" href="mobile.css">
     <?php endif; ?>
@@ -213,130 +293,93 @@ $brands = $pdo->query("SELECT DISTINCT s.store_name FROM sellers s JOIN products
 <body>
 <?php
 if (session_status() === PHP_SESSION_NONE) session_start();
-if (!isset($_SESSION['is_mobile'])) {
-    $is_mobile = preg_match('/android|iphone|ipad|ipod|blackberry|windows phone|opera mini|mobile/i', $_SERVER['HTTP_USER_AGENT']);
-    $_SESSION['is_mobile'] = $is_mobile ? true : false;
-}
 ?>
-<?php if (isset($_SESSION['flash_message'])): ?>
-    <div class="alert-success" id="cartAlert">
-        <?php echo $_SESSION['flash_message']; unset($_SESSION['flash_message']); ?>
-        <button class="close-btn" onclick="document.getElementById('cartAlert').style.display='none'">&times;</button>
-    </div>
-<?php endif; ?>
-<?php
-$categories = $pdo->query("SELECT * FROM categories ORDER BY id ASC")->fetchAll();
-?>
-<div class="header-search-row" style="margin: 32px auto 24px auto; max-width: 480px;">
-  <form action="search.php" method="get" class="central-search-bar" style="display:flex;align-items:center;gap:0;background:#fff;border-radius:14px;box-shadow:0 2px 8px #00BFAE11;padding:0 0 0 0;">
-    <div class="search-input-container">
-        <input type="text" id="liveSearchInput" name="name" placeholder="<?= __('search_placeholder') ?>" autocomplete="off" style="width:100%;padding:14px 18px;border:none;border-radius:14px 0 0 14px;font-size:1.13em;outline:none;" value="<?php echo htmlspecialchars($name); ?>">
-        <div id="autocompleteSuggestions" class="autocomplete-suggestions" style="display:none;"></div>
-    </div>
-    <button type="submit" style="background:var(--primary-color);color:#fff;border:none;border-radius:0 14px 14px 0;padding:0 22px;font-size:1.2em;cursor:pointer;">🔍</button>
-    <button type="button" id="toggleFilters" style="background:none;border:none;font-size:1.3em;padding:0 12px;cursor:pointer;" title="<?= __('filter_toggle') ?>">🧰</button>
-  </form>
-</div>
 
-<!-- Filter Tags -->
-<div id="filterTags" class="filter-tags" style="max-width:480px;margin:0 auto 16px auto;justify-content:center;">
-    <?php if ($name): ?>
-        <span class="filter-tag">البحث: <?= htmlspecialchars($name) ?> <span class="remove" onclick="removeFilter('name')">×</span></span>
-    <?php endif; ?>
-    <?php if ($category_id): 
-        $cat_name = '';
-        foreach ($categories as $cat) {
-            if ($cat['id'] == $category_id) {
-                $cat_name = $cat['name_' . $lang] ?? $cat['name'];
-                break;
-            }
-        }
-    ?>
-        <span class="filter-tag">التصنيف: <?= htmlspecialchars($cat_name) ?> <span class="remove" onclick="removeFilter('category_id')">×</span></span>
-    <?php endif; ?>
-    <?php if ($min_price || $max_price): ?>
-        <span class="filter-tag">السعر: <?= $min_price ? $min_price : '0' ?> - <?= $max_price ? $max_price : '∞' ?> <span class="remove" onclick="removeFilter('price')">×</span></span>
-    <?php endif; ?>
-    <?php if ($brand): ?>
-        <span class="filter-tag">العلامة التجارية: <?= htmlspecialchars($brand) ?> <span class="remove" onclick="removeFilter('brand')">×</span></span>
-    <?php endif; ?>
-    <?php if ($rating): ?>
-        <span class="filter-tag">التقييم: <?= $rating ?>+ نجوم <span class="remove" onclick="removeFilter('rating')">×</span></span>
-    <?php endif; ?>
-    <?php if ($in_stock === '1'): ?>
-        <span class="filter-tag">متوفر فقط <span class="remove" onclick="removeFilter('in_stock')">×</span></span>
-    <?php endif; ?>
-</div>
-
-<div id="filtersPanel" style="display:none;max-width:480px;margin:0 auto 24px auto;background:#fff;border-radius:14px;box-shadow:0 2px 8px #00BFAE11;padding:18px 18px 8px 18px;">
-  <form action="search.php" method="get" style="display:flex;flex-wrap:wrap;gap:16px;align-items:center;">
-    <select name="category_id" style="padding:10px;border-radius:8px;border:1.5px solid #eee;min-width:140px;">
-      <option value="">كل التصنيفات</option>
-      <?php foreach ($categories as $cat): ?>
-        <?php $cat_name = $cat['name_' . $lang] ?? $cat['name']; ?>
-        <option value="<?= $cat['id'] ?>" <?php if ($category_id == $cat['id']) echo 'selected'; ?>><?= htmlspecialchars($cat_name) ?></option>
-      <?php endforeach; ?>
-    </select>
-    
-    <select name="brand" style="padding:10px;border-radius:8px;border:1.5px solid #eee;min-width:140px;">
-      <option value="">كل العلامات التجارية</option>
-      <?php foreach ($brands as $brand_item): ?>
-        <option value="<?= htmlspecialchars($brand_item['store_name']) ?>" <?php if ($brand == $brand_item['store_name']) echo 'selected'; ?>><?= htmlspecialchars($brand_item['store_name']) ?></option>
-      <?php endforeach; ?>
-    </select>
-    
-    <input type="number" name="min_price" placeholder="<?= __('min_price_placeholder') ?>" min="0" value="<?php echo htmlspecialchars($min_price); ?>" style="padding:10px;border-radius:8px;border:1.5px solid #eee;max-width:110px;">
-    <input type="number" name="max_price" placeholder="<?= __('max_price_placeholder') ?>" min="0" value="<?php echo htmlspecialchars($max_price); ?>" style="padding:10px;border-radius:8px;border:1.5px solid #eee;max-width:110px;">
-    
-    <select name="rating" style="padding:10px;border-radius:8px;border:1.5px solid #eee;min-width:120px;">
-      <option value="">أي تقييم</option>
-      <option value="5" <?php if ($rating == 5) echo 'selected'; ?>>5 نجوم</option>
-      <option value="4" <?php if ($rating == 4) echo 'selected'; ?>>4+ نجوم</option>
-      <option value="3" <?php if ($rating == 3) echo 'selected'; ?>>3+ نجوم</option>
-      <option value="2" <?php if ($rating == 2) echo 'selected'; ?>>2+ نجوم</option>
-      <option value="1" <?php if ($rating == 1) echo 'selected'; ?>>1+ نجوم</option>
-    </select>
-    
-    <select name="in_stock" style="padding:10px;border-radius:8px;border:1.5px solid #eee;min-width:120px;">
-      <option value="">جميع المنتجات</option>
-      <option value="1" <?php if ($in_stock === '1') echo 'selected'; ?>>متوفر فقط</option>
-    </select>
-    
-    <select name="sort" style="padding:10px;border-radius:8px;border:1.5px solid #eee;min-width:120px;">
-      <option value=""><?= __('sort_by') ?>...</option>
-      <option value="newest" <?php if ($sort === 'newest') echo 'selected'; ?>><?= __('newest_first') ?></option>
-      <option value="price_asc" <?php if ($sort === 'price_asc') echo 'selected'; ?>><?= __('lowest_price') ?></option>
-      <option value="price_desc" <?php if ($sort === 'price_desc') echo 'selected'; ?>><?= __('highest_price') ?></option>
-      <option value="rating" <?php if ($sort === 'rating') echo 'selected'; ?>>الأعلى تقييماً</option>
-      <option value="popularity" <?php if ($sort === 'popularity') echo 'selected'; ?>>الأكثر شعبية</option>
-    </select>
-    
-    <button type="submit" style="background:var(--primary-color);color:#fff;border:none;border-radius:8px;padding:10px 24px;font-size:1em;"><?= __('apply_filters') ?></button>
-    <button type="button" id="closeFilters" style="background:none;border:none;font-size:1.2em;padding:0 10px;cursor:pointer;">✖</button>
-  </form>
-</div>
+<?php include 'header.php'; ?>
 
 <div class="search-container">
-    <h2><?= __('advanced_search') ?></h2>
+    <h2><?= __('search_products') ?></h2>
     
-    <!-- Results Info -->
-    <div class="results-info">
-        تم العثور على <?= count($products) ?> منتج<?= count($products) != 1 ? 'ات' : '' ?>
-        <?php if ($name || $category_id || $brand || $rating || $in_stock): ?>
-            مع الفلاتر المطبقة
+    <!-- Search Form -->
+    <form class="search-form" method="GET" action="">
+        <div class="search-input-container">
+            <input type="text" id="liveSearchInput" name="name" value="<?= htmlspecialchars($name) ?>" placeholder="<?= __('search_placeholder') ?>" autocomplete="off">
+            <div id="autocompleteSuggestions" class="autocomplete-suggestions" style="display: none;"></div>
+        </div>
+        
+        <select name="category_id">
+            <option value=""><?= __('all_categories') ?></option>
+            <?php foreach ($brands as $brand_item): ?>
+                <option value="<?= $brand_item['store_name'] ?>" <?= $brand === $brand_item['store_name'] ? 'selected' : '' ?>>
+                    <?= htmlspecialchars($brand_item['store_name']) ?>
+                </option>
+            <?php endforeach; ?>
+        </select>
+        
+        <input type="number" name="min_price" value="<?= $min_price ?>" placeholder="<?= __('min_price') ?>" step="0.01">
+        <input type="number" name="max_price" value="<?= $max_price ?>" placeholder="<?= __('max_price') ?>" step="0.01">
+        
+        <select name="in_stock">
+            <option value=""><?= __('all_products') ?></option>
+            <option value="1" <?= $in_stock === '1' ? 'selected' : '' ?>><?= __('in_stock_only') ?></option>
+        </select>
+        
+        <select name="priority">
+            <option value=""><?= __('all_products') ?></option>
+            <option value="disabled_sellers" <?= $priority === 'disabled_sellers' ? 'selected' : '' ?>><?= __('disabled_sellers_only') ?></option>
+        </select>
+        
+        <select name="sort">
+            <option value="newest" <?= $sort === 'newest' ? 'selected' : '' ?>><?= __('newest') ?></option>
+            <option value="price_low" <?= $sort === 'price_low' ? 'selected' : '' ?>><?= __('price_low_to_high') ?></option>
+            <option value="price_high" <?= $sort === 'price_high' ? 'selected' : '' ?>><?= __('price_high_to_low') ?></option>
+            <option value="name" <?= $sort === 'name' ? 'selected' : '' ?>><?= __('name') ?></option>
+            <option value="rating" <?= $sort === 'rating' ? 'selected' : '' ?>><?= __('rating') ?></option>
+        </select>
+        
+        <button type="submit"><?= __('search') ?></button>
+    </form>
+    
+    <!-- Filter Tags -->
+    <div class="filter-tags">
+        <?php if ($name): ?>
+            <span class="filter-tag">
+                <?= __('name') ?>: <?= htmlspecialchars($name) ?>
+                <span class="remove" onclick="removeFilter('name')">×</span>
+            </span>
+        <?php endif; ?>
+        <?php if ($min_price || $max_price): ?>
+            <span class="filter-tag">
+                <?= __('price') ?>: <?= $min_price ? $min_price : '0' ?> - <?= $max_price ? $max_price : '∞' ?>
+                <span class="remove" onclick="removeFilter('price')">×</span>
+            </span>
+        <?php endif; ?>
+        <?php if ($priority === 'disabled_sellers'): ?>
+            <span class="filter-tag">
+                <?= __('disabled_sellers_only') ?>
+                <span class="remove" onclick="removeFilter('priority')">×</span>
+            </span>
         <?php endif; ?>
     </div>
     
+    <!-- Results Info -->
+    <div class="results-info">
+        <?= sprintf(__('found_products'), count($products)) ?>
+    </div>
+    
+    <!-- Product Grid -->
     <div class="product-grid">
-        <?php if ($products): foreach ($products as $product): ?>
-        <?php $prod_name = $product['name_' . $lang] ?? $product['name']; ?>
+        <?php if (!empty($products)): ?>
+        <?php foreach ($products as $product): ?>
+        <?php 
+        $prod_name = $product['name'];
+        if ($lang === 'ar' && !empty($product['name_ar'])) $prod_name = $product['name_ar'];
+        elseif ($lang === 'en' && !empty($product['name_en'])) $prod_name = $product['name_en'];
+        elseif ($lang === 'fr' && !empty($product['name_fr'])) $prod_name = $product['name_fr'];
+        ?>
         <div class="product-card">
-            <?php if (isset($_SESSION['user_id'])): 
-                // Check if product is in user's wishlist
-                $wishlist_check = $pdo->prepare('SELECT 1 FROM wishlist WHERE user_id = ? AND product_id = ?');
-                $wishlist_check->execute([$_SESSION['user_id'], $product['id']]);
-                $in_wishlist = $wishlist_check->fetch();
-            ?>
+            <?php if ($user_id): ?>
+                <?php $in_wishlist = in_array($product['id'], $wishlist_items); ?>
                 <button class="wishlist-btn" data-product-id="<?php echo $product['id']; ?>" title="<?= __('add_to_favorites') ?>" style="position: absolute; top: 12px; left: 12px; z-index: 3; background: none; border: none; cursor: pointer; font-size: 1.5em; color: <?= $in_wishlist ? '#F44336' : '#FFD600' ?>;"><?= $in_wishlist ? '★' : '☆' ?></button>
             <?php endif; ?>
             <?php if (!empty($product['disabled_seller_name'])): ?>
@@ -350,7 +393,17 @@ $categories = $pdo->query("SELECT * FROM categories ORDER BY id ASC")->fetchAll(
             <?php endif; ?>
             <a href="product.php?id=<?php echo $product['id']; ?>">
             <?php if ($product['image']): ?>
-                <img src="uploads/<?php echo htmlspecialchars($product['image']); ?>" alt="<?= __('product_image') ?>" loading="lazy">
+                <?php 
+                $optimized_image = get_optimized_image('uploads/' . $product['image'], 'card');
+                ?>
+                <img src="<?php echo $optimized_image['src']; ?>" 
+                     srcset="<?php echo $optimized_image['srcset']; ?>" 
+                     sizes="<?php echo $optimized_image['sizes']; ?>"
+                     alt="<?= __('product_image') ?>" 
+                     loading="lazy"
+                     width="220" 
+                     height="140"
+                     onload="this.classList.add('loaded');">
             <?php endif; ?>
             <h3><?php echo htmlspecialchars($prod_name); ?></h3>
             </a>
@@ -378,7 +431,7 @@ $categories = $pdo->query("SELECT * FROM categories ORDER BY id ASC")->fetchAll(
     </div>
 </div>
 
-<script src="main.js"></script>
+<script src="main.js?v=1.4"></script>
 <script>
 // Filter toggle functionality
 document.getElementById('toggleFilters').onclick = function() {
@@ -448,89 +501,35 @@ document.addEventListener('click', function(e) {
 });
 
 // Debounce function
-function debounce(fn, delay) {
-  let timer = null;
-  return function(...args) {
-    clearTimeout(timer);
-    timer = setTimeout(() => fn.apply(this, args), delay);
-  };
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
 }
 
-const searchForm = document.querySelector('.central-search-bar');
-const filtersPanel = document.getElementById('filtersPanel');
-const productGrid = document.querySelector('.product-grid');
-
-function getFilters() {
-  const data = new FormData(searchForm);
-  if (filtersPanel) {
-    Array.from(filtersPanel.querySelectorAll('input, select')).forEach(el => {
-      if (el.name && el.value) data.set(el.name, el.value);
-    });
-  }
-  return new URLSearchParams(data).toString();
-}
-
+// Fetch results function
 function fetchResults() {
-  if (!productGrid) return;
-  productGrid.innerHTML = '<div style="text-align:center;padding:40px;">جاري التحميل...</div>';
-  fetch('search.php?' + getFilters() + '&ajax=1')
-    .then(res => res.text())
-    .then(html => { 
-        productGrid.innerHTML = html;
-        // Update results count
-        const resultsCount = productGrid.querySelectorAll('.product-card').length;
-        const resultsInfo = document.querySelector('.results-info');
-        if (resultsInfo) {
-            resultsInfo.textContent = `تم العثور على ${resultsCount} منتج${resultsCount != 1 ? 'ات' : ''}`;
-        }
-    })
-    .catch(error => {
-        console.error('Error fetching results:', error);
-        productGrid.innerHTML = '<div style="text-align:center;padding:40px;color:red;">حدث خطأ في تحميل النتائج</div>';
-    });
-}
-
-const debouncedFetch = debounce(fetchResults, 300);
-
-if (searchForm) {
-    searchForm.addEventListener('input', debouncedFetch);
-    searchForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-        fetchResults();
-    });
-}
-
-if (filtersPanel) {
-    filtersPanel.addEventListener('change', fetchResults);
-}
-
-// Google Analytics
-if (!localStorage.getItem('cookiesAccepted')) {
-  // do nothing, wait for accept
-} else {
-  var gaScript = document.createElement('script');
-  gaScript.src = 'https://www.googletagmanager.com/gtag/js?id=G-PVP8CCFQPL';
-  gaScript.async = true;
-  document.head.appendChild(gaScript);
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-PVP8CCFQPL');
-}
-
-var acceptBtn = document.getElementById('acceptCookiesBtn');
-if (acceptBtn) {
-  acceptBtn.addEventListener('click', function() {
-    var gaScript = document.createElement('script');
-    gaScript.src = 'https://www.googletagmanager.com/gtag/js?id=G-PVP8CCFQPL';
-    gaScript.async = true;
-    document.head.appendChild(gaScript);
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-PVP8CCFQPL');
-  });
+    const form = document.querySelector('.search-form');
+    const formData = new FormData(form);
+    const params = new URLSearchParams(formData);
+    
+    fetch('search.php?display_results=1&' + params.toString())
+        .then(response => response.text())
+        .then(html => {
+            document.querySelector('.product-grid').innerHTML = html;
+        })
+        .catch(error => {
+            console.error('Error fetching results:', error);
+        });
 }
 </script>
+
+<?php include 'footer.php'; ?>
 </body>
 </html> 

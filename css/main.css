@@ -8,11 +8,15 @@
 @import 'base/_typography.css';
 @import 'base/_utilities.css';
 
+/* Import Theme Controller (must be first) */
+@import 'themes/_theme-controller.css';
+
 /* Import Component Files */
 @import 'components/_buttons.css';
 @import 'components/_forms.css';
 @import 'components/_cards.css';
 @import 'components/_navigation.css';
+@import 'components/_reviews.css';
 
 /* Import Layout Files */
 @import 'layout/_grid.css';
@@ -22,6 +26,12 @@
 /* Import Phase 4 - Advanced Features */
 @import 'pages/_animations.css';
 @import 'pages/_accessibility.css';
+@import 'pages/_auth.css';
+@import 'pages/_terms.css';
+@import 'pages/_faq.css';
+@import 'pages/_product-mobile.css';
+@import 'pages/_forms-mobile.css';
+@import 'components/_cookie-consent.css';
 
 /* ========================================
    Global Styles
@@ -33,6 +43,8 @@
   max-width: var(--container-max-width);
   margin: 0 auto;
   padding: 0 var(--space-4);
+  background-color: var(--color-background);
+  color: var(--color-text);
 }
 
 .container--fluid {
@@ -54,6 +66,7 @@
 /* Smooth page transitions */
 .page-transition {
   animation: fadeIn 0.3s ease-out;
+  background-color: var(--color-background);
 }
 
 @keyframes fadeIn {
@@ -74,9 +87,9 @@
 /* Skeleton loading */
 .skeleton {
   background: linear-gradient(90deg, 
-    var(--color-gray-200) 25%, 
-    var(--color-gray-300) 50%, 
-    var(--color-gray-200) 75%
+    var(--color-border-light) 25%, 
+    var(--color-border) 50%, 
+    var(--color-border-light) 75%
   );
   background-size: 200% 100%;
   animation: loading 1.5s infinite;
@@ -94,27 +107,44 @@
 
 /* Enhanced focus indicators */
 :focus-visible {
-  outline: 2px solid var(--color-primary-500);
+  outline: 2px solid var(--color-input-focus);
   outline-offset: 2px;
   border-radius: var(--border-radius-sm);
 }
 
 /* ========================================
-   Accessibility Improvements
+   Body and HTML
    ======================================== */
 
-/* Skip to main content */
+html {
+  background-color: var(--color-background);
+  color: var(--color-text);
+  transition: background-color var(--transition-medium), color var(--transition-medium);
+}
+
+body {
+  background-color: var(--color-background);
+  color: var(--color-text);
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-base);
+  transition: background-color var(--transition-medium), color var(--transition-medium);
+}
+
+/* ========================================
+   Skip Links
+   ======================================== */
+
 .skip-link {
   position: absolute;
   top: -40px;
   left: 6px;
   background: var(--color-primary-600);
-  color: var(--color-white);
-  padding: var(--space-3) var(--space-4);
-  border-radius: var(--border-radius-md);
+  color: white;
+  padding: 8px;
   text-decoration: none;
-  font-weight: var(--font-weight-medium);
-  z-index: var(--z-index-fixed);
+  border-radius: var(--border-radius-sm);
+  z-index: 1000;
   transition: top var(--transition-fast);
 }
 
@@ -122,7 +152,10 @@
   top: 6px;
 }
 
-/* Screen reader only */
+/* ========================================
+   Screen Reader Only
+   ======================================== */
+
 .sr-only {
   position: absolute;
   width: 1px;
@@ -136,7 +169,7 @@
 }
 
 /* ========================================
-   Reduced Motion Support
+   Accessibility Enhancements
    ======================================== */
 
 @media (prefers-reduced-motion: reduce) {
@@ -146,21 +179,17 @@
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
   
   .skeleton {
     animation: none;
-    background: var(--color-gray-200);
   }
 }
 
-/* ========================================
-   High Contrast Mode
-   ======================================== */
-
 @media (prefers-contrast: high) {
   :focus-visible {
-    outline: 3px solid var(--color-primary-600);
+    outline: 3px solid var(--color-text);
     outline-offset: 3px;
   }
 }
@@ -174,79 +203,74 @@
   right: 6px;
 }
 
+[dir="rtl"] .skip-link:focus {
+  left: auto;
+  right: 6px;
+}
+
 /* ========================================
    Print Styles
    ======================================== */
 
 @media print {
   .skeleton,
-  .toast-container,
-  .modal-backdrop {
+  .page-transition {
     display: none !important;
   }
   
   * {
-    animation: none !important;
-    transition: none !important;
+    background: transparent !important;
+    color: black !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
   }
   
-  /* Ensure good contrast in print */
   * {
-    color: black !important;
-    background: white !important;
+    page-break-inside: avoid;
   }
-}
-
-/* ========================================
-   Legacy Support
-   ======================================== */
-
-/* Fallback for older browsers */
-@supports not (display: grid) {
+  
+  * {
+    orphans: 3;
+    widows: 3;
+  }
+  
   .grid {
-    display: flex;
-    flex-wrap: wrap;
+    display: block !important;
   }
   
   .grid > * {
-    flex: 1 1 300px;
+    display: block !important;
+    page-break-inside: avoid;
   }
-}
-
-@supports not (display: flex) {
+  
   .flex {
-    display: block;
+    display: block !important;
   }
   
   .flex > * {
-    display: block;
-    margin-bottom: var(--space-4);
+    display: block !important;
   }
 }
 
 /* ========================================
-   Feature Detection
+   Progressive Enhancement
    ======================================== */
 
-/* Grid support */
 .supports-grid .grid {
   display: grid;
 }
 
-/* Flexbox support */
 .supports-flexbox .flex {
   display: flex;
 }
 
-/* Custom properties support */
 .supports-custom-properties {
-  /* Custom properties are already working */
+  /* Custom properties are supported */
 }
 
-/* Intersection Observer support */
 .supports-intersection-observer img[loading="lazy"] {
   opacity: 0;
-  transition: opacity var(--transition-fast);
+  transition: opacity var(--transition-medium);
 }
 
 .supports-intersection-observer img[loading="lazy"].loaded {
@@ -254,41 +278,41 @@
 }
 
 /* ========================================
-   Performance Optimizations
+   Enhanced Interactions
    ======================================== */
 
-/* Optimize paint and layout */
 .btn,
-.form__input,
-.form__textarea,
-.form__select {
-  will-change: transform;
+.card,
+.nav__link {
+  transition: all var(--transition-fast);
 }
 
-/* Optimize animations */
 .card--hover,
-.btn--hover,
-.image--hover {
-  will-change: transform;
+.product-card {
+  transition: transform var(--transition-medium), box-shadow var(--transition-medium);
+}
+
+.card--hover:hover,
+.product-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
 }
 
 /* ========================================
-   Mobile Optimizations
+   Responsive Enhancements
    ======================================== */
 
 @media (max-width: 768px) {
-  /* Optimize touch targets */
   .btn,
-  .form__input,
-  .form__textarea,
-  .form__select {
-    min-height: 44px;
+  .card,
+  .nav__link {
+    transition: none;
   }
   
-  /* Reduce animations on mobile for better performance */
   .card--hover:hover,
-  .btn--hover:hover {
+  .product-card:hover {
     transform: none;
+    box-shadow: var(--shadow-md);
   }
 }
 

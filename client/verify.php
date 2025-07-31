@@ -53,14 +53,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt = $pdo->prepare('INSERT INTO sellers (user_id, store_name) VALUES (?, ?)');
             $stmt->execute([$user_id, $pending['name'] . "'s Store"]);
         }
-        
         // Send welcome email based on user type
         if (!empty($pending['is_seller'])) {
             send_welcome_email_seller($pending['email'], $pending['name']);
         } else {
             send_welcome_email_client($pending['email'], $pending['name']);
         }
-        
         unset($_SESSION['pending_registration']);
         unset($_SESSION['pending_email']);
         $success = true;
@@ -68,69 +66,87 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 ?>
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="<?php echo $lang; ?>" dir="<?php echo $lang === 'ar' ? 'rtl' : 'ltr'; ?>" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <title><?= __('verify_email') ?></title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../beta333.css">
-    <style>
-        .verify-container { max-width: 400px; margin: 80px auto; background: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-        .verify-container h2 { text-align: center; margin-bottom: 20px; }
-        .verify-container label { display: block; margin-bottom: 8px; }
-        .verify-container input { width: 100%; padding: 10px; margin-bottom: 15px; border-radius: 5px; border: 1px solid #ccc; }
-        .verify-container button { width: 100%; padding: 10px; background: var(--primary-color); color: #fff; border: none; border-radius: 5px; font-size: 1em; }
-        .verify-container .error { color: red; text-align: center; margin-bottom: 10px; }
-        .verify-container .success { color: green; text-align: center; margin-bottom: 10px; }
-        .verify-container .info { color: #1A237E; text-align: center; margin-bottom: 10px; }
-        .resend-link { text-align: center; margin-top: 10px; }
-    </style>
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="../css/pages/_auth.css">
+    <link rel="icon" type="image/x-icon" href="../favicon.ico">
+    <link href="https://fonts.googleapis.com/css2?family=Amiri&display=swap" rel="stylesheet">
+    <script src="../main.js?v=1.5" defer></script>
 </head>
 <body>
-    <div class="verify-container">
-        <h2><?= __('verify_email') ?></h2>
-        <?php if ($resend_msg): ?>
-            <div class="info"><?php echo $resend_msg; ?></div>
-        <?php endif; ?>
-        <?php if ($error): ?>
-            <div class="error"><?php echo $error; ?></div>
-        <?php elseif ($success): ?>
-            <div class="success"><?= __('email_verified') ?></div>
-            <div style="text-align:center;margin-top:16px;"><a href="login.php" class="btn"><?= __('login') ?></a></div>
-        <?php else: ?>
-        <form method="post" autocomplete="off">
-            <label for="code"><?= __('enter_verification_code') ?>:</label>
-            <input type="text" id="code" name="code" required pattern="[0-9]{6}" maxlength="6" autofocus autocomplete="one-time-code">
-            <button type="submit"><?= __('verify') ?></button>
-        </form>
-        <div class="resend-link">
-            <a href="?resend=1" id="resendLink" style="pointer-events:none;opacity:0.5;">إعادة إرسال الرمز؟ (<span id="timer">60</span>)</a>
+    <section class="auth-section">
+        <div class="auth-container">
+            <div class="auth-card">
+                <div class="auth-header">
+                    <h1 class="auth-title"><?= __('verify_email') ?></h1>
+                    <p class="auth-subtitle"><?php echo sprintf(__('verification_code_sent_to'), '<b>' . htmlspecialchars($email) . '</b>'); ?></p>
+                </div>
+                <?php if ($resend_msg): ?>
+                    <div class="alert alert--info"><?php echo $resend_msg; ?></div>
+                <?php endif; ?>
+                <?php if ($error): ?>
+                    <div class="alert alert--danger"><?php echo $error; ?></div>
+                <?php elseif ($success): ?>
+                    <div class="alert alert--success"><?= __('email_verified') ?></div>
+                    <div class="auth-links" style="text-align:center;margin-top:16px;">
+                        <a href="login.php" class="btn btn--primary btn--full"><?= __('login') ?></a>
+                    </div>
+                <?php else: ?>
+                <form method="post" class="auth-form" autocomplete="off">
+                    <div class="form-group">
+                        <label for="code" class="form-label"><?= __('enter_verification_code') ?></label>
+                        <div class="form-input-wrapper">
+                            <input type="text" id="code" name="code" class="form-input" required pattern="[0-9]{6}" maxlength="6" autofocus autocomplete="one-time-code">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn--primary btn--full"><?= __('verify') ?></button>
+                </form>
+                <div class="auth-links resend-link">
+                    <a href="?resend=1" id="resendLink" class="auth-link" style="pointer-events:none;opacity:0.5;">
+                        <?= __('resend_code') ?> (<span id="timer">60</span>)
+                    </a>
+                </div>
+                <?php endif; ?>
+                <div class="auth-consent-notice">
+                    <p class="consent-text">
+                        <?php echo __('by_logging_in_you_agree'); ?> 
+                        <a href="../terms.php" class="consent-link"><?php echo __('terms_and_conditions'); ?></a>, 
+                        <a href="../privacy.php" class="consent-link"><?php echo __('privacy_policy'); ?></a>, 
+                        <?php echo __('and'); ?> 
+                        <a href="../cookies.php" class="consent-link"><?php echo __('cookie_policy'); ?></a>.
+                    </p>
+                </div>
+            </div>
         </div>
-        <?php endif; ?>
-    </div>
-<script>
-let timer = 60;
-const resendLink = document.getElementById('resendLink');
-const timerSpan = document.getElementById('timer');
-const url = new URL(window.location.href);
-if (url.searchParams.get('resend') === '1') {
-  timer = 60;
-}
-function updateTimer() {
-  if (timer > 0) {
-    resendLink.style.pointerEvents = 'none';
-    resendLink.style.opacity = '0.5';
-    timerSpan.textContent = timer;
-    timer--;
-    setTimeout(updateTimer, 1000);
-  } else {
-    resendLink.style.pointerEvents = 'auto';
-    resendLink.style.opacity = '1';
-    timerSpan.textContent = '';
-    resendLink.textContent = 'إعادة إرسال الرمز؟';
-  }
-}
-updateTimer();
-</script>
+    </section>
+    <script>
+    let timer = 60;
+    const resendLink = document.getElementById('resendLink');
+    const timerSpan = document.getElementById('timer');
+    const url = new URL(window.location.href);
+    if (url.searchParams.get('resend') === '1') {
+      timer = 60;
+    }
+    function updateTimer() {
+      if (timer > 0) {
+        resendLink.style.pointerEvents = 'none';
+        resendLink.style.opacity = '0.5';
+        timerSpan.textContent = timer;
+        timer--;
+        setTimeout(updateTimer, 1000);
+      } else {
+        resendLink.style.pointerEvents = 'auto';
+        resendLink.style.opacity = '1';
+        timerSpan.textContent = '';
+        resendLink.textContent = '<?= __('resend_code') ?>';
+      }
+    }
+    updateTimer();
+    </script>
+    <?php include '../cookie_consent_banner.php'; ?>
 </body>
 </html> 

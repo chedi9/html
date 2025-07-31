@@ -1,4 +1,7 @@
 <?php
+// Security and compatibility headers
+require_once 'security_integration.php';
+
 // Initialize session if not already started
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
@@ -15,27 +18,14 @@ if (!function_exists('__')) {
 }
 ?>
 <!DOCTYPE html>
-<html lang="<?php echo $lang; ?>" dir="<?php echo $lang === 'ar' ? 'rtl' : 'ltr'; ?>" data-theme="light">
+<html lang="<?php echo isset($_COOKIE['language']) ? $_COOKIE['language'] : ($lang ?? 'en'); ?>" dir="<?php echo (isset($_COOKIE['language']) ? $_COOKIE['language'] : ($lang ?? 'en')) === 'ar' ? 'rtl' : 'ltr'; ?>" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo isset($page_title) ? $page_title : 'WeBuy - Online Shopping Platform'; ?></title>
     
     <!-- CSS Files - Load in correct order -->
-    <link rel="stylesheet" href="../css/base/_variables.css">
-    <link rel="stylesheet" href="../css/base/_reset.css">
-    <link rel="stylesheet" href="../css/base/_typography.css">
-    <link rel="stylesheet" href="../css/base/_utilities.css">
-    <link rel="stylesheet" href="../css/components/_buttons.css">
-    <link rel="stylesheet" href="../css/components/_forms.css">
-    <link rel="stylesheet" href="../css/components/_cards.css">
-    <link rel="stylesheet" href="../css/components/_navigation.css">
-    <link rel="stylesheet" href="../css/layout/_grid.css">
-    <link rel="stylesheet" href="../css/layout/_sections.css">
-    <link rel="stylesheet" href="../css/layout/_footer.css">
-    <link rel="stylesheet" href="../css/themes/_light.css">
-    <link rel="stylesheet" href="../css/themes/_dark.css">
-    <link rel="stylesheet" href="../css/build.css">
+    <link rel="stylesheet" href="../css/main.css">
     
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="favicon.ico">
@@ -51,7 +41,31 @@ if (!function_exists('__')) {
     <?php endif; ?>
     
     <!-- JavaScript -->
-    <script src="../main.js?v=1.3" defer></script>
+    <script src="../js/theme-controller.js" defer></script>
+    <script src="../main.js?v=1.5" defer></script>
+    
+    <!-- Google Analytics (only if consent is given) -->
+    <?php
+    // Check if user has given consent for analytics cookies
+    $cookie_preferences = $_COOKIE['cookie_preferences'] ?? null;
+    $analytics_enabled = false;
+    
+    if ($cookie_preferences) {
+        $prefs = json_decode($cookie_preferences, true);
+        $analytics_enabled = $prefs['analytics'] ?? false;
+    }
+    ?>
+    
+    <?php if ($analytics_enabled): ?>
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-PVP8CCFQPL"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-PVP8CCFQPL');
+    </script>
+    <?php endif; ?>
 </head>
 <body class="page-transition">
     <!-- Skip to main content for accessibility -->
@@ -108,6 +122,44 @@ if (!function_exists('__')) {
                         </svg>
                     </button>
                     
+                    <!-- Language Select -->
+                    <div class="language-select">
+                        <button class="language-select__button" id="languageSelect" aria-label="<?php echo ($lang ?? 'en') === 'ar' ? 'اختر اللغة' : 'Select Language'; ?>" aria-expanded="false">
+                            <span class="language-select__flag">
+                                <?php 
+                                $current_lang = $lang ?? 'en';
+                                if ($current_lang === 'ar') echo '🇸🇦';
+                                elseif ($current_lang === 'en') echo '🇬🇧';
+                                else echo '🇫🇷';
+                                ?>
+                            </span>
+                            <span class="language-select__text">
+                                <?php 
+                                if ($current_lang === 'ar') echo 'العربية';
+                                elseif ($current_lang === 'en') echo 'English';
+                                else echo 'Français';
+                                ?>
+                            </span>
+                            <svg class="language-select__icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M5 8l6 6 6-6"/>
+                            </svg>
+                        </button>
+                        <div class="language-select__dropdown" id="languageDropdown">
+                            <a href="?lang=ar" class="language-select__option <?php echo $current_lang === 'ar' ? 'language-select__option--active' : ''; ?>">
+                                <span class="language-select__flag">🇸🇦</span>
+                                <span class="language-select__text">العربية</span>
+                            </a>
+                            <a href="?lang=en" class="language-select__option <?php echo $current_lang === 'en' ? 'language-select__option--active' : ''; ?>">
+                                <span class="language-select__flag">🇬🇧</span>
+                                <span class="language-select__text">English</span>
+                            </a>
+                            <a href="?lang=fr" class="language-select__option <?php echo $current_lang === 'fr' ? 'language-select__option--active' : ''; ?>">
+                                <span class="language-select__flag">🇫🇷</span>
+                                <span class="language-select__text">Français</span>
+                            </a>
+                        </div>
+                    </div>
+                    
                     <!-- Search -->
                     <div class="nav__search">
                         <form action="search_suggest.php" method="GET" class="search-form">
@@ -126,14 +178,124 @@ if (!function_exists('__')) {
                     </div>
                     
                     <!-- Cart -->
-                    <a href="cart.php" class="nav__cart" aria-label="<?php echo ($lang ?? 'en') === 'ar' ? 'عربة التسوق' : 'Shopping Cart'; ?>">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M9 22a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"></path>
-                            <path d="M20 22a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"></path>
-                            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
-                        </svg>
-                        <span class="nav__cart-count"><?php echo isset($_SESSION['cart']) ? count($_SESSION['cart']) : 0; ?></span>
-                    </a>
+                    <div class="nav__cart">
+                        <a href="cart.php" class="nav__cart-link" aria-label="<?php echo ($lang ?? 'en') === 'ar' ? 'عربة التسوق' : 'Shopping Cart'; ?>">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M9 22a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"></path>
+                                <path d="M20 22a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"></path>
+                                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                            </svg>
+                            <span class="nav__cart-count"><?php echo isset($_SESSION['cart']) ? count($_SESSION['cart']) : 0; ?></span>
+                        </a>
+                        
+                        <!-- Cart Dropdown -->
+                        <div class="nav__cart-dropdown">
+                            <div class="nav__cart-header">
+                                <h3 class="nav__cart-title"><?php echo ($lang ?? 'en') === 'ar' ? 'عربة التسوق' : 'Shopping Cart'; ?></h3>
+                            </div>
+                            
+                            <div class="nav__cart-items">
+                                <?php if (isset($_SESSION['cart']) && !empty($_SESSION['cart'])): ?>
+                                    <?php 
+                                    $cart_total = 0;
+                                    $cart_items_display = [];
+                                    $cart_keys = array_keys($_SESSION['cart']);
+                                    $ids = array_map(function($k){ return explode('|', $k)[0]; }, $cart_keys);
+                                    $ids_str = implode(',', array_map('intval', $ids));
+                                    $stmt = $pdo->query("SELECT * FROM products WHERE id IN ($ids_str)");
+                                    $products_map = [];
+                                    while ($row = $stmt->fetch()) {
+                                        $products_map[$row['id']] = $row;
+                                    }
+                                    
+                                    foreach (array_slice($cart_keys, 0, 3) as $cart_key): 
+                                        $parts = explode('|', $cart_key, 2);
+                                        $pid = intval($parts[0]);
+                                        $variant = isset($parts[1]) ? $parts[1] : '';
+                                        if (!isset($products_map[$pid])) continue;
+                                        $product = $products_map[$pid];
+                                        $qty = $_SESSION['cart'][$cart_key];
+                                        $subtotal = $qty * $product['price'];
+                                        $cart_total += $subtotal;
+                                        $prod_name = $product['name_' . $lang] ?? $product['name'];
+                                    ?>
+                                        <div class="nav__cart-item">
+                                            <?php if (!empty($product['image'])): ?>
+                                                <?php 
+                                                $optimized_image = get_optimized_image('uploads/' . $product['image'], 'admin');
+                                                ?>
+                                                <img src="<?php echo $optimized_image['src']; ?>" 
+                                                     alt="<?php echo htmlspecialchars($prod_name); ?>" 
+                                                     class="nav__cart-item-image">
+                                            <?php else: ?>
+                                                <div class="nav__cart-item-image" style="background: var(--color-gray-200); display: flex; align-items: center; justify-content: center;">
+                                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                                        <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                                                        <polyline points="21,15 16,10 5,21"></polyline>
+                                                    </svg>
+                                                </div>
+                                            <?php endif; ?>
+                                            
+                                            <div class="nav__cart-item-details">
+                                                <h4 class="nav__cart-item-name"><?php echo htmlspecialchars($prod_name); ?></h4>
+                                                <div class="nav__cart-item-price"><?php echo number_format($product['price'], 2); ?> <?php echo __('currency'); ?></div>
+                                                <div class="nav__cart-item-qty"><?php echo __('qty'); ?>: <?php echo $qty; ?></div>
+                                            </div>
+                                        </div>
+                                    <?php endforeach; ?>
+                                    
+                                    <?php if (count($_SESSION['cart']) > 3): ?>
+                                        <div class="nav__cart-item">
+                                            <div class="nav__cart-item-details">
+                                                <div class="nav__cart-item-name"><?php echo __('and_more_items', ['count' => count($_SESSION['cart']) - 3]); ?></div>
+                                            </div>
+                                        </div>
+                                    <?php endif; ?>
+                                <?php else: ?>
+                                    <div class="nav__cart-empty">
+                                        <div class="nav__cart-empty-icon">🛒</div>
+                                        <p class="nav__cart-empty-text"><?php echo ($lang ?? 'en') === 'ar' ? 'عربة التسوق فارغة' : 'Your cart is empty'; ?></p>
+                                    </div>
+                                <?php endif; ?>
+                            </div>
+                            
+                            <?php if (isset($_SESSION['cart']) && !empty($_SESSION['cart'])): ?>
+                                <div class="nav__cart-footer">
+                                    <div class="nav__cart-total">
+                                        <span class="nav__cart-total-label"><?php echo __('total'); ?>:</span>
+                                        <span class="nav__cart-total-amount"><?php echo number_format($cart_total, 2); ?> <?php echo __('currency'); ?></span>
+                                    </div>
+                                    <div class="nav__cart-actions">
+                                        <a href="cart.php" class="nav__cart-btn nav__cart-btn--primary"><?php echo __('view_cart'); ?></a>
+                                        <a href="checkout.php" class="nav__cart-btn nav__cart-btn--secondary"><?php echo __('checkout'); ?></a>
+                                    </div>
+                                </div>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                    
+                    <!-- Seller Dashboard Button (only for sellers) -->
+                    <?php if (isset($_SESSION['user_id'])): ?>
+                        <?php
+                        // Check if user is a seller
+                        require_once 'db.php';
+                        $user_id = $_SESSION['user_id'];
+                        $stmt = $pdo->prepare('SELECT is_seller FROM users WHERE id = ?');
+                        $stmt->execute([$user_id]);
+                        $user = $stmt->fetch();
+                        ?>
+                        <?php if (!empty($user['is_seller'])): ?>
+                            <a href="client/seller_dashboard.php" class="nav__seller-dashboard" aria-label="<?php echo ($lang ?? 'en') === 'ar' ? 'لوحة تحكم البائع' : 'Seller Dashboard'; ?>">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+                                    <path d="M2 17l10 5 10-5"></path>
+                                    <path d="M2 12l10 5 10-5"></path>
+                                </svg>
+                                <span class="nav__seller-dashboard-text"><?php echo ($lang ?? 'en') === 'ar' ? 'لوحة البائع' : 'Seller'; ?></span>
+                            </a>
+                        <?php endif; ?>
+                    <?php endif; ?>
                     
                     <!-- User Menu -->
                     <div class="nav__user">
@@ -148,16 +310,16 @@ if (!function_exists('__')) {
                                     </svg>
                                 </button>
                                 <div class="nav__user-dropdown">
-                                    <a href="/client/account.php" class="nav__user-link">
+                                    <a href="client/account.php" class="nav__user-link">
                                         <?php echo ($lang ?? 'en') === 'ar' ? 'الملف الشخصي' : 'Profile'; ?>
                                     </a>
-                                    <a href="my_orders.php" class="nav__user-link">
+                                    <a href="client/orders.php" class="nav__user-link">
                                         <?php echo ($lang ?? 'en') === 'ar' ? 'طلباتي' : 'My Orders'; ?>
                                     </a>
                                     <a href="wishlist.php" class="nav__user-link">
                                         <?php echo ($lang ?? 'en') === 'ar' ? 'المفضلة' : 'Wishlist'; ?>
                                     </a>
-                                    <a href="logout.php" class="nav__user-link">
+                                    <a href="client/logout.php" class="nav__user-link">
                                         <?php echo ($lang ?? 'en') === 'ar' ? 'تسجيل الخروج' : 'Logout'; ?>
                                     </a>
                                 </div>

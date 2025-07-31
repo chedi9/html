@@ -27,4 +27,7 @@ try {
     throw new PDOException($e->getMessage(), (int)$e->getCode());
 }
 
-define('SITE_EMAIL', 'webuytn0@gmail.com'); 
+// Define SITE_EMAIL only if it hasn't been defined already
+if (!defined('SITE_EMAIL')) {
+    define('SITE_EMAIL', 'webuytn0@gmail.com');
+} 

@@ -10,15 +10,15 @@ class SecurityHeaders {
      * Set comprehensive security headers
      */
     public static function setSecurityHeaders() {
-        // Only set security headers if enabled
-        if (!function_exists('isSecurityHeadersEnabled') || isSecurityHeadersEnabled()) {
+        // Only set security headers if enabled and headers haven't been sent
+        if ((!function_exists('isSecurityHeadersEnabled') || isSecurityHeadersEnabled()) && !headers_sent()) {
             // Content Security Policy (CSP) - Prevent XSS attacks
             $csp = "default-src 'self'; " .
-                    "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://checkout.stripe.com https://www.paypal.com https://js.stripe.com; " .
+                    "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://checkout.stripe.com https://www.paypal.com https://js.stripe.com https://www.googletagmanager.com https://www.google-analytics.com; " .
                     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; " .
                     "font-src 'self' https://fonts.gstatic.com; " .
                     "img-src 'self' data: https: blob:; " .
-                    "connect-src 'self' https://api.stripe.com https://api.paypal.com https://d17.tn https://flouci.com; " .
+                    "connect-src 'self' https://api.stripe.com https://api.paypal.com https://d17.tn https://flouci.com https://www.google-analytics.com https://analytics.google.com; " .
                     "frame-src 'self' https://checkout.stripe.com https://www.paypal.com; " .
                     "object-src 'none'; " .
                     "base-uri 'self'; " .
@@ -98,21 +98,29 @@ class SecurityHeaders {
             ini_set('session.gc_maxlifetime', 3600);
         }
         
-        // Set cookie parameters if session is active
-        if (session_status() === PHP_SESSION_ACTIVE) {
-            $secure = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on';
-            $httponly = true;
-            $samesite = 'Strict';
-            
-            // Use session_set_cookie_params for active sessions
-            session_set_cookie_params([
-                'lifetime' => 3600,
-                'path' => '/',
-                'domain' => '',
-                'secure' => $secure,
-                'httponly' => $httponly,
-                'samesite' => $samesite
-            ]);
+        // Only try to set cookie parameters if session is active and we haven't set them yet
+        if (session_status() === PHP_SESSION_ACTIVE && !isset($_SESSION['security_cookies_set'])) {
+            try {
+                $secure = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on';
+                $httponly = true;
+                $samesite = 'Strict';
+                
+                // Use session_set_cookie_params for active sessions
+                session_set_cookie_params([
+                    'lifetime' => 3600,
+                    'path' => '/',
+                    'domain' => '',
+                    'secure' => $secure,
+                    'httponly' => $httponly,
+                    'samesite' => $samesite
+                ]);
+                
+                // Mark that we've set the cookies to avoid duplicate calls
+                $_SESSION['security_cookies_set'] = true;
+            } catch (Exception $e) {
+                // Log the error but don't break the application
+                error_log("Security cookie parameters could not be set: " . $e->getMessage());
+            }
         }
     }
     
@@ -268,8 +276,4 @@ class SecurityHeaders {
             error_log("IP blocking failed: " . $e->getMessage());
         }
     }
-}
-
-// Initialize security headers
-SecurityHeaders::setSecurityHeaders();
-SecurityHeaders::setSecureCookieParams(); 
+} 

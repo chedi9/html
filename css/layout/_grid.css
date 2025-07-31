@@ -216,11 +216,13 @@
   }
 }
 
+/* Enhanced Mobile Grid Layout - Week 2 Implementation */
 @media (max-width: 768px) {
   .container {
     padding: 0 var(--space-3);
   }
   
+  /* Single column layout for all grids on mobile */
   .grid--2,
   .grid--3,
   .grid--4,
@@ -228,8 +230,27 @@
   .grid--6,
   .grid--12 {
     grid-template-columns: 1fr;
+    gap: var(--space-4); /* Better spacing on mobile */
   }
   
+  /* Optimize auto-fit grids for mobile */
+  .grid--auto-fit-sm,
+  .grid--auto-fit-md,
+  .grid--auto-fit-lg,
+  .grid--auto-fit-xl {
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+  }
+  
+  .grid--auto-fill-sm,
+  .grid--auto-fill-md,
+  .grid--auto-fill-lg,
+  .grid--auto-fill-xl {
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+  }
+  
+  /* Enhanced mobile layout */
   .layout--sidebar {
     grid-template-columns: 1fr;
     grid-template-areas: 
@@ -264,6 +285,20 @@
   
   .main__content {
     padding: var(--space-4);
+  }
+  
+  /* Better mobile spacing */
+  .section {
+    padding: var(--space-6) 0;
+  }
+  
+  .section__header {
+    margin-bottom: var(--space-4);
+  }
+  
+  .section__title {
+    font-size: var(--font-size-2xl);
+    margin-bottom: var(--space-2);
   }
 }
 

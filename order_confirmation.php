@@ -6,7 +6,7 @@ require_once 'pci_compliant_payment_handler.php';
 
 // Check if user is logged in
 if (!isset($_SESSION['user_id'])) {
-    header('Location: client/login.php');
+    header('Location: login.php');
     exit();
 }
 

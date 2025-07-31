@@ -1,5 +1,8 @@
 <?php
 // Security and compatibility headers
+require_once '../security_integration.php';
+
+// Security and compatibility headers
 header('Content-Type: text/html; charset=utf-8');
 header('Cache-Control: public, max-age=3600');
 header('X-Content-Type-Options: nosniff');
@@ -16,20 +19,13 @@ $user_id = $_SESSION['user_id'];
 $stmt = $pdo->prepare('SELECT * FROM users WHERE id = ?');
 $stmt->execute([$user_id]);
 $user = $stmt->fetch();
-// Fetch seller info if user is a seller
-$seller = null;
-if (!empty($user['is_seller'])) {
-    $stmt = $pdo->prepare('SELECT * FROM sellers WHERE user_id = ?');
-    $stmt->execute([$user_id]);
-    $seller = $stmt->fetch();
-}
 // Fetch order history
 $orders = $pdo->prepare('SELECT * FROM orders WHERE user_id = ? ORDER BY created_at DESC');
 $orders->execute([$user_id]);
 $orders = $orders->fetchAll();
 ?>
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <title><?= __('my_account') ?></title>
@@ -51,39 +47,41 @@ $orders = $orders->fetchAll();
     <link rel="stylesheet" href="../css/pages/_account.css">
     <script>
     function showTab(tab) {
-        // Remove active class from all tabs
-        document.querySelectorAll('.account-tab').forEach(btn => btn.classList.remove('active'));
-        
-        // Hide all tab content
-        document.querySelectorAll('.tab-content').forEach(tc => {
-            if (tc) tc.style.display = 'none';
+        // Remove active class from all navigation items
+        document.querySelectorAll('.account-nav-item').forEach(btn => {
+            btn.classList.remove('account-nav-item--active');
         });
         
-        // Add active class to selected tab
-        const tabElement = document.getElementById(tab+'-tab');
-        if (tabElement) {
-            tabElement.classList.add('active');
-        }
+        // Hide all tab content
+        document.querySelectorAll('.tab-content').forEach(content => {
+            content.style.display = 'none';
+            content.classList.remove('tab-content--active');
+        });
         
         // Show selected tab content
-        const contentElement = document.getElementById(tab+'-content');
-        if (contentElement) {
-            contentElement.style.display = 'block';
-        } else {
-            console.warn('Tab content element not found:', tab+'-content');
+        const tabElement = document.getElementById(tab+'-content');
+        if (tabElement) {
+            tabElement.style.display = 'block';
+            tabElement.classList.add('tab-content--active');
+        }
+        
+        // Add active class to selected navigation item
+        const navItem = document.querySelector(`[onclick="showTab('${tab}')"]`);
+        if (navItem) {
+            navItem.classList.add('account-nav-item--active');
         }
     }
     
     window.onload = function() { 
-        // Check if orders tab exists before trying to show it
-        const ordersTab = document.getElementById('orders-tab');
+        // Show orders tab by default
+        const ordersTab = document.getElementById('orders-content');
         if (ordersTab) {
             showTab('orders'); 
         } else {
             // If orders tab doesn't exist, show the first available tab
-            const firstTab = document.querySelector('.account-tab');
+            const firstTab = document.querySelector('.tab-content');
             if (firstTab) {
-                const tabId = firstTab.id.replace('-tab', '');
+                const tabId = firstTab.id.replace('-content', '');
                 showTab(tabId);
             }
         }
@@ -94,31 +92,142 @@ $orders = $orders->fetchAll();
     <?php include '../header.php'; ?>
     <div class="account-container">
         <a href="../index.php" class="back-home-btn"><span class="arrow">&#8592;</span> <?= __('return_to_home') ?></a>
-        <div class="account-tabs">
-            <button type="button" class="account-tab" id="orders-tab" onclick="showTab('orders')"><?= __('order_history') ?></button>
-            <button type="button" class="account-tab" id="returns-tab" onclick="showTab('returns')">الإرجاعات والاسترداد</button>
-            <button type="button" class="account-tab" id="notifications-tab" onclick="showTab('notifications')">الإشعارات</button>
-            <button type="button" class="account-tab" id="saved-addresses-tab" onclick="showTab('saved-addresses')">العناوين المحفوظة</button>
-            <button type="button" class="account-tab" id="payment-methods-tab" onclick="showTab('payment-methods')">طرق الدفع المحفوظة</button>
-            <button type="button" class="account-tab" id="wishlist-tab" onclick="showTab('wishlist')"><?= __('wishlist') ?></button>
-            <button type="button" class="account-tab" id="viewed-tab" onclick="showTab('viewed')"><?= __('viewed_products') ?></button>
-            <button type="button" class="account-tab" id="address-tab" onclick="showTab('address')"><?= __('address_and_phone') ?></button>
-            <button type="button" class="account-tab" id="credentials-tab" onclick="showTab('credentials')"><?= __('change_email_password') ?></button>
-            <?php if ($seller): ?>
-            <button type="button" class="account-tab" id="seller-tab" onclick="showTab('seller')">My Seller Dashboard</button>
-            <?php endif; ?>
+        
+        <!-- Sidebar Navigation -->
+        <div class="account-sidebar">
+            <div class="account-nav-groups">
+                <!-- Primary Actions -->
+                <div class="account-nav-group">
+                    <div class="account-nav-title">الإجراءات الأساسية</div>
+                    <button type="button" class="account-nav-item account-nav-item--active" onclick="showTab('orders')">
+                        <svg class="account-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 12l2 2 4-4"></path>
+                            <path d="M21 12c-1 0-2-.4-2-1V5c0-1.1-.9-2-2-2H7c-1.1 0-2 .9-2 2v6c0 .6-1 1-2 1"></path>
+                            <path d="M21 12v7c0 1.1-.9 2-2 2H5c-1.1 0-2-.9-2-2v-7"></path>
+                        </svg>
+                        <?= __('order_history') ?>
+                    </button>
+                    <button type="button" class="account-nav-item" onclick="showTab('wishlist')">
+                        <svg class="account-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                        </svg>
+                        <?= __('wishlist') ?>
+                    </button>
+                    <button type="button" class="account-nav-item" onclick="showTab('viewed')">
+                        <svg class="account-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                            <circle cx="12" cy="12" r="3"></circle>
+                        </svg>
+                        <?= __('viewed_products') ?>
+                    </button>
+                </div>
+
+                <!-- Account Settings -->
+                <div class="account-nav-group">
+                    <div class="account-nav-title">إعدادات الحساب</div>
+                    <button type="button" class="account-nav-item" onclick="showTab('credentials')">
+                        <svg class="account-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M15 7a2 2 0 0 1 2 2m4 0a6 6 0 0 1-7.743 5.743L11 17H9v2H7v2H4a1 1 0 0 1-1-1v-2.586a1 1 0 0 1 .293-.707l5.964-5.964A6 6 0 1 1 21 9z"></path>
+                        </svg>
+                        <?= __('change_email_password') ?>
+                    </button>
+                    <button type="button" class="account-nav-item" onclick="showTab('address')">
+                        <svg class="account-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                            <circle cx="12" cy="10" r="3"></circle>
+                        </svg>
+                        <?= __('address_and_phone') ?>
+                    </button>
+                    <button type="button" class="account-nav-item" onclick="showTab('saved-addresses')">
+                        <svg class="account-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                            <polyline points="9,22 9,12 15,12 15,22"></polyline>
+                        </svg>
+                        العناوين المحفوظة
+                    </button>
+                    <button type="button" class="account-nav-item" onclick="showTab('payment-methods')">
+                        <svg class="account-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
+                            <line x1="1" y1="10" x2="23" y2="10"></line>
+                        </svg>
+                        طرق الدفع المحفوظة
+                    </button>
+                </div>
+
+                <!-- Account Activity -->
+                <div class="account-nav-group">
+                    <div class="account-nav-title">نشاط الحساب</div>
+                    <button type="button" class="account-nav-item" onclick="showTab('returns')">
+                        <svg class="account-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M3 12h18"></path>
+                            <path d="M3 12l6-6"></path>
+                            <path d="M3 12l6 6"></path>
+                        </svg>
+                        الإرجاعات والاسترداد
+                    </button>
+                    <button type="button" class="account-nav-item" onclick="showTab('notifications')">
+                        <svg class="account-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                            <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                        </svg>
+                        الإشعارات
+                    </button>
+                </div>
+            </div>
         </div>
-        <div class="tab-content" id="orders-content">
+
+        <!-- Account Content Area -->
+        <div class="account-content">
+            <!-- Orders Content -->
+            <div class="tab-content tab-content--active" id="orders-content">
+                <div class="content-section">
             <h3><?= __('order_history') ?></h3>
             <?php if ($orders): ?>
+                    <div class="table-container">
             <table class="orders-table">
                 <thead>
-                    <tr><th><?= __('order_number') ?></th><th><?= __('total') ?></th><th><?= __('status') ?></th><th><?= __('order_date') ?></th><th>الإجراءات</th></tr>
+                                <tr>
+                                    <th><?= __('order_number') ?></th>
+                                    <th>المنتجات</th>
+                                    <th><?= __('total') ?></th>
+                                    <th><?= __('status') ?></th>
+                                    <th><?= __('order_date') ?></th>
+                                    <th>الإجراءات</th>
+                                </tr>
                 </thead>
                 <tbody>
                 <?php foreach ($orders as $order): ?>
+                                <?php
+                                // Fetch order items with product images
+                                $order_items_stmt = $pdo->prepare('
+                                    SELECT oi.*, p.name as product_name, p.image as product_image 
+                                    FROM order_items oi 
+                                    JOIN products p ON oi.product_id = p.id 
+                                    WHERE oi.order_id = ?
+                                ');
+                                $order_items_stmt->execute([$order['id']]);
+                                $order_items = $order_items_stmt->fetchAll();
+                                ?>
                     <tr>
                         <td><?php echo $order['id']; ?></td>
+                                    <td>
+                                        <div class="order-products">
+                                            <?php foreach ($order_items as $item): ?>
+                                                <div class="order-product-item">
+                                                    <div style="position: relative; overflow: hidden;">
+                                                        <div class="skeleton skeleton--image" style="width: 36px; height: 36px; border-radius: 4px;"></div>
+                                                        <img src="../uploads/<?php echo htmlspecialchars($item['product_image']); ?>" 
+                                                             alt="<?php echo htmlspecialchars($item['product_name']); ?>"
+                                                             class="order-product-image" loading="lazy" style="position: relative; z-index: 2;">
+                                                    </div>
+                                                    <div class="order-product-info">
+                                                        <div class="order-product-name"><?php echo htmlspecialchars($item['product_name']); ?></div>
+                                                        <div class="order-product-qty">الكمية: <?php echo $item['qty']; ?></div>
+                                                    </div>
+                                                </div>
+                                            <?php endforeach; ?>
+                                        </div>
+                                    </td>
                         <td><?php echo $order['total']; ?> <?= __('currency') ?></td>
                         <td><?php echo htmlspecialchars($order['status']); ?></td>
                         <td><?php echo $order['created_at']; ?></td>
@@ -133,12 +242,15 @@ $orders = $orders->fetchAll();
                 <?php endforeach; ?>
                 </tbody>
             </table>
+                    </div>
             <?php else: ?>
                 <p><?= __('no_orders_yet') ?></p>
             <?php endif; ?>
+                </div>
         </div>
         
-        <div class="tab-content" id="returns-content" style="display:none;">
+        <div class="tab-content" id="returns-content">
+            <div class="content-section">
             <h3>الإرجاعات والاسترداد</h3>
             <?php
             // Fetch user returns
@@ -184,9 +296,11 @@ $orders = $orders->fetchAll();
             <?php else: ?>
                 <p>لا توجد طلبات إرجاع حتى الآن.</p>
             <?php endif; ?>
+            </div>
         </div>
         
-        <div class="tab-content" id="notifications-content" style="display:none;">
+        <div class="tab-content" id="notifications-content">
+            <div class="content-section">
             <h3>الإشعارات</h3>
             <?php
             // Fetch user notifications
@@ -232,23 +346,25 @@ $orders = $orders->fetchAll();
             <?php else: ?>
                 <p>لا توجد إشعارات حتى الآن.</p>
             <?php endif; ?>
+            </div>
         </div>
         
-        <div class="tab-content" id="wishlist-content" style="display:none;">
+        <div class="tab-content" id="wishlist-content">
+            <div class="content-section">
             <h3><?= __('wishlist') ?></h3>
             <?php
             if (!empty($_SESSION['wishlist'])) {
                 $ids = implode(',', array_map('intval', array_unique($_SESSION['wishlist'])));
                 $stmt = $pdo->query("SELECT * FROM products WHERE id IN ($ids)");
-                echo '<div style="display: flex; flex-wrap: wrap; gap: 18px;">';
+                    echo '<div class="product-grid">';
                 while ($prod = $stmt->fetch()) {
-                    echo '<div style="background:#f4f6fb; border-radius:8px; box-shadow:0 1px 4px #0001; padding:12px; width:180px; text-align:center; position:relative;">';
-                    echo '<a href="../product.php?id=' . $prod['id'] . '"><img src="../uploads/' . htmlspecialchars($prod['image']) . '" alt="' . htmlspecialchars($prod['name']) . '" style="max-width:100%;height:120px;object-fit:cover;border-radius:6px;"></a>';
-                    echo '<div style="margin:8px 0 4px;font-weight:bold;">' . htmlspecialchars($prod['name']) . '</div>';
-                    echo '<div style="color:#00BFAE;font-weight:bold;">' . $prod['price'] . ' ' . __('currency') . '</div>';
-                    echo '<form method="post" action="remove_from_wishlist.php" style="margin-top:8px;">';
+                        echo '<div class="product-card">';
+                        echo '<a href="../product.php?id=' . $prod['id'] . '"><img src="../uploads/' . htmlspecialchars($prod['image']) . '" alt="' . htmlspecialchars($prod['name']) . '"></a>';
+                        echo '<h4>' . htmlspecialchars($prod['name']) . '</h4>';
+                        echo '<div class="price">' . $prod['price'] . ' ' . __('currency') . '</div>';
+                        echo '<form method="post" action="remove_from_wishlist.php">';
                     echo '<input type="hidden" name="id" value="' . $prod['id'] . '">';
-                    echo '<button type="submit" style="background:#c00;color:#fff;border:none;border-radius:6px;padding:4px 12px;cursor:pointer;">' . __('remove') . '</button>';
+                        echo '<button type="submit" class="remove-btn">' . __('remove') . '</button>';
                     echo '</form>';
                     echo '</div>';
                 }
@@ -258,18 +374,21 @@ $orders = $orders->fetchAll();
             }
             ?>
         </div>
-        <div class="tab-content" id="viewed-content" style="display:none;">
+        </div>
+        
+        <div class="tab-content" id="viewed-content">
+            <div class="content-section">
             <h3><?= __('viewed_products') ?></h3>
             <?php
             if (!empty($_SESSION['viewed_products'])) {
                 $ids = implode(',', array_map('intval', array_unique($_SESSION['viewed_products'])));
                 $stmt = $pdo->query("SELECT * FROM products WHERE id IN ($ids)");
-                echo '<div style="display: flex; flex-wrap: wrap; gap: 18px;">';
+                    echo '<div class="product-grid">';
                 while ($prod = $stmt->fetch()) {
-                    echo '<div style="background:#f4f6fb; border-radius:8px; box-shadow:0 1px 4px #0001; padding:12px; width:180px; text-align:center;">';
-                    echo '<a href="../product.php?id=' . $prod['id'] . '"><img src="../uploads/' . htmlspecialchars($prod['image']) . '" alt="' . htmlspecialchars($prod['name']) . '" style="max-width:100%;height:120px;object-fit:cover;border-radius:6px;"></a>';
-                    echo '<div style="margin:8px 0 4px;font-weight:bold;">' . htmlspecialchars($prod['name']) . '</div>';
-                    echo '<div style="color:#00BFAE;font-weight:bold;">' . $prod['price'] . ' ' . __('currency') . '</div>';
+                        echo '<div class="product-card">';
+                        echo '<a href="../product.php?id=' . $prod['id'] . '"><img src="../uploads/' . htmlspecialchars($prod['image']) . '" alt="' . htmlspecialchars($prod['name']) . '"></a>';
+                        echo '<h4>' . htmlspecialchars($prod['name']) . '</h4>';
+                        echo '<div class="price">' . $prod['price'] . ' ' . __('currency') . '</div>';
                     echo '</div>';
                 }
                 echo '</div>';
@@ -278,51 +397,59 @@ $orders = $orders->fetchAll();
             }
             ?>
         </div>
-        <div class="tab-content" id="address-content" style="display:none;">
+        </div>
+        
+        <div class="tab-content" id="address-content">
+            <div class="content-section">
             <h3><?= __('address_and_phone') ?></h3>
             <form method="post" action="update_address.php" class="modern-form">
                 <div class="form-group">
+                        <label for="address"><?= __('address') ?>:</label>
                     <input type="text" id="address" name="address" value="<?php echo htmlspecialchars($user['address'] ?? ''); ?>" placeholder="<?= __('address_placeholder') ?>" autocomplete="address">
-                    <label for="address"><?= __('address') ?>:</label>
                 </div>
                 <div class="form-group">
+                        <label for="phone"><?= __('phone_number') ?>:</label>
                     <input type="text" id="phone" name="phone" value="<?php echo htmlspecialchars($user['phone'] ?? ''); ?>" placeholder="<?= __('phone_placeholder') ?>" autocomplete="tel">
-                    <label for="phone"><?= __('phone_number') ?>:</label>
                 </div>
                 <button type="submit" class="save-btn"><?= __('save_changes') ?></button>
             </form>
         </div>
-        <div class="tab-content" id="credentials-content" style="display:none;">
+        </div>
+        
+        <div class="tab-content" id="credentials-content">
+            <div class="content-section">
             <h3><?= __('change_email_password') ?></h3>
             <?php if (isset($_SESSION['flash_message'])): ?>
                 <div class="form-group" style="color: green; font-weight: bold;"> <?php echo $_SESSION['flash_message']; unset($_SESSION['flash_message']); ?> </div>
             <?php endif; ?>
             <form method="post" action="update_credentials.php" class="modern-form">
                 <div class="form-group">
+                        <label for="email"><?= __('email') ?>:</label>
                     <input type="email" id="email" name="email" value="<?php echo htmlspecialchars($user['email']); ?>" placeholder="<?= __('email_placeholder') ?>" autocomplete="email">
-                    <label for="email"><?= __('email') ?>:</label>
                 </div>
                 <button type="submit" class="save-btn"><?= __('update_email') ?></button>
             </form>
             <hr>
             <form method="post" action="change_password.php" class="modern-form">
                 <div class="form-group">
+                        <label for="current_password"><?= __('current_password') ?>:</label>
                     <input type="password" id="current_password" name="current_password" placeholder="<?= __('current_password_placeholder') ?>" autocomplete="current-password">
-                    <label for="current_password"><?= __('current_password') ?>:</label>
                 </div>
                 <div class="form-group">
+                        <label for="new_password"><?= __('new_password') ?>:</label>
                     <input type="password" id="new_password" name="new_password" placeholder="<?= __('new_password_placeholder') ?>" autocomplete="new-password">
-                    <label for="new_password"><?= __('new_password') ?>:</label>
                 </div>
                 <div class="form-group">
+                        <label for="confirm_password"><?= __('confirm_new_password') ?>:</label>
                     <input type="password" id="confirm_password" name="confirm_password" placeholder="<?= __('confirm_password_placeholder') ?>" autocomplete="new-password">
-                    <label for="confirm_password"><?= __('confirm_new_password') ?>:</label>
                 </div>
                 <button type="submit" class="save-btn"><?= __('change_password') ?></button>
             </form>
+            </div>
         </div>
         
-        <div class="tab-content" id="saved-addresses-content" style="display:none;">
+        <div class="tab-content" id="saved-addresses-content">
+            <div class="content-section">
             <h3>العناوين المحفوظة</h3>
             <?php
             // Fetch user addresses
@@ -332,14 +459,14 @@ $orders = $orders->fetchAll();
             ?>
             
             <?php if ($addresses): ?>
-                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; margin-bottom: 20px;">
+                    <div class="address-grid">
                     <?php foreach ($addresses as $address): ?>
-                        <div style="border: 1px solid #ddd; border-radius: 8px; padding: 16px; background: <?php echo $address['is_default'] ? '#f0f8ff' : '#f9f9f9'; ?>;">
+                            <div class="address-card <?php echo $address['is_default'] ? 'default' : ''; ?>">
                             <?php if ($address['is_default']): ?>
-                                <div style="background: var(--primary-color); color: #fff; padding: 4px 8px; border-radius: 12px; font-size: 0.8em; display: inline-block; margin-bottom: 8px;">افتراضي</div>
+                                    <div class="default-badge">افتراضي</div>
                             <?php endif; ?>
                             
-                            <div style="color: #666; font-size: 0.9em; margin-bottom: 8px;">
+                                <div class="address-type">
                                 <?php
                                 switch ($address['type']) {
                                     case 'shipping': echo 'عنوان الشحن'; break;
@@ -349,10 +476,10 @@ $orders = $orders->fetchAll();
                                 ?>
                             </div>
                             
-                            <div style="font-weight: bold; margin-bottom: 6px;"><?php echo htmlspecialchars($address['full_name']); ?></div>
-                            <div style="color: #666; margin-bottom: 8px;"><?php echo htmlspecialchars($address['phone']); ?></div>
+                                <div class="address-name"><?php echo htmlspecialchars($address['full_name']); ?></div>
+                                <div class="address-phone"><?php echo htmlspecialchars($address['phone']); ?></div>
                             
-                            <div style="line-height: 1.4; margin-bottom: 12px;">
+                                <div class="address-details">
                                 <?php echo htmlspecialchars($address['address_line1']); ?><br>
                                 <?php if ($address['address_line2']): ?>
                                     <?php echo htmlspecialchars($address['address_line2']); ?><br>
@@ -371,17 +498,19 @@ $orders = $orders->fetchAll();
                 </div>
                 
                 <div style="text-align: center;">
-                    <a href="manage_addresses.php" class="save-btn" style="background: var(--secondary-color); text-decoration: none; display: inline-block;">إدارة جميع العناوين</a>
+                        <a href="manage_addresses.php" class="save-btn">إدارة جميع العناوين</a>
                 </div>
             <?php else: ?>
                 <p>لا توجد عناوين محفوظة</p>
                 <div style="text-align: center; margin-top: 20px;">
-                    <a href="manage_addresses.php" class="save-btn" style="background: var(--primary-color); text-decoration: none; display: inline-block;">إضافة عنوان جديد</a>
+                        <a href="manage_addresses.php" class="save-btn">إضافة عنوان جديد</a>
                 </div>
             <?php endif; ?>
+            </div>
         </div>
         
-        <div class="tab-content" id="payment-methods-content" style="display:none;">
+        <div class="tab-content" id="payment-methods-content">
+            <div class="content-section">
             <h3>طرق الدفع المحفوظة</h3>
             <?php
             // Fetch user payment methods
@@ -391,14 +520,14 @@ $orders = $orders->fetchAll();
             ?>
             
             <?php if ($payment_methods): ?>
-                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; margin-bottom: 20px;">
+                    <div class="payment-grid">
                     <?php foreach ($payment_methods as $payment): ?>
-                        <div style="border: 1px solid #ddd; border-radius: 8px; padding: 16px; background: <?php echo $payment['is_default'] ? '#f0f8ff' : '#f9f9f9'; ?>;">
+                            <div class="payment-card <?php echo $payment['is_default'] ? 'default' : ''; ?>">
                             <?php if ($payment['is_default']): ?>
-                                <div style="background: var(--primary-color); color: #fff; padding: 4px 8px; border-radius: 12px; font-size: 0.8em; display: inline-block; margin-bottom: 8px;">افتراضي</div>
+                                    <div class="default-badge">افتراضي</div>
                             <?php endif; ?>
                             
-                            <div style="color: #666; font-size: 0.9em; margin-bottom: 8px;">
+                                <div class="payment-type">
                                 <?php
                                 switch ($payment['type']) {
                                     case 'card': echo '💳 بطاقة بنكية'; break;
@@ -408,74 +537,40 @@ $orders = $orders->fetchAll();
                                 ?>
                             </div>
                             
-                            <div style="font-weight: bold; margin-bottom: 8px;"><?php echo htmlspecialchars($payment['name']); ?></div>
+                                <div class="payment-name"><?php echo htmlspecialchars($payment['name']); ?></div>
                             
                             <?php if ($payment['card_number']): ?>
-                                <div style="font-family: monospace; margin-bottom: 6px;">
+                                    <div class="card-number">
                                     **** **** **** <?php echo substr($payment['card_number'], -4); ?>
                                 </div>
                             <?php endif; ?>
                             
                             <?php if ($payment['card_type']): ?>
-                                <div style="color: #666; margin-bottom: 6px;">النوع: <?php echo htmlspecialchars($payment['card_type']); ?></div>
+                                    <div class="card-details">النوع: <?php echo htmlspecialchars($payment['card_type']); ?></div>
                             <?php endif; ?>
                             
                             <?php if ($payment['expiry_month'] && $payment['expiry_year']): ?>
-                                <div style="color: #666;">تاريخ الانتهاء: <?php echo $payment['expiry_month']; ?>/<?php echo $payment['expiry_year']; ?></div>
+                                    <div class="card-details">تاريخ الانتهاء: <?php echo $payment['expiry_month']; ?>/<?php echo $payment['expiry_year']; ?></div>
                             <?php endif; ?>
                         </div>
                     <?php endforeach; ?>
                 </div>
                 
                 <div style="text-align: center;">
-                    <a href="manage_payment_methods.php" class="save-btn" style="background: var(--secondary-color); text-decoration: none; display: inline-block;">إدارة جميع طرق الدفع</a>
+                        <a href="manage_payment_methods.php" class="save-btn">إدارة جميع طرق الدفع</a>
                 </div>
             <?php else: ?>
                 <p>لا توجد طرق دفع محفوظة</p>
                 <div style="text-align: center; margin-top: 20px;">
-                    <a href="manage_payment_methods.php" class="save-btn" style="background: var(--primary-color); text-decoration: none; display: inline-block;">إضافة طريقة دفع جديدة</a>
+                        <a href="manage_payment_methods.php" class="save-btn">إضافة طريقة دفع جديدة</a>
                 </div>
             <?php endif; ?>
         </div>
-        
-        <?php if ($seller): ?>
-        <div class="tab-content" id="seller-content" style="display:none;">
-            <h3>Seller Dashboard</h3>
-            <p>Welcome, <b><?php echo htmlspecialchars($seller['store_name']); ?></b>!</p>
-            <a href="seller_dashboard.php" class="save-btn">Go to Seller Dashboard</a>
-            <a href="../store.php?seller_id=<?php echo $seller['id']; ?>" class="save-btn" style="background:#888;">View My Store</a>
         </div>
-        <?php endif; ?>
     </div>
     <script src="../main.js?v=1.3" defer></script>
-    <script>
-if (!localStorage.getItem('cookiesAccepted')) {
-  // do nothing, wait for accept
-} else {
-  var gaScript = document.createElement('script');
-  gaScript.src = '../https://www.googletagmanager.com/gtag/js?id=G-PVP8CCFQPL';
-  gaScript.async = true;
-  document.head.appendChild(gaScript);
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-PVP8CCFQPL');
-}
-</script>
-<script>
-var acceptBtn = document.getElementById('acceptCookiesBtn');
-if (acceptBtn) {
-  acceptBtn.addEventListener('click', function() {
-    var gaScript = document.createElement('script');
-    gaScript.src = '../https://www.googletagmanager.com/gtag/js?id=G-PVP8CCFQPL';
-    gaScript.async = true;
-    document.head.appendChild(gaScript);
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-PVP8CCFQPL');
-  });
-}
-</script>
+    
+    <!-- Cookie Consent Banner -->
+    <?php include '../cookie_consent_banner.php'; ?>
 </body>
 </html> 

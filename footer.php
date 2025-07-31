@@ -7,7 +7,7 @@
                 <!-- Company Info -->
                 <div class="footer__section">
                     <div class="footer__brand">
-                        <img src="../webuy-logo-transparent.jpg" alt="WeBuy Logo" style="height: 40px; width: auto;">
+                        <img src="webuy-logo-transparent.jpg" alt="WeBuy Logo" style="height: 40px; width: auto;">
                         <h3 class="footer__title">WeBuy</h3>
                     </div>
                     <p class="footer__description">
@@ -39,7 +39,7 @@
                         <li><a href="index.php" class="footer__link"><?php echo $lang === 'ar' ? 'الرئيسية' : 'Home'; ?></a></li>
                         <li><a href="store.php" class="footer__link"><?php echo $lang === 'ar' ? 'المتجر' : 'Store'; ?></a></li>
                         <li><a href="faq.php" class="footer__link"><?php echo $lang === 'ar' ? 'الأسئلة الشائعة' : 'FAQ'; ?></a></li>
-                        <li><a href="about.php" class="footer__link"><?php echo $lang === 'ar' ? 'من نحن' : 'About Us'; ?></a></li>
+                        <li><a href="faq.php" class="footer__link"><?php echo $lang === 'ar' ? 'الأسئلة الشائعة' : 'FAQ'; ?></a></li>
                     </ul>
                 </div>
                 
@@ -47,9 +47,8 @@
                 <div class="footer__section">
                     <h4 class="footer__section-title"><?php echo $lang === 'ar' ? 'خدمة العملاء' : 'Customer Service'; ?></h4>
                     <ul class="footer__links">
-                        <li><a href="contact.php" class="footer__link"><?php echo $lang === 'ar' ? 'اتصل بنا' : 'Contact Us'; ?></a></li>
-                        <li><a href="shipping.php" class="footer__link"><?php echo $lang === 'ar' ? 'الشحن والتوصيل' : 'Shipping & Delivery'; ?></a></li>
-                        <li><a href="returns.php" class="footer__link"><?php echo $lang === 'ar' ? 'الإرجاع والاستبدال' : 'Returns & Exchanges'; ?></a></li>
+                        <li><a href="faq.php" class="footer__link"><?php echo $lang === 'ar' ? 'الأسئلة الشائعة' : 'FAQ'; ?></a></li>
+                        <li><a href="terms.php" class="footer__link"><?php echo $lang === 'ar' ? 'الشروط والأحكام' : 'Terms & Conditions'; ?></a></li>
                         <li><a href="privacy.php" class="footer__link"><?php echo $lang === 'ar' ? 'سياسة الخصوصية' : 'Privacy Policy'; ?></a></li>
                     </ul>
                 </div>
@@ -64,7 +63,7 @@
                             <li><a href="wishlist.php" class="footer__link"><?php echo $lang === 'ar' ? 'المفضلة' : 'Wishlist'; ?></a></li>
                             <li><a href="client/seller_dashboard.php" class="footer__link"><?php echo $lang === 'ar' ? 'لوحة البائع' : 'Seller Dashboard'; ?></a></li>
                         <?php else: ?>
-                            <li><a href="client/login.php" class="footer__link"><?php echo $lang === 'ar' ? 'تسجيل الدخول' : 'Login'; ?></a></li>
+                            <li><a href="login.php" class="footer__link"><?php echo $lang === 'ar' ? 'تسجيل الدخول' : 'Login'; ?></a></li>
                             <li><a href="client/register.php" class="footer__link"><?php echo $lang === 'ar' ? 'التسجيل' : 'Register'; ?></a></li>
                             <li><a href="client/forgot_password.php" class="footer__link"><?php echo $lang === 'ar' ? 'نسيت كلمة المرور' : 'Forgot Password'; ?></a></li>
                         <?php endif; ?>
@@ -89,7 +88,7 @@
     </footer>
     
     <!-- Optimized JavaScript -->
-    <script src="../js/optimized/main.min.js" defer></script>
+    <script src="js/optimized/main.min.js" defer></script>
     
     <!-- Performance monitoring -->
     <script>
@@ -99,5 +98,8 @@
             console.log('Page load time:', loadTime.toFixed(2), 'ms');
         });
     </script>
+    
+    <!-- Cookie Consent Banner -->
+    <?php include 'cookie_consent_banner.php'; ?>
 </body>
 </html>

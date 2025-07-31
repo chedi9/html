@@ -1,4 +1,7 @@
 <?php
+// Security and compatibility headers
+require_once 'security_integration.php';
+
 // Initialize session if not already started
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
@@ -15,6 +18,7 @@ if (!function_exists('__')) {
 }
 
 require 'db.php';
+require_once 'includes/thumbnail_helper.php';
 
 // Fetch products
 $products = $pdo->query("SELECT p.*, s.is_disabled FROM products p LEFT JOIN sellers s ON p.seller_id = s.id WHERE p.approved = 1 ORDER BY s.is_disabled DESC, p.created_at DESC LIMIT 8")->fetchAll();
@@ -52,30 +56,21 @@ $priority_products = getPriorityProducts(6);
     <title>WeBuy - Online Shopping Platform</title>
     
     <!-- CSS Files - Load in correct order -->
-    <link rel="stylesheet" href="css/base/_variables.css">
-    <link rel="stylesheet" href="css/base/_reset.css">
-    <link rel="stylesheet" href="css/base/_typography.css">
-    <link rel="stylesheet" href="css/base/_utilities.css">
-    <link rel="stylesheet" href="css/components/_buttons.css">
-    <link rel="stylesheet" href="css/components/_forms.css">
-    <link rel="stylesheet" href="css/components/_cards.css">
-    <link rel="stylesheet" href="css/components/_navigation.css">
-    <link rel="stylesheet" href="css/layout/_grid.css">
-    <link rel="stylesheet" href="css/layout/_sections.css">
-    <link rel="stylesheet" href="css/layout/_footer.css">
-    <link rel="stylesheet" href="css/themes/_light.css">
-    <link rel="stylesheet" href="css/themes/_dark.css">
-    <link rel="stylesheet" href="css/build.css">
+    <link rel="stylesheet" href="css/main.css">
     
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="favicon.ico">
     
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Amiri&display=swap" rel="stylesheet">
+    
+    <!-- JavaScript -->
+    <script src="js/theme-controller.js" defer></script>
+    <script src="main.js?v=1.5" defer></script>
 </head>
 <body class="page-transition">
     <!-- Skip to main content for accessibility -->
-    <a href="#main-content" class="skip-link">Skip to main content</a>
+    <a href="#main-content" class="skip-link"><?php echo __('skip_to_main_content'); ?></a>
     
     <?php include 'header.php'; ?>
     
@@ -98,29 +93,78 @@ $priority_products = getPriorityProducts(6);
     <main id="main-content" role="main">
         <!-- Hero Section -->
         <section class="hero">
+            <div class="hero__background">
+                <div class="hero__background-overlay"></div>
+                <div class="hero__background-pattern"></div>
+            </div>
             <div class="container">
                 <div class="hero__content">
-                    <h1 class="hero__title">
-                        <?php echo $lang === 'ar' ? 'اكتشف مواهب تونس وادعم الإبداع المحلي' : 'Discover Tunisian Talents and Support Local Creativity'; ?>
-                    </h1>
-                    <p class="hero__subtitle">
-                        <?php echo $lang === 'ar' ? 'منصة WeBuy تجمع أفضل المنتجات المصنوعة بحب وإتقان من قبل أفراد ذوي إعاقة في تونس. تسوق، شارك، وكن جزءًا من التغيير!' : 'WeBuy platform brings together the best products made with love and craftsmanship by individuals with disabilities in Tunisia. Shop, share, and be part of the change!'; ?>
-                    </p>
-                    <div class="hero__actions">
-                        <a href="#categories" class="btn btn--primary btn--lg">
-                            <?php echo $lang === 'ar' ? 'تصفح التصنيفات' : 'Browse Categories'; ?>
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <line x1="5" y1="12" x2="19" y2="12"></line>
-                                <polyline points="12,5 19,12 12,19"></polyline>
-                            </svg>
-                        </a>
-                        <a href="store.php" class="btn btn--secondary btn--lg">
-                            <?php echo $lang === 'ar' ? 'تسوق الآن' : 'Shop Now'; ?>
-                        </a>
+                    <div class="hero__text">
+                        <h1 class="hero__title">
+                            <?php echo __('discover_tunisian_talents'); ?>
+                        </h1>
+                        <p class="hero__subtitle">
+                            <?php echo __('webuy_platform_description'); ?>
+                        </p>
+                        <div class="hero__features">
+                            <div class="hero__feature">
+                                <span class="hero__feature-icon">🌟</span>
+                                <span class="hero__feature-text"><?php echo __('support_disabled_sellers'); ?></span>
+                            </div>
+                            <div class="hero__feature">
+                                <span class="hero__feature-icon">🚚</span>
+                                <span class="hero__feature-text"><?php echo __('fast_delivery'); ?></span>
+                            </div>
+                            <div class="hero__feature">
+                                <span class="hero__feature-icon">💳</span>
+                                <span class="hero__feature-text"><?php echo __('secure_payment'); ?></span>
+                            </div>
+                        </div>
+                        <div class="hero__actions">
+                            <a href="#categories" class="btn btn--primary btn--lg hero__btn">
+                                <?php echo __('browse_categories'); ?>
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                                    <polyline points="12,5 19,12 12,19"></polyline>
+                                </svg>
+                            </a>
+                            <a href="store.php" class="btn btn--secondary btn--lg hero__btn">
+                                <?php echo __('shop_now'); ?>
+                            </a>
+                        </div>
                     </div>
-                </div>
-                <div class="hero__image">
-                    <img src="webuy-logo-transparent.jpg" alt="WeBuy Logo" loading="lazy">
+                    <div class="hero__visual">
+                        <div class="hero__image-container">
+                            <div class="hero__image hero__image--main">
+                                <div class="hero__image-placeholder">
+                                    <svg width="120" height="120" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                        <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                                        <polyline points="21,15 16,10 5,21"></polyline>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="hero__image hero__image--secondary">
+                                <div class="hero__image-placeholder">
+                                    <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+                                        <path d="M2 17l10 5 10-5"></path>
+                                        <path d="M2 12l10 5 10-5"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="hero__image hero__image--tertiary">
+                                <div class="hero__image-placeholder">
+                                    <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <circle cx="12" cy="12" r="3"></circle>
+                                        <path d="M12 1v6m0 6v6"></path>
+                                        <path d="M18.36 5.64l-4.24 4.24m0 0l4.24 4.24m-4.24-4.24l4.24-4.24"></path>
+                                        <path d="M5.64 5.64l4.24 4.24m0 0l-4.24 4.24m4.24-4.24l-4.24-4.24"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
@@ -130,25 +174,44 @@ $priority_products = getPriorityProducts(6);
             <div class="container">
                 <div class="section__header">
                     <h2 class="section__title">
-                        <?php echo $lang === 'ar' ? 'التصنيفات المميزة' : 'Featured Categories'; ?>
+                        <?php echo __('featured_categories'); ?>
                     </h2>
                     <p class="section__subtitle">
-                        <?php echo $lang === 'ar' ? 'اكتشف مجموعة متنوعة من المنتجات المصنوعة بحب وإتقان' : 'Discover a diverse collection of products made with love and craftsmanship'; ?>
+                        <?php echo __('discover_diverse_collection'); ?>
                     </p>
                 </div>
                 
-                <div class="grid grid--3-cols">
+                <div class="grid grid--3">
                     <?php foreach (array_slice($categories, 0, 6) as $category): ?>
                         <?php $cat_name = $category['name_' . $lang] ?? $category['name']; ?>
                         <div class="card card--category">
                             <a href="store.php?category_id=<?php echo $category['id']; ?>" class="card__link">
                                 <div class="card__image">
+                                    <div class="skeleton skeleton--image"></div>
                                     <?php if (!empty($category['image'])): ?>
-                                        <img src="uploads/<?php echo htmlspecialchars($category['image']); ?>" 
-                                             alt="<?php echo htmlspecialchars($cat_name); ?>" loading="lazy">
+                                        <?php 
+                                        $optimized_image = get_optimized_image('uploads/' . $category['image'], 'category');
+                                        ?>
+                                        <img src="<?php echo $optimized_image['src']; ?>" 
+                                             srcset="<?php echo $optimized_image['srcset']; ?>"
+                                             sizes="<?php echo $optimized_image['sizes']; ?>"
+                                             alt="<?php echo htmlspecialchars($cat_name); ?>" 
+                                             loading="lazy"
+                                             width="200"
+                                             height="120"
+                                             onload="this.classList.add('loaded'); this.previousElementSibling.style.display='none';">
                                     <?php elseif (!empty($category['icon'])): ?>
-                                        <img src="uploads/<?php echo htmlspecialchars($category['icon']); ?>" 
-                                             alt="<?php echo htmlspecialchars($cat_name); ?>" loading="lazy">
+                                        <?php 
+                                        $optimized_image = get_optimized_image('uploads/' . $category['icon'], 'category');
+                                        ?>
+                                        <img src="<?php echo $optimized_image['src']; ?>" 
+                                             srcset="<?php echo $optimized_image['srcset']; ?>"
+                                             sizes="<?php echo $optimized_image['sizes']; ?>"
+                                             alt="<?php echo htmlspecialchars($cat_name); ?>" 
+                                             loading="lazy"
+                                             width="200"
+                                             height="120"
+                                             onload="this.classList.add('loaded'); this.previousElementSibling.style.display='none';">
                                     <?php else: ?>
                                         <div class="card__placeholder">
                                             <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -160,6 +223,7 @@ $priority_products = getPriorityProducts(6);
                                     <?php endif; ?>
                                 </div>
                                 <div class="card__content">
+                                    <div class="skeleton skeleton--title"></div>
                                     <h3 class="card__title"><?php echo htmlspecialchars($cat_name); ?></h3>
                                 </div>
                             </a>
@@ -175,22 +239,22 @@ $priority_products = getPriorityProducts(6);
             <div class="container">
                 <div class="section__header">
                     <h2 class="section__title">
-                        <?php echo $lang === 'ar' ? '🌟 منتجات البائعين ذوي الإعاقة' : '🌟 Products from Sellers with Disabilities'; ?>
+                        🌟 <?php echo __('products_from_disabled_sellers'); ?>
                     </h2>
                     <p class="section__subtitle">
-                        <?php echo $lang === 'ar' ? 'نساند وندعم البائعين ذوي الإعاقة في رحلتهم نحو النجاح' : 'We support and empower sellers with disabilities in their journey to success'; ?>
+                        <?php echo __('support_disabled_sellers'); ?>
                     </p>
                 </div>
                 
-                <div class="grid grid--3-cols">
+                <div class="grid grid--3">
                     <?php foreach ($priority_products as $product): ?>
                         <div class="card card--product" data-product-id="<?php echo $product['id']; ?>">
                             <div class="card__badge card__badge--priority">
-                                <?php echo $lang === 'ar' ? '🌟 بائع ذو إعاقة' : '🌟 Disabled Seller'; ?>
+                                🌟 <?php echo __('disabled_seller'); ?>
                             </div>
                             
                             <button class="card__wishlist" data-product-id="<?php echo $product['id']; ?>" 
-                                    title="<?php echo $lang === 'ar' ? 'إضافة إلى المفضلة' : 'Add to Wishlist'; ?>">
+                                    title="<?php echo __('add_to_wishlist'); ?>">
                                 <?php if (!empty($_SESSION['wishlist']) && in_array($product['id'], $_SESSION['wishlist'])): ?>
                                     <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2">
                                         <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
@@ -204,20 +268,59 @@ $priority_products = getPriorityProducts(6);
                             
                             <a href="product.php?id=<?php echo $product['id']; ?>" class="card__link">
                                 <div class="card__image">
-                                    <img src="uploads/<?php echo htmlspecialchars($product['image']); ?>" 
-                                         alt="<?php echo htmlspecialchars($product['name']); ?>" loading="lazy">
+                                    <div class="skeleton skeleton--image"></div>
+                                    <?php 
+                                    $optimized_image = get_optimized_image('uploads/' . $product['image'], 'card');
+                                    ?>
+                                    <img src="<?php echo $optimized_image['src']; ?>" 
+                                         srcset="<?php echo $optimized_image['srcset']; ?>"
+                                         sizes="<?php echo $optimized_image['sizes']; ?>"
+                                         alt="<?php echo htmlspecialchars($product['name']); ?>" 
+                                         loading="lazy"
+                                         width="300"
+                                         height="200"
+                                         onload="this.classList.add('loaded'); this.previousElementSibling.style.display='none';">
                                 </div>
                                 <div class="card__content">
+                                    <div class="skeleton skeleton--title"></div>
                                     <h3 class="card__title"><?php echo htmlspecialchars($product['name']); ?></h3>
+                                    <div class="skeleton skeleton--text"></div>
                                     <p class="card__description"><?php echo htmlspecialchars($product['description']); ?></p>
-                                    <div class="card__price"><?php echo htmlspecialchars($product['price']); ?> <?php echo $lang === 'ar' ? 'د.ت' : 'TND'; ?></div>
+                                    
+                                    <!-- Rating Section -->
+                                    <?php
+                                    // Get product rating
+                                    $stmt = $pdo->prepare('
+                                        SELECT AVG(rating) as avg_rating, COUNT(*) as review_count 
+                                        FROM reviews 
+                                        WHERE product_id = ? AND status = "approved"
+                                    ');
+                                    $stmt->execute([$product['id']]);
+                                    $rating_data = $stmt->fetch();
+                                    $avg_rating = round($rating_data['avg_rating'] ?? 0, 1);
+                                    $review_count = $rating_data['review_count'] ?? 0;
+                                    ?>
+                                    
+                                    <?php if ($avg_rating > 0): ?>
+                                        <div class="card__rating">
+                                            <div class="card__rating-stars">
+                                                <?php for ($i = 1; $i <= 5; $i++): ?>
+                                                    <span class="star <?php echo $i <= $avg_rating ? 'filled' : ''; ?>">★</span>
+                                                <?php endfor; ?>
+                                            </div>
+                                            <span class="card__rating-count">(<?php echo $review_count; ?>)</span>
+                                        </div>
+                                    <?php endif; ?>
+                                    
+                                    <div class="skeleton skeleton--price"></div>
+                                    <div class="card__price"><?php echo htmlspecialchars($product['price']); ?> <?php echo __('currency'); ?></div>
                                 </div>
                             </a>
                             
                             <form action="add_to_cart.php" method="get" class="card__form">
                                 <input type="hidden" name="id" value="<?php echo $product['id']; ?>">
                                 <button type="submit" class="btn btn--primary btn--sm">
-                                    <?php echo $lang === 'ar' ? 'إضافة إلى السلة' : 'Add to Cart'; ?>
+                                    <?php echo __('add_to_cart'); ?>
                                 </button>
                             </form>
                         </div>
@@ -226,7 +329,7 @@ $priority_products = getPriorityProducts(6);
                 
                 <div class="section__footer">
                     <a href="store.php?priority=disabled_sellers" class="btn btn--secondary">
-                        <?php echo $lang === 'ar' ? 'عرض جميع منتجات البائعين ذوي الإعاقة' : 'View All Products from Disabled Sellers'; ?>
+                        <?php echo __('view_all_disabled_seller_products'); ?>
                     </a>
                 </div>
             </div>
@@ -238,30 +341,30 @@ $priority_products = getPriorityProducts(6);
             <div class="container">
                 <div class="section__header">
                     <h2 class="section__title">
-                        <?php echo $lang === 'ar' ? 'المنتجات المميزة' : 'Featured Products'; ?>
+                        <?php echo __('featured_products'); ?>
                     </h2>
                     <p class="section__subtitle">
-                        <?php echo $lang === 'ar' ? 'اكتشف أحدث وأفضل المنتجات من بائعين موثوقين' : 'Discover the latest and best products from trusted sellers'; ?>
+                        <?php echo __('discover_latest_products'); ?>
                     </p>
                 </div>
                 
-                <div class="grid grid--4-cols">
+                <div class="grid grid--4">
                     <?php foreach ($products as $i => $product): ?>
                         <div class="card card--product" data-product-id="<?php echo $product['id']; ?>">
                             <?php if ($i < 3): ?>
                                 <div class="card__badge card__badge--new">
-                                    <?php echo $lang === 'ar' ? 'جديد' : 'New'; ?>
+                                    <?php echo __('new'); ?>
                                 </div>
                             <?php endif; ?>
                             
                             <?php if (!empty($product['is_disabled'])): ?>
                                 <div class="card__badge card__badge--disabled">
-                                    <?php echo $lang === 'ar' ? 'بائع ذو إعاقة' : 'Disabled Seller'; ?>
+                                    <?php echo __('disabled_seller'); ?>
                                 </div>
                             <?php endif; ?>
                             
                             <button class="card__wishlist" data-product-id="<?php echo $product['id']; ?>" 
-                                    title="<?php echo $lang === 'ar' ? 'إضافة إلى المفضلة' : 'Add to Wishlist'; ?>">
+                                    title="<?php echo __('add_to_wishlist'); ?>">
                                 <?php if (!empty($_SESSION['wishlist']) && in_array($product['id'], $_SESSION['wishlist'])): ?>
                                     <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2">
                                         <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
@@ -275,20 +378,59 @@ $priority_products = getPriorityProducts(6);
                             
                             <a href="product.php?id=<?php echo $product['id']; ?>" class="card__link">
                                 <div class="card__image">
-                                    <img src="uploads/<?php echo htmlspecialchars($product['image']); ?>" 
-                                         alt="<?php echo htmlspecialchars($product['name']); ?>" loading="lazy">
+                                    <div class="skeleton skeleton--image"></div>
+                                    <?php 
+                                    $optimized_image = get_optimized_image('uploads/' . $product['image'], 'card');
+                                    ?>
+                                    <img src="<?php echo $optimized_image['src']; ?>" 
+                                         srcset="<?php echo $optimized_image['srcset']; ?>"
+                                         sizes="<?php echo $optimized_image['sizes']; ?>"
+                                         alt="<?php echo htmlspecialchars($product['name']); ?>" 
+                                         loading="lazy"
+                                         width="300"
+                                         height="200"
+                                         onload="this.classList.add('loaded'); this.previousElementSibling.style.display='none';">
                                 </div>
                                 <div class="card__content">
+                                    <div class="skeleton skeleton--title"></div>
                                     <h3 class="card__title"><?php echo htmlspecialchars($product['name']); ?></h3>
+                                    <div class="skeleton skeleton--text"></div>
                                     <p class="card__description"><?php echo htmlspecialchars($product['description']); ?></p>
-                                    <div class="card__price"><?php echo htmlspecialchars($product['price']); ?> <?php echo $lang === 'ar' ? 'د.ت' : 'TND'; ?></div>
+                                    
+                                    <!-- Rating Section -->
+                                    <?php
+                                    // Get product rating
+                                    $stmt = $pdo->prepare('
+                                        SELECT AVG(rating) as avg_rating, COUNT(*) as review_count 
+                                        FROM reviews 
+                                        WHERE product_id = ? AND status = "approved"
+                                    ');
+                                    $stmt->execute([$product['id']]);
+                                    $rating_data = $stmt->fetch();
+                                    $avg_rating = round($rating_data['avg_rating'] ?? 0, 1);
+                                    $review_count = $rating_data['review_count'] ?? 0;
+                                    ?>
+                                    
+                                    <?php if ($avg_rating > 0): ?>
+                                        <div class="card__rating">
+                                            <div class="card__rating-stars">
+                                                <?php for ($i = 1; $i <= 5; $i++): ?>
+                                                    <span class="star <?php echo $i <= $avg_rating ? 'filled' : ''; ?>">★</span>
+                                                <?php endfor; ?>
+                                            </div>
+                                            <span class="card__rating-count">(<?php echo $review_count; ?>)</span>
+                                        </div>
+                                    <?php endif; ?>
+                                    
+                                    <div class="skeleton skeleton--price"></div>
+                                    <div class="card__price"><?php echo htmlspecialchars($product['price']); ?> <?php echo __('currency'); ?></div>
                                 </div>
                             </a>
                             
                             <form action="add_to_cart.php" method="get" class="card__form">
                                 <input type="hidden" name="id" value="<?php echo $product['id']; ?>">
                                 <button type="submit" class="btn btn--primary btn--sm">
-                                    <?php echo $lang === 'ar' ? 'إضافة إلى السلة' : 'Add to Cart'; ?>
+                                    <?php echo __('add_to_cart'); ?>
                                 </button>
                             </form>
                         </div>
@@ -303,11 +445,11 @@ $priority_products = getPriorityProducts(6);
             <div class="container">
                 <div class="section__header">
                     <h2 class="section__title">
-                        <?php echo $lang === 'ar' ? 'المنتجات التي شاهدتها مؤخرًا' : 'Recently Viewed Products'; ?>
+                        <?php echo __('recently_viewed'); ?>
                     </h2>
                 </div>
                 
-                <div class="grid grid--4-cols">
+                <div class="grid grid--4">
                     <?php foreach ($recently_viewed as $product): ?>
                         <?php $prod_name = $product['name_' . $lang] ?? $product['name']; ?>
                         <div class="card card--product">
@@ -337,22 +479,17 @@ $priority_products = getPriorityProducts(6);
         <!-- About Section -->
         <section class="section section--highlight">
             <div class="container">
-                <div class="grid grid--2-cols">
-                    <div class="section__content">
-                        <h2 class="section__title">
-                            <?php echo $lang === 'ar' ? 'من نحن' : 'About Us'; ?>
-                        </h2>
-                        <p class="section__text">
-                            <?php echo $lang === 'ar' ? 'منصة WeBuy هي منصة تسوق إلكتروني مخصصة لدعم وتمكين الأفراد ذوي الإعاقة في تونس. نساعدهم على بيع منتجاتهم وبناء مستقبل مستقل.' : 'WeBuy is an e-commerce platform dedicated to supporting and empowering individuals with disabilities in Tunisia. We help them sell their products and build an independent future.'; ?>
-                        </p>
-                        <div class="section__actions">
-                            <a href="about.php" class="btn btn--primary">
-                                <?php echo $lang === 'ar' ? 'تعرف على المزيد' : 'Learn More'; ?>
-                            </a>
-                        </div>
-                    </div>
-                    <div class="section__image">
-                        <img src="webuy.jpg" alt="WeBuy Platform" loading="lazy">
+                <div class="section__content">
+                    <h2 class="section__title">
+                        <?php echo $lang === 'ar' ? 'من نحن' : 'About Us'; ?>
+                    </h2>
+                    <p class="section__text">
+                        <?php echo $lang === 'ar' ? 'منصة WeBuy هي منصة تسوق إلكتروني مخصصة لدعم وتمكين الأفراد ذوي الإعاقة في تونس. نساعدهم على بيع منتجاتهم وبناء مستقبل مستقل.' : 'WeBuy is an e-commerce platform dedicated to supporting and empowering individuals with disabilities in Tunisia. We help them sell their products and build an independent future.'; ?>
+                    </p>
+                    <div class="section__actions">
+                        <a href="faq.php" class="btn btn--primary">
+                            <?php echo $lang === 'ar' ? 'تعرف على المزيد' : 'Learn More'; ?>
+                        </a>
                     </div>
                 </div>
             </div>

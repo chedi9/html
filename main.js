@@ -1,61 +1,144 @@
-// Dark Mode Toggle - Consolidated
-const themeToggle = document.getElementById('themeToggle');
-const darkModeToggle = document.getElementById('darkModeToggle');
+/* ========================================
+   WeBuy - Main JavaScript File
+   ======================================== */
 
-console.log('Script loaded, themeToggle element:', themeToggle);
-console.log('Current data-theme attribute:', document.documentElement.getAttribute('data-theme'));
+// ========================================
+// Theme Management (handled by ThemeController)
+// ========================================
 
-// Function to toggle theme
+// Legacy theme functions for backward compatibility
 function toggleTheme() {
-  const currentTheme = document.documentElement.getAttribute('data-theme');
-  const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-  
-  console.log('Toggling theme from', currentTheme, 'to', newTheme);
-  
-  document.documentElement.setAttribute('data-theme', newTheme);
-  localStorage.setItem('theme', newTheme);
-  
-  console.log('Theme updated to:', document.documentElement.getAttribute('data-theme'));
-}
-
-// Set up theme toggle (new version)
-if (themeToggle) {
-  console.log('Theme toggle found, setting up event listener');
-  themeToggle.addEventListener('click', toggleTheme);
-  
-  // Test click event
-  themeToggle.addEventListener('click', function(e) {
-    console.log('Theme toggle clicked!', e);
-  });
-} else {
-  console.log('Theme toggle not found');
-}
-
-// Set up legacy dark mode toggle (for backward compatibility)
-if (darkModeToggle) {
-  darkModeToggle.addEventListener('click', () => {
-    document.body.classList.toggle('dark-mode');
-    localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
-  });
-  
-  // On load, set dark mode if previously chosen
-  if (localStorage.getItem('darkMode') === 'true') {
-    document.body.classList.add('dark-mode');
+  if (window.themeController) {
+    window.themeController.toggleTheme();
   }
 }
 
-// Initialize theme on page load - Force light mode if no preference
-const savedTheme = localStorage.getItem('theme');
-if (savedTheme === 'dark') {
-  console.log('Initializing theme: dark (from localStorage)');
-  document.documentElement.setAttribute('data-theme', 'dark');
-} else {
-  console.log('Initializing theme: light (default)');
-  document.documentElement.setAttribute('data-theme', 'light');
-  localStorage.setItem('theme', 'light'); // Ensure light mode is saved
+// ========================================
+// Toast Notifications
+// ========================================
+
+function showToast(message, type = 'info') {
+  // Create toast container if it doesn't exist
+  let toastContainer = document.getElementById('toast-container');
+  if (!toastContainer) {
+    toastContainer = document.createElement('div');
+    toastContainer.id = 'toast-container';
+    toastContainer.style.cssText = `
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    `;
+    document.body.appendChild(toastContainer);
+  }
+  
+  // Create toast element
+  const toast = document.createElement('div');
+  toast.style.cssText = `
+    padding: 12px 16px;
+    border-radius: 6px;
+    color: white;
+    font-size: 14px;
+    font-weight: 500;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transform: translateX(100%);
+    transition: transform 0.3s ease;
+    max-width: 300px;
+    word-wrap: break-word;
+  `;
+  
+  // Set background color based on type
+  const colors = {
+    success: '#10b981',
+    warning: '#f59e0b',
+    danger: '#ef4444',
+    info: '#3b82f6'
+  };
+  
+  toast.style.backgroundColor = colors[type] || colors.info;
+  toast.textContent = message;
+  
+  // Add to container
+  toastContainer.appendChild(toast);
+  
+  // Animate in
+  setTimeout(() => {
+    toast.style.transform = 'translateX(0)';
+  }, 10);
+  
+  // Remove after 3 seconds
+  setTimeout(() => {
+    toast.style.transform = 'translateX(100%)';
+    setTimeout(() => {
+      if (toast.parentNode) {
+        toast.parentNode.removeChild(toast);
+      }
+    }, 300);
+  }, 3000);
 }
 
-console.log('Final theme after initialization:', document.documentElement.getAttribute('data-theme'));
+// ========================================
+// Language Management
+// ========================================
+
+// Language Toggle Functionality
+const languageToggle = document.getElementById('languageToggle');
+
+function toggleLanguage() {
+  const currentLang = document.documentElement.getAttribute('lang') || 'en';
+  let newLang;
+  
+  // Cycle through three languages: en -> ar -> fr -> en
+  if (currentLang === 'en') {
+    newLang = 'ar';
+  } else if (currentLang === 'ar') {
+    newLang = 'fr';
+  } else {
+    newLang = 'en';
+  }
+  
+  console.log('Toggling language from', currentLang, 'to', newLang);
+  
+  // Update HTML attributes
+  document.documentElement.setAttribute('lang', newLang);
+  document.documentElement.setAttribute('dir', newLang === 'ar' ? 'rtl' : 'ltr');
+  
+  // Update localStorage
+  localStorage.setItem('language', newLang);
+  
+  // Update button text
+  const buttonText = languageToggle.querySelector('.language-toggle__text');
+  if (buttonText) {
+    if (newLang === 'ar') {
+      buttonText.textContent = 'FR';
+    } else if (newLang === 'fr') {
+      buttonText.textContent = 'عربي';
+    } else {
+      buttonText.textContent = 'EN';
+    }
+  }
+  
+  // Reload page to apply language changes
+  setTimeout(() => {
+    window.location.reload();
+  }, 300);
+}
+
+// Set up language toggle
+if (languageToggle) {
+  console.log('Language toggle found, setting up event listener');
+  languageToggle.addEventListener('click', toggleLanguage);
+} else {
+  console.log('Language toggle not found');
+}
+
+// Initialize language on page load
+const savedLanguage = localStorage.getItem('language') || 'en';
+document.documentElement.setAttribute('lang', savedLanguage);
+document.documentElement.setAttribute('dir', savedLanguage === 'ar' ? 'rtl' : 'ltr');
 
 // Quick View Modal
 const quickViewModal = document.getElementById('quickViewModal');
@@ -271,6 +354,161 @@ function setupWishlist() {
   });
 }
 document.addEventListener('DOMContentLoaded', setupWishlist); 
+
+// Review functionality
+function voteReview(reviewId, voteType) {
+  fetch('review_vote_handler.php', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    body: 'review_id=' + reviewId + '&vote_type=' + voteType
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      // Update vote counts
+      const helpfulElement = document.getElementById('helpful-' + reviewId);
+      const unhelpfulElement = document.getElementById('unhelpful-' + reviewId);
+      
+      if (helpfulElement && data.helpful_votes !== undefined) {
+        helpfulElement.textContent = data.helpful_votes;
+      }
+      
+      if (unhelpfulElement && data.unhelpful_votes !== undefined) {
+        unhelpfulElement.textContent = data.unhelpful_votes;
+      }
+      
+      showToast(data.message || 'Vote recorded successfully!', 'success');
+    } else {
+      showToast(data.message || 'Error recording vote', 'danger');
+    }
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    showToast('Error recording vote', 'danger');
+  });
+}
+
+// Image modal functionality
+function openImageModal(imageSrc) {
+  const modal = document.createElement('div');
+  modal.className = 'image-modal';
+  modal.style.display = 'flex';
+  
+  modal.innerHTML = `
+    <div class="close" onclick="closeImageModal()">&times;</div>
+    <img src="${imageSrc}" alt="Review image">
+  `;
+  
+  document.body.appendChild(modal);
+  
+  // Close on background click
+  modal.addEventListener('click', function(e) {
+    if (e.target === modal) {
+      closeImageModal();
+    }
+  });
+  
+  // Close on escape key
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      closeImageModal();
+    }
+  });
+}
+
+function closeImageModal() {
+  const modal = document.querySelector('.image-modal');
+  if (modal) {
+    modal.remove();
+  }
+}
+
+// Review form enhancement
+function initReviewForm() {
+  const reviewForm = document.querySelector('.review-form');
+  if (reviewForm) {
+    // Character counter for review title
+    const titleInput = document.getElementById('review_title');
+    if (titleInput) {
+      titleInput.addEventListener('input', function() {
+        const remaining = 100 - this.value.length;
+        if (!this.nextElementSibling || !this.nextElementSibling.classList.contains('char-counter')) {
+          const counter = document.createElement('small');
+          counter.className = 'char-counter';
+          counter.style.color = 'var(--color-gray-500)';
+          this.parentNode.appendChild(counter);
+        }
+        this.nextElementSibling.textContent = `${remaining} characters remaining`;
+      });
+    }
+    
+    // Character counter for review comment
+    const commentInput = document.getElementById('comment');
+    if (commentInput) {
+      commentInput.addEventListener('input', function() {
+        const remaining = 1000 - this.value.length;
+        if (!this.nextElementSibling || !this.nextElementSibling.classList.contains('char-counter')) {
+          const counter = document.createElement('small');
+          counter.className = 'char-counter';
+          counter.style.color = 'var(--color-gray-500)';
+          this.parentNode.appendChild(counter);
+        }
+        this.nextElementSibling.textContent = `${remaining} characters remaining`;
+      });
+    }
+    
+    // File upload preview
+    const fileInput = document.getElementById('review_images');
+    if (fileInput) {
+      fileInput.addEventListener('change', function() {
+        const previewContainer = document.createElement('div');
+        previewContainer.className = 'image-preview';
+        previewContainer.style.display = 'grid';
+        previewContainer.style.gridTemplateColumns = 'repeat(auto-fit, minmax(100px, 1fr))';
+        previewContainer.style.gap = 'var(--space-2)';
+        previewContainer.style.marginTop = 'var(--space-2)';
+        
+        // Remove existing preview
+        const existingPreview = this.parentNode.querySelector('.image-preview');
+        if (existingPreview) {
+          existingPreview.remove();
+        }
+        
+        if (this.files.length > 0) {
+          for (let i = 0; i < Math.min(this.files.length, 5); i++) {
+            const file = this.files[i];
+            if (file.type.startsWith('image/')) {
+              const reader = new FileReader();
+              reader.onload = function(e) {
+                const preview = document.createElement('div');
+                preview.style.aspectRatio = '1';
+                preview.style.borderRadius = 'var(--border-radius-md)';
+                preview.style.overflow = 'hidden';
+                
+                const img = document.createElement('img');
+                img.src = e.target.result;
+                img.style.width = '100%';
+                img.style.height = '100%';
+                img.style.objectFit = 'cover';
+                
+                preview.appendChild(img);
+                previewContainer.appendChild(preview);
+              };
+              reader.readAsDataURL(file);
+            }
+          }
+          this.parentNode.appendChild(previewContainer);
+        }
+      });
+    }
+  }
+}
+
+// Initialize review form when DOM is loaded
+document.addEventListener('DOMContentLoaded', initReviewForm);
+
 document.addEventListener('DOMContentLoaded', function() {
   const reviewForm = document.getElementById('reviewForm');
   if (reviewForm) {
@@ -484,11 +722,251 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   }
 }); 
-document.querySelectorAll('.card__image img').forEach(img => {
-  img.addEventListener('load', function() {
-    img.classList.add('loaded');
-    const skeleton = img.parentElement.querySelector('.skeleton');
-    if (skeleton) skeleton.style.opacity = '0';
-    setTimeout(() => { if (skeleton) skeleton.remove(); }, 400);
+// ========================================
+// Image Loading and Skeleton Management
+// ========================================
+
+function initImageLoading() {
+  // Handle image loading
+  const images = document.querySelectorAll('img[loading="lazy"]');
+  
+  images.forEach(img => {
+    // Create a more reliable loading detection
+    const skeleton = img.previousElementSibling;
+    if (skeleton && skeleton.classList.contains('skeleton')) {
+      // Hide skeleton when image starts loading
+      img.addEventListener('loadstart', function() {
+        skeleton.style.display = 'none';
+      });
+      
+      // Also hide when image is loaded (backup)
+      img.addEventListener('load', function() {
+        this.classList.add('loaded');
+        skeleton.style.display = 'none';
+      });
+      
+      // Handle image load errors
+      img.addEventListener('error', function() {
+        this.style.display = 'none';
+        skeleton.style.display = 'block';
+      });
+      
+      // Additional method: Check if image is already cached
+      if (img.complete && img.naturalWidth > 0) {
+        // Image is already loaded (cached)
+        skeleton.style.display = 'none';
+        img.classList.add('loaded');
+      } else {
+        // Image is not loaded yet, add loading event
+        img.addEventListener('load', function() {
+          skeleton.style.display = 'none';
+          this.classList.add('loaded');
+        });
+      }
+      
+      // Force hide skeleton after a timeout as backup
+      setTimeout(() => {
+        if (skeleton && skeleton.style.display !== 'none') {
+          skeleton.style.display = 'none';
+        }
+      }, 2000);
+    }
   });
+  
+  // Handle text content skeletons
+  const textSkeletons = document.querySelectorAll('.skeleton--title, .skeleton--text, .skeleton--price');
+  textSkeletons.forEach(skeleton => {
+    // Hide text skeletons when their corresponding content is loaded
+    const cardContent = skeleton.closest('.product-card__body, .card__content');
+    if (cardContent) {
+      // Check if corresponding content exists and hide skeleton
+      const titleSkeleton = skeleton.classList.contains('skeleton--title');
+      const textSkeleton = skeleton.classList.contains('skeleton--text');
+      const priceSkeleton = skeleton.classList.contains('skeleton--price');
+      
+      // Check for product card title (product-card__title or card__title)
+      if (titleSkeleton && (cardContent.querySelector('.product-card__title') || cardContent.querySelector('.card__title'))) {
+        skeleton.style.display = 'none';
+      }
+      
+      // Check for product card description (product-card__meta or card__description)
+      if (textSkeleton && (cardContent.querySelector('.product-card__meta') || cardContent.querySelector('.card__description'))) {
+        skeleton.style.display = 'none';
+      }
+      
+      // Check for product card price (product-card__price or card__price)
+      if (priceSkeleton && (cardContent.querySelector('.product-card__price') || cardContent.querySelector('.card__price'))) {
+        skeleton.style.display = 'none';
+      }
+      
+      // Fallback: hide all text skeletons after a short delay
+      setTimeout(() => {
+        if (skeleton.style.display !== 'none') {
+          skeleton.style.display = 'none';
+        }
+      }, 500);
+    }
+  });
+  
+  // Additional fallback: Hide all skeletons after page load
+  window.addEventListener('load', () => {
+    setTimeout(() => {
+      const allSkeletons = document.querySelectorAll('.skeleton');
+      allSkeletons.forEach(skeleton => {
+        skeleton.style.display = 'none';
+      });
+    }, 1000);
+  });
+  
+  // Handle category card skeletons specifically
+  const categorySkeletons = document.querySelectorAll('.card--category .skeleton--title');
+  categorySkeletons.forEach(skeleton => {
+    const cardContent = skeleton.closest('.card__content');
+    if (cardContent && cardContent.querySelector('.card__title')) {
+      // Hide category title skeleton immediately if title exists
+      skeleton.style.display = 'none';
+    } else {
+      // Fallback: hide after delay
+      setTimeout(() => {
+        if (skeleton.style.display !== 'none') {
+          skeleton.style.display = 'none';
+        }
+      }, 300);
+    }
+  });
+}
+
+// ========================================
+// Product Card Enhancements
+// ========================================
+
+function initProductCards() {
+  // Handle product card skeletons
+  const productCardElements = document.querySelectorAll('.product-card');
+  productCardElements.forEach(card => {
+    // Hide skeletons when content is loaded
+    const skeletons = card.querySelectorAll('.skeleton');
+    const content = card.querySelectorAll('.product-card__title, .product-card__meta, .product-card__price, img');
+    
+    // If content exists, hide skeletons
+    if (content.length > 0) {
+      skeletons.forEach(skeleton => {
+        skeleton.style.display = 'none';
+      });
+    }
+  });
+  
+  // Handle wishlist functionality
+  const wishlistButtons = document.querySelectorAll('.card__wishlist');
+  
+  wishlistButtons.forEach(button => {
+    button.addEventListener('click', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      
+      const productId = this.dataset.productId;
+      addToWishlist(productId);
+    });
+  });
+  
+  // Handle card hover effects
+  const productCards = document.querySelectorAll('.card--product');
+  
+  productCards.forEach(card => {
+    card.addEventListener('mouseenter', function() {
+      this.style.transform = 'translateY(-4px)';
+    });
+    
+    card.addEventListener('mouseleave', function() {
+      this.style.transform = 'translateY(0)';
+    });
+  });
+}
+
+// ========================================
+// Rating Display
+// ========================================
+
+function initRatingDisplay() {
+  // Add rating tooltips
+  const ratingStars = document.querySelectorAll('.card__rating-stars');
+  
+  ratingStars.forEach(stars => {
+    const starElements = stars.querySelectorAll('.star');
+    const ratingCount = stars.nextElementSibling;
+    
+    if (ratingCount) {
+      const count = ratingCount.textContent.match(/\((\d+)\)/)?.[1] || '0';
+      stars.title = `${count} reviews`;
+    }
+  });
+}
+
+// ========================================
+// Initialize All Features
+// ========================================
+
+document.addEventListener('DOMContentLoaded', function() {
+  initImageLoading();
+  initProductCards();
+  initRatingDisplay();
+  
+  // Initialize existing features
+  if (typeof setupWishlist === 'function') {
+    setupWishlist();
+  }
+  
+  if (typeof setupAjaxAddToCart === 'function') {
+    setupAjaxAddToCart();
+  }
+  
+  // Force hide all skeletons after a delay as final fallback
+  setTimeout(() => {
+    const allSkeletons = document.querySelectorAll('.skeleton');
+    allSkeletons.forEach(skeleton => {
+      skeleton.style.display = 'none';
+    });
+  }, 1500);
+}); 
+
+// Language Select Functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const languageSelect = document.getElementById('languageSelect');
+    const languageDropdown = document.getElementById('languageDropdown');
+    
+    if (languageSelect && languageDropdown) {
+        // Toggle dropdown on button click
+        languageSelect.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            const isExpanded = languageSelect.getAttribute('aria-expanded') === 'true';
+            languageSelect.setAttribute('aria-expanded', !isExpanded);
+            languageDropdown.classList.toggle('language-select__dropdown--open');
+        });
+        
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!languageSelect.contains(e.target) && !languageDropdown.contains(e.target)) {
+                languageSelect.setAttribute('aria-expanded', 'false');
+                languageDropdown.classList.remove('language-select__dropdown--open');
+            }
+        });
+        
+        // Keyboard navigation
+        languageSelect.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                languageSelect.click();
+            }
+        });
+        
+        // Close dropdown on Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                languageSelect.setAttribute('aria-expanded', 'false');
+                languageDropdown.classList.remove('language-select__dropdown--open');
+            }
+        });
+    }
 }); 

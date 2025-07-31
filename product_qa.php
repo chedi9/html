@@ -282,7 +282,7 @@ $questions = getProductQA($pdo, $product_id);
         </div>
         <?php else: ?>
         <div class="ask-question-section">
-            <p>يجب <a href="client/login.php">تسجيل الدخول</a> لطرح سؤال.</p>
+            <p>يجب <a href="login.php">تسجيل الدخول</a> لطرح سؤال.</p>
         </div>
         <?php endif; ?>
         

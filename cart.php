@@ -1,15 +1,18 @@
 <?php
+// Security and compatibility headers
+require_once 'security_integration.php';
+
 // Enable error reporting for debugging
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-// Security and compatibility headers
 header('Content-Type: text/html; charset=utf-8');
 header('Cache-Control: public, max-age=3600');
 header('X-Content-Type-Options: nosniff');
 header("Content-Security-Policy: frame-ancestors 'self'");
 if (session_status() === PHP_SESSION_NONE) session_start();
 require 'db.php';
+require_once 'includes/thumbnail_helper.php';
 if (!isset($_SESSION['cart'])) {
     $_SESSION['cart'] = [];
 }
@@ -71,7 +74,32 @@ $lang = $_GET['lang'] ?? $_SESSION['lang'] ?? 'ar';
     <meta charset="UTF-8">
     <title>سلة التسوق</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="beta333.css">
+    
+    <!-- CSS Files - Load in correct order -->
+    <link rel="stylesheet" href="css/base/_variables.css">
+    <link rel="stylesheet" href="css/base/_reset.css">
+    <link rel="stylesheet" href="css/base/_typography.css">
+    <link rel="stylesheet" href="css/base/_utilities.css">
+    <link rel="stylesheet" href="css/components/_buttons.css">
+    <link rel="stylesheet" href="css/components/_forms.css">
+    <link rel="stylesheet" href="css/components/_cards.css">
+    <link rel="stylesheet" href="css/components/_navigation.css">
+    <link rel="stylesheet" href="css/layout/_grid.css">
+    <link rel="stylesheet" href="css/layout/_sections.css">
+    <link rel="stylesheet" href="css/layout/_footer.css">
+    <link rel="stylesheet" href="css/themes/_light.css">
+    <link rel="stylesheet" href="css/themes/_dark.css">
+    <link rel="stylesheet" href="css/build.css">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Amiri&display=swap" rel="stylesheet">
+    
+    <!-- JavaScript -->
+    <script src="main.js?v=1.4" defer></script>
+    
     <?php if (!empty($_SESSION['is_mobile'])): ?>
     <link rel="stylesheet" href="mobile.css">
     <?php endif; ?>
@@ -113,13 +141,20 @@ $lang = $_GET['lang'] ?? $_SESSION['lang'] ?? 'ar';
   <?php $cart_key = array_keys($_SESSION['cart'])[$idx]; ?>
   <tr>
     <td><?php if ($item['image']): ?>
-            <div class="product-img-wrap">
+            <div class="product-img-wrap" style="position: relative; overflow: hidden;">
+                <div class="skeleton skeleton--image"></div>
                 <?php 
-                $image_path = "uploads/" . htmlspecialchars($item['image']);
-                $thumb_path = "uploads/thumbnails/" . pathinfo($item['image'], PATHINFO_FILENAME) . "_thumb.jpg";
-                $final_image = file_exists($thumb_path) ? $thumb_path : $image_path;
+                $optimized_image = get_optimized_image('uploads/' . $item['image'], 'card');
                 ?>
-                <img src="<?php echo $final_image; ?>" alt="<?php echo htmlspecialchars($item['name']); ?>" loading="lazy" width="300" height="300">
+                <img src="<?php echo $optimized_image['src']; ?>" 
+                     srcset="<?php echo $optimized_image['srcset']; ?>" 
+                     sizes="<?php echo $optimized_image['sizes']; ?>"
+                     alt="<?php echo htmlspecialchars($item['name']); ?>" 
+                     loading="lazy" 
+                     width="80" 
+                     height="80" 
+                     style="position: relative; z-index: 2; object-fit: cover; border-radius: 4px;"
+                     onload="this.classList.add('loaded'); this.previousElementSibling.style.display='none';">
             </div>
     <?php endif; ?></td>
     <td><a href="product.php?id=<?php echo $item['id']; ?>"><?php echo htmlspecialchars($item['name']); ?></a>
@@ -127,10 +162,10 @@ $lang = $_GET['lang'] ?? $_SESSION['lang'] ?? 'ar';
       <div style="font-size:0.98em;color:#1A237E;margin-top:4px;">(<?php echo htmlspecialchars($item['variant']); ?>)</div>
     <?php endif; ?>
     </td>
-    <td><?php echo htmlspecialchars($item['price']); ?> د.ت</td>
+          <td><?php echo htmlspecialchars($item['price']); ?> <?php echo __('currency'); ?></td>
     <td><input type="number" name="qty[<?php echo htmlspecialchars($cart_key); ?>]" value="<?php echo $item['qty']; ?>" min="1" style="width:60px;"></td>
-    <td><?php echo $item['subtotal']; ?> د.ت</td>
-    <td><a href="cart.php?remove=<?php echo urlencode($cart_key); ?>" class="remove-btn">إزالة</a></td>
+          <td><?php echo $item['subtotal']; ?> <?php echo __('currency'); ?></td>
+                        <td><a href="cart.php?remove=<?php echo urlencode($cart_key); ?>" class="remove-btn"><?php echo __('remove'); ?></a></td>
   </tr>
 <?php endforeach; ?>
             </tbody>
@@ -140,7 +175,7 @@ $lang = $_GET['lang'] ?? $_SESSION['lang'] ?? 'ar';
         <h3 style="text-align:left; margin-top:30px;">الإجمالي: <?php echo $total; ?> د.ت</h3>
                   <a href="checkout.php" class="checkout-btn">إتمام الشراء</a>
             <?php if (!isset($_SESSION['user_id'])): ?>
-                <a href="checkout.php?guest=1" class="checkout-btn" style="background: #28a745; margin-top: 10px;">🛒 Continue as Guest (Online Payments Only)</a>
+                <a href="checkout.php?guest=1" class="checkout-btn" style="background: #28a745; margin-top: 10px;">🛒 <?php echo __('continue_as_guest'); ?></a>
             <?php endif; ?>
           <?php else: ?>
           <p style="text-align:center;">سلة التسوق فارغة</p>
@@ -148,5 +183,8 @@ $lang = $_GET['lang'] ?? $_SESSION['lang'] ?? 'ar';
                   <a href="index.php" class="checkout-btn" style="background:var(--secondary-color);margin-top:30px;display:inline-block !important;visibility:visible !important;opacity:1 !important;">العودة للتسوق</a>
     </div>
 </div>
+
+<!-- Cookie Consent Banner -->
+<?php include 'cookie_consent_banner.php'; ?>
 </body>
 </html> 

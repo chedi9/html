@@ -1,4 +1,7 @@
 <?php
+// Security and compatibility headers
+require_once 'security_integration.php';
+
 session_start();
 require 'db.php';
 
@@ -26,25 +29,31 @@ if (empty($token)) {
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title><?php echo $page_title; ?> - WeBuy</title>
-        <link rel="stylesheet" href="beta333.css">
-        <style>
-            .auth-container { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px; }
-            .auth-card { background: white; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); padding: 40px; width: 100%; max-width: 450px; text-align: center; }
-            .auth-logo { font-size: 2.5em; font-weight: bold; color: #1A237E; margin-bottom: 10px; }
-            .auth-subtitle { color: #666; margin-bottom: 30px; }
-            .form-group { margin-bottom: 20px; text-align: right; }
-            .form-group label { display: block; margin-bottom: 8px; font-weight: 600; color: #333; }
-            .form-control { width: 100%; padding: 15px; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 16px; transition: border-color 0.3s ease; }
-            .form-control:focus { outline: none; border-color: #00BFAE; box-shadow: 0 0 0 3px rgba(0, 191, 174, 0.1); }
-            .btn-primary { width: 100%; padding: 15px; background: linear-gradient(135deg, #00BFAE 0%, #1A237E 100%); color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: 600; cursor: pointer; transition: transform 0.3s ease; }
-            .btn-primary:hover { transform: translateY(-2px); }
-            .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
-            .auth-links { margin-top: 25px; padding-top: 20px; border-top: 1px solid #e0e0e0; }
-            .auth-links a { color: #00BFAE; text-decoration: none; font-weight: 600; }
-            .auth-links a:hover { text-decoration: underline; }
-            .message { padding: 15px; border-radius: 10px; margin-bottom: 20px; font-weight: 600; }
-            .message.error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
-        </style>
+        
+        <!-- CSS Files - Load in correct order -->
+        <link rel="stylesheet" href="css/base/_variables.css">
+        <link rel="stylesheet" href="css/base/_reset.css">
+        <link rel="stylesheet" href="css/base/_typography.css">
+        <link rel="stylesheet" href="css/base/_utilities.css">
+        <link rel="stylesheet" href="css/components/_buttons.css">
+        <link rel="stylesheet" href="css/components/_forms.css">
+        <link rel="stylesheet" href="css/components/_cards.css">
+        <link rel="stylesheet" href="css/components/_navigation.css">
+        <link rel="stylesheet" href="css/layout/_grid.css">
+        <link rel="stylesheet" href="css/layout/_sections.css">
+        <link rel="stylesheet" href="css/layout/_footer.css">
+        <link rel="stylesheet" href="css/themes/_light.css">
+        <link rel="stylesheet" href="css/themes/_dark.css">
+        <link rel="stylesheet" href="css/build.css">
+        
+        <!-- Favicon -->
+        <link rel="icon" type="image/x-icon" href="favicon.ico">
+        
+        <!-- Google Fonts -->
+        <link href="https://fonts.googleapis.com/css2?family=Amiri&display=swap" rel="stylesheet">
+        
+        <!-- JavaScript -->
+        <script src="main.js?v=1.2" defer></script>
     </head>
     <body>
         <div style="display:flex;justify-content:flex-end;align-items:center;margin-bottom:10px;max-width:600px;margin-left:auto;margin-right:auto;gap:18px;">
@@ -128,126 +137,31 @@ if (!$reset_data) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo $page_title; ?> - WeBuy</title>
-    <link rel="stylesheet" href="beta333.css">
-    <style>
-        .auth-container {
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            padding: 20px;
-        }
-        .auth-card {
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-            padding: 40px;
-            width: 100%;
-            max-width: 450px;
-            text-align: center;
-        }
-        .auth-logo {
-            font-size: 2.5em;
-            font-weight: bold;
-            color: #1A237E;
-            margin-bottom: 10px;
-        }
-        .auth-subtitle {
-            color: #666;
-            margin-bottom: 30px;
-        }
-        .form-group {
-            margin-bottom: 20px;
-            text-align: right;
-        }
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: #333;
-        }
-        .form-control {
-            width: 100%;
-            padding: 15px;
-            border: 2px solid #e0e0e0;
-            border-radius: 10px;
-            font-size: 16px;
-            transition: border-color 0.3s ease;
-        }
-        .form-control:focus {
-            outline: none;
-            border-color: #00BFAE;
-            box-shadow: 0 0 0 3px rgba(0, 191, 174, 0.1);
-        }
-        .password-strength {
-            margin-top: 5px;
-            font-size: 0.9em;
-            color: #666;
-        }
-        .password-strength.weak { color: #dc3545; }
-        .password-strength.medium { color: #ffc107; }
-        .password-strength.strong { color: #28a745; }
-        .btn-primary {
-            width: 100%;
-            padding: 15px;
-            background: linear-gradient(135deg, #00BFAE 0%, #1A237E 100%);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: transform 0.3s ease;
-        }
-        .btn-primary:hover {
-            transform: translateY(-2px);
-        }
-        .btn-primary:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
-        }
-        .auth-links {
-            margin-top: 25px;
-            padding-top: 20px;
-            border-top: 1px solid #e0e0e0;
-        }
-        .auth-links a {
-            color: #00BFAE;
-            text-decoration: none;
-            font-weight: 600;
-        }
-        .auth-links a:hover {
-            text-decoration: underline;
-        }
-        .message {
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            font-weight: 600;
-        }
-        .message.success {
-            background: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-        .message.error {
-            background: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-        .user-info {
-            background: #f8f9fa;
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            border: 1px solid #e9ecef;
-        }
-        .user-info strong {
-            color: #1A237E;
-        }
-    </style>
+    
+    <!-- CSS Files - Load in correct order -->
+    <link rel="stylesheet" href="css/base/_variables.css">
+    <link rel="stylesheet" href="css/base/_reset.css">
+    <link rel="stylesheet" href="css/base/_typography.css">
+    <link rel="stylesheet" href="css/base/_utilities.css">
+    <link rel="stylesheet" href="css/components/_buttons.css">
+    <link rel="stylesheet" href="css/components/_forms.css">
+    <link rel="stylesheet" href="css/components/_cards.css">
+    <link rel="stylesheet" href="css/components/_navigation.css">
+    <link rel="stylesheet" href="css/layout/_grid.css">
+    <link rel="stylesheet" href="css/layout/_sections.css">
+    <link rel="stylesheet" href="css/layout/_footer.css">
+    <link rel="stylesheet" href="css/themes/_light.css">
+    <link rel="stylesheet" href="css/themes/_dark.css">
+    <link rel="stylesheet" href="css/build.css">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Amiri&display=swap" rel="stylesheet">
+    
+    <!-- JavaScript -->
+    <script src="main.js?v=1.2" defer></script>
 </head>
 <body>
     <div style="display:flex;justify-content:flex-end;align-items:center;margin-bottom:10px;max-width:600px;margin-left:auto;margin-right:auto;gap:18px;">
@@ -272,7 +186,7 @@ if (!$reset_data) {
             <?php elseif ($success): ?>
                 <div class="message success"><?php echo htmlspecialchars($success); ?></div>
                 <div class="auth-links">
-                    <a href="client/login.php">تسجيل الدخول</a>
+                    <a href="login.php">تسجيل الدخول</a>
                 </div>
             <?php else: ?>
                 <div class="user-info">
@@ -357,5 +271,8 @@ if (!$reset_data) {
             }
         });
     </script>
+    
+    <!-- Cookie Consent Banner -->
+    <?php include 'cookie_consent_banner.php'; ?>
 </body>
 </html> 

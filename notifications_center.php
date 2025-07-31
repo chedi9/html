@@ -5,7 +5,7 @@ require_once 'lang.php';
 
 // Check if user is logged in
 if (!isset($_SESSION['user_id'])) {
-    header('Location: client/login.php');
+    header('Location: login.php');
     exit();
 }
 

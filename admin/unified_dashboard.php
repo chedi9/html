@@ -5,6 +5,9 @@
  */
 
 // Security and compatibility headers
+require_once '../security_integration_admin.php';
+
+// Security and compatibility headers
 header('Content-Type: text/html; charset=utf-8');
 header('Cache-Control: public, max-age=3600');
 header('X-Content-Type-Options: nosniff');
@@ -26,9 +29,9 @@ $user_name = $_SESSION['admin_full_name'] ?? $_SESSION['admin_username'] ?? 'Adm
 // Define role-based access permissions
 $role_permissions = [
     'superadmin' => ['all'], // God mode - can do everything
-    'admin' => ['products', 'orders', 'reviews', 'categories', 'disabled_sellers', 'bulk_upload', 'activity', 'newsletter', 'email_campaigns', 'seller_tips', 'seller_analytics', 'automated_reports', 'returns', 'payment_settings', 'payment_analytics', 'view_security'], // Can view security but not edit
-    'moderator' => ['orders', 'reviews', 'activity', 'returns', 'view_security'], // Can view security but not edit
-    'security_personnel' => ['security_dashboard', 'security_features', 'security_logs', 'security_monitoring', 'view_all'] // Can view everything but only edit security
+                'admin' => ['products', 'orders', 'reviews', 'categories', 'disabled_sellers', 'bulk_upload', 'activity', 'newsletter', 'email_campaigns', 'seller_tips', 'seller_analytics', 'automated_reports', 'returns', 'payment_settings', 'payment_analytics', 'view_security', 'delivery_settings', 'runner_management', 'mock_webhook_tester', 'system_status', 'system_settings'], // Can view security but not edit
+            'moderator' => ['orders', 'reviews', 'activity', 'returns', 'view_security', 'delivery_settings', 'mock_webhook_tester', 'system_status', 'system_settings'], // Can view security but not edit
+    'security_personnel' => ['security_dashboard', 'security_features', 'security_logs', 'security_monitoring', 'view_all', 'system_status'] // Can view everything but only edit security
 ];
 
 // Get allowed features for current user
@@ -452,6 +455,31 @@ function canEdit($feature) {
                     <?php echo strtoupper(str_replace('_', ' ', $user_role)); ?>
                 </span>
             </div>
+            
+            <!-- Quick Status Indicators -->
+            <div style="display: flex; justify-content: center; gap: 20px; margin-top: 20px; flex-wrap: wrap;">
+                <?php if (canAccess('delivery_settings')): ?>
+                    <div style="background: rgba(52, 152, 219, 0.1); padding: 10px 20px; border-radius: 15px; border: 1px solid rgba(52, 152, 219, 0.3);">
+                        <span style="font-weight: 600; color: #2c3e50;">🚚 نظام التوصيل:</span>
+                        <span style="color: #27ae60; font-weight: 600;">متاح</span>
+                    </div>
+                <?php endif; ?>
+                
+                <?php if (canAccess('mock_webhook_tester')): ?>
+                    <div style="background: rgba(155, 89, 182, 0.1); padding: 10px 20px; border-radius: 15px; border: 1px solid rgba(155, 89, 182, 0.3);">
+                        <span style="font-weight: 600; color: #2c3e50;">🧪 Mock Webhook:</span>
+                        <span style="color: #27ae60; font-weight: 600;">متاح</span>
+                    </div>
+                <?php endif; ?>
+                
+                <?php if (canAccess('system_status')): ?>
+                    <?php
+                    require_once '../includes/quick_status_widget.php';
+                    $status_widget = new QuickStatusWidget($pdo);
+                    echo $status_widget->render(false);
+                    ?>
+                <?php endif; ?>
+            </div>
         </div>
 
         <!-- Permission Info -->
@@ -473,6 +501,22 @@ function canEdit($feature) {
         <!-- Security Section -->
         <h3 class="section-title">🛡️ الأمان والمراقبة</h3>
         <div class="dashboard-nav">
+            <?php if (canAccess('system_status')): ?>
+                <a href="system_status.php" class="nav-card <?php echo !canEdit('system_status') ? 'read-only' : ''; ?>">
+                    <span class="icon">📊</span>
+                    <h3>حالة النظام</h3>
+                    <p>مراقبة صحة جميع الخدمات الحيوية في الموقع</p>
+                </a>
+            <?php endif; ?>
+            
+            <?php if (canAccess('system_settings')): ?>
+                <a href="system_settings.php" class="nav-card <?php echo !canEdit('system_settings') ? 'read-only' : ''; ?>">
+                    <span class="icon">⚙️</span>
+                    <h3>إعدادات النظام</h3>
+                    <p>إدارة إعدادات البريد الإلكتروني والموقع</p>
+                </a>
+            <?php endif; ?>
+            
             <?php if (canAccess('security_dashboard') || canAccess('view_security')): ?>
                 <a href="security_dashboard.php" class="nav-card <?php echo !canEdit('security_dashboard') ? 'read-only' : ''; ?>">
                     <span class="icon">🔒</span>
@@ -594,6 +638,34 @@ function canEdit($feature) {
             <?php endif; ?>
         </div>
 
+        <!-- Delivery Management Section -->
+        <h3 class="section-title">🚚 إدارة التوصيل</h3>
+        <div class="dashboard-nav">
+            <?php if (canAccess('delivery_settings')): ?>
+                <a href="delivery_settings.php" class="nav-card <?php echo !canEdit('delivery_settings') ? 'read-only' : ''; ?>">
+                    <span class="icon">⚙️</span>
+                    <h3>إعدادات التوصيل</h3>
+                    <p>إدارة شركات التوصيل وإعدادات First Delivery</p>
+                </a>
+            <?php endif; ?>
+            
+            <?php if (canAccess('runner_management')): ?>
+                <a href="runner_management.php" class="nav-card <?php echo !canEdit('runner_management') ? 'read-only' : ''; ?>">
+                    <span class="icon">👥</span>
+                    <h3>إدارة السائقين</h3>
+                    <p>إدارة سائقي التوصيل وتوزيع الطلبات</p>
+                </a>
+            <?php endif; ?>
+            
+            <?php if (canAccess('mock_webhook_tester')): ?>
+                <a href="mock_webhook_tester.php" class="nav-card <?php echo !canEdit('mock_webhook_tester') ? 'read-only' : ''; ?>">
+                    <span class="icon">🧪</span>
+                    <h3>اختبار Webhook الوهمي</h3>
+                    <p>محاكاة تحديثات حالة التوصيل للاختبار</p>
+                </a>
+            <?php endif; ?>
+        </div>
+
         <!-- System Section -->
         <h3 class="section-title">⚙️ إعدادات النظام</h3>
         <div class="dashboard-nav">
@@ -618,6 +690,14 @@ function canEdit($feature) {
                     <span class="icon">📝</span>
                     <h3>سجل النشاط</h3>
                     <p>عرض سجل الأنشطة والإجراءات</p>
+                </a>
+            <?php endif; ?>
+            
+            <?php if (canAccess('mock_webhook_tester')): ?>
+                <a href="../setup_mock_webhook_tables.php" class="nav-card <?php echo !canEdit('mock_webhook_tester') ? 'read-only' : ''; ?>">
+                    <span class="icon">🔧</span>
+                    <h3>إعداد Mock Webhook</h3>
+                    <p>إعداد جداول قاعدة البيانات للاختبار</p>
                 </a>
             <?php endif; ?>
         </div>

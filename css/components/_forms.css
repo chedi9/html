@@ -426,7 +426,7 @@
   pointer-events: none;
 }
 
-/* Responsive Design */
+/* Enhanced Mobile Touch Targets - Week 1 Implementation */
 @media (max-width: 768px) {
   .form--inline {
     flex-direction: column;
@@ -454,6 +454,71 @@
   .form__input-group .form__select:not(:last-child) {
     border-bottom: 0;
     border-right: 2px solid var(--color-gray-300);
+  }
+  
+  /* Enhanced touch targets for mobile */
+  .form__input,
+  .form__textarea,
+  .form__select {
+    min-height: 48px;
+    padding: var(--space-4) var(--space-5);
+    font-size: var(--font-size-base);
+    border-radius: var(--border-radius-lg);
+  }
+  
+  .form__textarea {
+    min-height: 120px;
+  }
+  
+  .form__label {
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-medium);
+    margin-bottom: var(--space-2);
+  }
+  
+  .form__checkbox,
+  .form__radio {
+    min-height: 48px;
+    padding: var(--space-3);
+  }
+  
+  .form__checkbox .form__checkbox__indicator,
+  .form__radio .form__radio__indicator {
+    width: 24px;
+    height: 24px;
+  }
+  
+  .form__switch {
+    min-height: 48px;
+    padding: var(--space-3);
+  }
+  
+  .form__switch__indicator {
+    width: 48px;
+    height: 28px;
+  }
+  
+  .form__switch__indicator::after {
+    width: 24px;
+    height: 24px;
+  }
+  
+  /* Enhanced focus states for mobile */
+  .form__input:focus,
+  .form__textarea:focus,
+  .form__select:focus {
+    box-shadow: 0 0 0 4px var(--color-primary-200);
+    border-color: var(--color-primary-500);
+  }
+  
+  /* Better spacing for mobile forms */
+  .form__group {
+    margin-bottom: var(--space-4);
+  }
+  
+  .form__message {
+    font-size: var(--font-size-sm);
+    margin-top: var(--space-2);
   }
 }
 

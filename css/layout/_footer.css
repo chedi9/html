@@ -126,7 +126,7 @@
   color: var(--color-gray-300);
 }
 
-/* Responsive Footer */
+/* Enhanced Mobile Footer - Week 2 Implementation */
 @media (max-width: 768px) {
   .footer {
     padding: var(--space-8) 0 var(--space-4);
@@ -137,6 +137,56 @@
     gap: var(--space-6);
   }
   
+  .footer__section {
+    text-align: center;
+  }
+  
+  .footer__brand {
+    justify-content: center;
+    margin-bottom: var(--space-4);
+  }
+  
+  .footer__logo {
+    max-width: 120px;
+  }
+  
+  .footer__title {
+    font-size: var(--font-size-xl);
+    margin-bottom: var(--space-3);
+  }
+  
+  .footer__description {
+    font-size: var(--font-size-base);
+    line-height: var(--line-height-relaxed);
+    margin-bottom: var(--space-4);
+  }
+  
+  .footer__social {
+    justify-content: center;
+    gap: var(--space-3);
+  }
+  
+  .footer__social-link {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--border-radius-md);
+  }
+  
+  .footer__section-title {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+    margin-bottom: var(--space-3);
+  }
+  
+  .footer__links {
+    gap: var(--space-2);
+  }
+  
+  .footer__link {
+    padding: var(--space-2) 0;
+    font-size: var(--font-size-base);
+  }
+  
   .footer__bottom-content {
     flex-direction: column;
     text-align: center;
@@ -145,6 +195,12 @@
   
   .footer__bottom-links {
     justify-content: center;
+    gap: var(--space-4);
+  }
+  
+  .footer__bottom-link {
+    font-size: var(--font-size-sm);
+    padding: var(--space-1) 0;
   }
 }
 

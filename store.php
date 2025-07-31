@@ -1,7 +1,11 @@
 <?php
+// Security and compatibility headers
+require_once 'security_integration.php';
+
 session_start();
 require_once 'db.php';
 require_once 'lang.php';
+require_once 'includes/thumbnail_helper.php';
 
 // Get filter parameters
 $category_id = isset($_GET['category']) ? (int)$_GET['category'] : 0;
@@ -103,7 +107,7 @@ $page_title = __('store') . ' - WeBuy';
     <link href="https://fonts.googleapis.com/css2?family=Amiri&display=swap" rel="stylesheet">
     
     <!-- JavaScript -->
-    <script src="main.js?v=1.3" defer></script>
+    <script src="main.js?v=1.4" defer></script>
     
     <!-- Store page specific styles -->
     <style>
@@ -547,9 +551,18 @@ $page_title = __('store') . ' - WeBuy';
                         <?php foreach ($products as $product): ?>
                             <div class="product-card">
                                 <div class="product-card__image">
-                                    <img src="uploads/<?php echo htmlspecialchars($product['image']); ?>" 
+                                    <div class="skeleton skeleton--image"></div>
+                                    <?php 
+                                    $optimized_image = get_optimized_image('uploads/' . $product['image'], 'card');
+                                    ?>
+                                    <img src="<?php echo $optimized_image['src']; ?>" 
+                                         srcset="<?php echo $optimized_image['srcset']; ?>" 
+                                         sizes="<?php echo $optimized_image['sizes']; ?>"
                                          alt="<?php echo htmlspecialchars($product['name']); ?>"
-                                         loading="lazy">
+                                         loading="lazy" 
+                                         width="280" 
+                                         height="280"
+                                         onload="this.classList.add('loaded'); this.previousElementSibling.style.display='none';">
                                     
                                     <?php if ($product['stock'] <= 0): ?>
                                         <div class="product-card__badge"><?php echo __('out_of_stock'); ?></div>
@@ -557,12 +570,14 @@ $page_title = __('store') . ' - WeBuy';
                                 </div>
                                 
                                 <div class="product-card__body">
+                                    <div class="skeleton skeleton--title"></div>
                                     <h3 class="product-card__title">
                                         <a href="product.php?id=<?php echo $product['id']; ?>">
                                             <?php echo htmlspecialchars($product['name']); ?>
                                         </a>
                                     </h3>
                                     
+                                    <div class="skeleton skeleton--text"></div>
                                     <div class="product-card__meta">
                                         <span><?php echo htmlspecialchars($product['category_name']); ?></span>
                                         <?php if ($product['seller_name']): ?>
@@ -571,6 +586,7 @@ $page_title = __('store') . ' - WeBuy';
                                         <?php endif; ?>
                                     </div>
                                     
+                                    <div class="skeleton skeleton--text"></div>
                                     <div class="product-card__price">
                                         <?php echo number_format($product['price'], 2); ?> <?php echo __('currency'); ?>
                                     </div>

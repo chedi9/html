@@ -110,7 +110,6 @@
 .btn--ghost:hover {
   background-color: var(--color-gray-100);
   color: var(--color-gray-900);
-  transform: translateY(-1px);
 }
 
 /* Button Sizes */
@@ -134,7 +133,7 @@
 
 /* Button States */
 .btn:disabled,
-.btn--disabled {
+.btn[disabled] {
   opacity: 0.5;
   cursor: not-allowed;
   pointer-events: none;
@@ -142,7 +141,7 @@
 
 .btn:focus {
   outline: none;
-  box-shadow: 0 0 0 3px var(--color-primary-200);
+  box-shadow: 0 0 0 3px var(--color-primary-100);
 }
 
 .btn:focus:not(:focus-visible) {
@@ -160,9 +159,9 @@
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 20px;
-  height: 20px;
-  margin: -10px 0 0 -10px;
+  width: 16px;
+  height: 16px;
+  margin: -8px 0 0 -8px;
   border: 2px solid transparent;
   border-top-color: currentColor;
   border-radius: 50%;
@@ -240,25 +239,142 @@
   border-bottom-left-radius: var(--border-radius-md);
 }
 
-/* Responsive Buttons */
+/* Enhanced Mobile Touch Targets & Performance - Week 1 Implementation */
 @media (max-width: 768px) {
   .btn {
+    padding: var(--space-3) var(--space-4);
+    font-size: var(--font-size-base);
+    min-height: 48px; /* Enhanced touch target */
+    min-width: 48px; /* Ensure square touch targets */
+    border-radius: var(--border-radius-lg); /* Larger radius for mobile */
+  }
+  
+  .btn--sm {
     padding: var(--space-2) var(--space-3);
     font-size: var(--font-size-sm);
-    min-height: 40px;
+    min-height: 44px; /* Minimum touch target */
+    min-width: 44px;
   }
   
   .btn--lg {
-    padding: var(--space-3) var(--space-4);
-    font-size: var(--font-size-base);
-    min-height: 48px;
+    padding: var(--space-4) var(--space-6);
+    font-size: var(--font-size-lg);
+    min-height: 56px; /* Larger touch target for important actions */
+    min-width: 56px;
   }
   
   .btn--xl {
-    padding: var(--space-4) var(--space-6);
-    font-size: var(--font-size-lg);
+    padding: var(--space-5) var(--space-8);
+    font-size: var(--font-size-xl);
+    min-height: 64px; /* Extra large for primary actions */
+    min-width: 64px;
+  }
+  
+  .btn--icon {
+    padding: var(--space-3);
+    min-width: 48px;
+    min-height: 48px;
+  }
+  
+  .btn--icon.btn--sm {
+    padding: var(--space-2);
+    min-width: 44px;
+    min-height: 44px;
+  }
+  
+  .btn--icon.btn--lg {
+    padding: var(--space-4);
+    min-width: 56px;
     min-height: 56px;
   }
+  
+  /* Enhanced focus states for mobile */
+  .btn:focus {
+    box-shadow: 0 0 0 4px var(--color-primary-200);
+    outline: none;
+  }
+  
+  /* Reduce hover effects on touch devices */
+  @media (hover: none) and (pointer: coarse) {
+    .btn:hover {
+      transform: none;
+      box-shadow: var(--shadow-sm);
+    }
+  }
+}
+
+/* Mobile Performance Optimizations */
+@media (max-width: 768px) {
+  /* Reduce animations on mobile for better performance */
+  .card:hover {
+    transform: none;
+  }
+  
+  .btn:hover {
+    transform: none;
+  }
+  
+  /* Optimize images for mobile */
+  .card__image img {
+    loading: lazy;
+  }
+  
+  /* Reduce shadows for better performance */
+  .card {
+    box-shadow: var(--shadow-sm);
+  }
+  
+  .card:hover {
+    box-shadow: var(--shadow-sm);
+  }
+}
+
+/* Mobile Accessibility Enhancements */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@media (prefers-contrast: high) {
+  .card {
+    border: 2px solid var(--color-gray-900);
+  }
+  
+  .btn {
+    border: 2px solid currentColor;
+  }
+  
+  .form__input {
+    border: 2px solid var(--color-gray-900);
+  }
+}
+
+/* Focus indicators for mobile */
+.btn:focus,
+.nav__link:focus,
+.form__input:focus {
+  outline: 3px solid var(--color-primary-500);
+  outline-offset: 2px;
+}
+
+/* Skip links for mobile */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 6px;
+  background: var(--color-primary-600);
+  color: white;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--border-radius-md);
+  text-decoration: none;
+  z-index: var(--z-index-back-to-top);
+}
+
+.skip-link:focus {
+  top: 6px;
 }
 
 /* High Contrast Mode */
