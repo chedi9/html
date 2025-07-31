@@ -2,6 +2,7 @@
    Theme Controller - Centralized Theme Management
    ======================================== */
 
+if (typeof window.ThemeController === 'undefined') {
 class ThemeController {
   constructor() {
     this.currentTheme = 'light';
@@ -205,12 +206,16 @@ class ThemeController {
 
 // Initialize theme controller when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
-  window.themeController = new ThemeController();
+  if (!window.themeController) {
+    window.themeController = new ThemeController();
+  }
 });
 
 // Export for module systems
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = ThemeController;
+}
+window.ThemeController = ThemeController;
 }
 
 // Global theme functions for backward compatibility

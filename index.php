@@ -67,6 +67,7 @@ $priority_products = getPriorityProducts(6);
     <!-- JavaScript -->
     <script src="js/theme-controller.js" defer></script>
     <script src="main.js?v=1.5" defer></script>
+<?php include_once 'include_load_analytics.php'; ?>
 </head>
 <body class="page-transition">
     <!-- Skip to main content for accessibility -->
@@ -93,10 +94,6 @@ $priority_products = getPriorityProducts(6);
     <main id="main-content" role="main">
         <!-- Hero Section -->
         <section class="hero">
-            <div class="hero__background">
-                <div class="hero__background-overlay"></div>
-                <div class="hero__background-pattern"></div>
-            </div>
             <div class="container">
                 <div class="hero__content">
                     <div class="hero__text">
@@ -134,36 +131,7 @@ $priority_products = getPriorityProducts(6);
                         </div>
                     </div>
                     <div class="hero__visual">
-                        <div class="hero__image-container">
-                            <div class="hero__image hero__image--main">
-                                <div class="hero__image-placeholder">
-                                    <svg width="120" height="120" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-                                        <circle cx="8.5" cy="8.5" r="1.5"></circle>
-                                        <polyline points="21,15 16,10 5,21"></polyline>
-                                    </svg>
-                                </div>
-                            </div>
-                            <div class="hero__image hero__image--secondary">
-                                <div class="hero__image-placeholder">
-                                    <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
-                                        <path d="M2 17l10 5 10-5"></path>
-                                        <path d="M2 12l10 5 10-5"></path>
-                                    </svg>
-                                </div>
-                            </div>
-                            <div class="hero__image hero__image--tertiary">
-                                <div class="hero__image-placeholder">
-                                    <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <circle cx="12" cy="12" r="3"></circle>
-                                        <path d="M12 1v6m0 6v6"></path>
-                                        <path d="M18.36 5.64l-4.24 4.24m0 0l4.24 4.24m-4.24-4.24l4.24-4.24"></path>
-                                        <path d="M5.64 5.64l4.24 4.24m0 0l-4.24 4.24m4.24-4.24l-4.24-4.24"></path>
-                                    </svg>
-                                </div>
-                            </div>
-                        </div>
+                        <!-- Hero images removed for mobile/cleaner look -->
                     </div>
                 </div>
             </div>
@@ -494,7 +462,9 @@ $priority_products = getPriorityProducts(6);
                 </div>
             </div>
         </section>
-    </main>
+...existing code...
+</main>
+<?php include_once 'include_load_analytics.php'; ?>
     
     <?php include 'footer.php'; ?>
     

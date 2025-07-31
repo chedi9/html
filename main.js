@@ -85,8 +85,13 @@ function showToast(message, type = 'info') {
 // ========================================
 
 // Language Toggle Functionality
-const languageToggle = document.getElementById('languageToggle');
+if (typeof window.languageToggle === 'undefined') {
+  window.languageToggle = document.getElementById('languageToggle');
+}
+// Always use window.languageToggle, never redeclare
+var languageToggle = window.languageToggle;
 
+if (typeof window.toggleLanguage !== 'function') {
 function toggleLanguage() {
   const currentLang = document.documentElement.getAttribute('lang') || 'en';
   let newLang;
@@ -128,11 +133,9 @@ function toggleLanguage() {
 }
 
 // Set up language toggle
-if (languageToggle) {
-  console.log('Language toggle found, setting up event listener');
+if (languageToggle && !languageToggle.hasAttribute('data-listener')) {
+  languageToggle.setAttribute('data-listener', 'true');
   languageToggle.addEventListener('click', toggleLanguage);
-} else {
-  console.log('Language toggle not found');
 }
 
 // Initialize language on page load
@@ -543,7 +546,7 @@ document.addEventListener('DOMContentLoaded', function() {
       });
     });
   }
-}); 
+});
 // Mobile-specific JS placeholder
 // You can add mobile-specific interactions here if needed 
 document.addEventListener('DOMContentLoaded', function() {
@@ -969,4 +972,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
-}); 
+});
+// Fix: Add missing closing brace for file
+}
+// End of main.js

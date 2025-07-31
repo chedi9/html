@@ -1,3 +1,132 @@
+/* --- Mobile Header Fixes --- */
+@media (max-width: 900px) {
+  .nav--desktop {
+    display: none !important;
+  }
+  .nav__mobile-toggle {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    padding: 8px;
+    margin-left: 8px;
+    cursor: pointer;
+    z-index: 1201;
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    min-height: 40px;
+    color: var(--color-primary-600, #2563eb);
+    background-color: var(--color-white, #fff);
+    border-radius: 8px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  }
+  .nav__mobile-toggle svg {
+    width: 28px;
+    height: 28px;
+    display: block;
+  }
+  /* Always show hamburger on mobile, even if other rules override */
+  @media (max-width: 900px) {
+    .nav__mobile-toggle {
+      display: flex !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+    }
+  }
+  .nav__cart--topbar {
+    display: flex !important;
+    align-items: center;
+    margin-left: 8px;
+  }
+  .header__container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 44px; /* reduce header height */
+    padding: 0 4px;   /* reduce side padding */
+    gap: 0;
+  }
+  .nav__brand {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+}
+
+@media (min-width: 901px) {
+  .nav__mobile-toggle {
+    display: none !important;
+  }
+  .nav--mobile {
+    display: none !important;
+  }
+}
+
+/* Mobile menu drawer */
+@media (max-width: 900px) {
+  .nav--mobile {
+    display: flex !important;
+    flex-direction: column;
+    position: fixed;
+    top: 44px; /* match reduced header height */
+    left: 0;
+    right: 0;
+    background: var(--color-white, #fff);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+    z-index: 1200;
+    padding: 4px 0 8px 0; /* even less padding */
+    border-bottom: 1px solid var(--color-gray-200);
+    transition: transform 0.2s;
+    max-height: calc(100dvh - 44px); /* fit to viewport, header height */
+    overflow-y: auto;
+  }
+  .nav--mobile[hidden] {
+    display: none !important;
+  }
+  .nav--mobile .nav__list {
+    flex-direction: column;
+    gap: 0;
+    width: 100%;
+    padding: 0 8px; /* reduce side padding */
+  }
+  .nav--mobile .nav__item {
+    width: 100%;
+    margin-bottom: 4px; /* reduce spacing */
+  }
+  .nav--mobile .nav__link {
+    width: 100%;
+    padding: 8px 0; /* reduce vertical padding */
+    font-size: 1em;  /* slightly smaller font */
+    border-radius: 0;
+    border-bottom: 1px solid var(--color-gray-100);
+  }
+  .nav--mobile .nav__actions--mobile {
+    display: flex;
+    flex-direction: column;
+    gap: 4px; /* even less gap */
+    padding: 4px 4px 0 4px; /* less padding */
+    border-top: 1px solid var(--color-gray-200);
+    margin-top: 2px; /* less margin */
+  }
+  .nav--mobile .nav__search {
+    width: 100%;
+    margin-bottom: 4px; /* less margin */
+  }
+  .nav--mobile .language-select,
+  .nav--mobile .theme-toggle,
+  .nav--mobile .nav__user,
+  .nav--mobile .nav__seller-dashboard {
+    width: 100%;
+  }
+}
+
+/* Hide cart dropdown on mobile topbar */
+@media (max-width: 900px) {
+  .nav__cart-dropdown {
+    display: none !important;
+  }
+}
 /* ========================================
    Navigation Components
    ======================================== */
