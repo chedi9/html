@@ -25,7 +25,7 @@ if (!function_exists('__')) {
     <title><?php echo isset($page_title) ? $page_title : 'WeBuy - Online Shopping Platform'; ?></title>
     
     <!-- CSS Files - Load in correct order -->
-    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="<?php echo (strpos($_SERVER['REQUEST_URI'], '/client/') !== false) ? '../' : ''; ?>css/optimized/main.min.css">
     
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="favicon.ico">
