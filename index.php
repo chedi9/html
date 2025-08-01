@@ -67,6 +67,7 @@ $priority_products = getPriorityProducts(6);
     <!-- JavaScript -->
     <script src="js/theme-controller.js" defer></script>
     <script src="main.js?v=1.5" defer></script>
+    <script src="js/cart.js" defer></script>
 <?php include_once 'include_load_analytics.php'; ?>
 </head>
 <body class="page-transition">
