@@ -43,7 +43,7 @@ if (!function_exists('__')) {
     <!-- JavaScript -->
     <script src="../js/theme-controller.js" defer></script>
     <script src="../main.js?v=1.5" defer></script>
-    <script src="../js/mobile-header.js" defer></script>
+    <script src="../js/mobile-navigation.js" defer></script>
     <?php include_once __DIR__ . '/include_load_analytics.php'; ?>
     
     <!-- Google Analytics (only if consent is given) -->
