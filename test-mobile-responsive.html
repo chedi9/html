@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WeBuy - Mobile Responsive Test</title>
+    <link rel="stylesheet" href="css/main.css">
+    <style>
+        /* Test-specific styles */
+        .test-section {
+            padding: var(--space-8) 0;
+            border-bottom: 1px solid var(--color-border);
+        }
+        
+        .test-info {
+            background: var(--color-primary-50);
+            border: 1px solid var(--color-primary-200);
+            border-radius: var(--border-radius-lg);
+            padding: var(--space-4);
+            margin-bottom: var(--space-6);
+        }
+        
+        .test-info h3 {
+            color: var(--color-primary-700);
+            margin: 0 0 var(--space-2) 0;
+        }
+        
+        .test-info p {
+            color: var(--color-primary-600);
+            margin: 0;
+            font-size: var(--font-size-sm);
+        }
+        
+        .viewport-indicator {
+            position: fixed;
+            bottom: var(--space-4);
+            right: var(--space-4);
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: var(--border-radius-md);
+            padding: var(--space-2) var(--space-3);
+            font-size: var(--font-size-xs);
+            font-weight: var(--font-weight-medium);
+            z-index: 9999;
+            box-shadow: var(--shadow-md);
+        }
+        
+        .demo-cart-items {
+            display: none;
+        }
+        
+        /* Simulate cart items for demo */
+        .nav__cart-count::after {
+            content: '3';
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header" role="banner">
+        <div class="container header__container">
+            <!-- Left: Logo -->
+            <div class="nav__brand">
+                <a href="#" class="nav__logo">
+                    <img src="webuy-logo-transparent.jpg" alt="WeBuy Logo" style="height: 40px; width: auto;">
+                    <span class="nav__logo-text">WeBuy</span>
+                </a>
+            </div>
+            
+            <!-- Center: Desktop Navigation (hidden on mobile) -->
+            <nav class="nav nav--desktop" role="navigation">
+                <ul class="nav__list">
+                    <li class="nav__item">
+                        <a href="#" class="nav__link nav__link--active">Home</a>
+                    </li>
+                    <li class="nav__item">
+                        <a href="#" class="nav__link">Store</a>
+                    </li>
+                    <li class="nav__item">
+                        <a href="#" class="nav__link">FAQ</a>
+                    </li>
+                </ul>
+            </nav>
+            
+            <!-- Right: Cart, Hamburger, Actions -->
+            <div class="header__actions-group">
+                <div class="nav__cart nav__cart--topbar">
+                    <a href="#" class="nav__cart-link" aria-label="Shopping Cart">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 22a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"></path>
+                            <path d="M20 22a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"></path>
+                            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                        </svg>
+                        <span class="nav__cart-count">3</span>
+                    </a>
+                    
+                    <!-- Cart Dropdown -->
+                    <div class="nav__cart-dropdown">
+                        <div class="nav__cart-header">
+                            <h3 class="nav__cart-title">Shopping Cart</h3>
+                        </div>
+                        
+                        <div class="nav__cart-items">
+                            <div class="nav__cart-item">
+                                <img src="https://via.placeholder.com/48x48/0284c7/ffffff?text=P1" alt="Product 1" class="nav__cart-item-image">
+                                <div class="nav__cart-item-details">
+                                    <div class="nav__cart-item-name">Wireless Headphones</div>
+                                    <div class="nav__cart-item-price">$99.99 × 1</div>
+                                </div>
+                            </div>
+                            <div class="nav__cart-item">
+                                <img src="https://via.placeholder.com/48x48/f97316/ffffff?text=P2" alt="Product 2" class="nav__cart-item-image">
+                                <div class="nav__cart-item-details">
+                                    <div class="nav__cart-item-name">Smartphone Case</div>
+                                    <div class="nav__cart-item-price">$24.99 × 2</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="nav__cart-footer">
+                            <div class="nav__cart-total">
+                                <span>Total:</span>
+                                <span>$149.97</span>
+                            </div>
+                            <div class="nav__cart-actions">
+                                <a href="#" class="btn btn--secondary btn--sm">View Cart</a>
+                                <a href="#" class="btn btn--primary btn--sm">Checkout</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <button class="nav__mobile-toggle" id="mobileMenuToggle" aria-label="Open menu">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="3" y1="12" x2="21" y2="12"></line>
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <line x1="3" y1="18" x2="21" y2="18"></line>
+                    </svg>
+                </button>
+                
+                <div class="nav__actions">
+                    <!-- Dark Mode Toggle -->
+                    <button class="theme-toggle" id="themeToggle" aria-label="Toggle Dark Mode">
+                        <svg class="theme-toggle__icon theme-toggle__icon--light" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="5"></circle>
+                            <line x1="12" y1="1" x2="12" y2="3"></line>
+                            <line x1="12" y1="21" x2="12" y2="23"></line>
+                            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                            <line x1="1" y1="12" x2="3" y2="12"></line>
+                            <line x1="21" y1="12" x2="23" y2="12"></line>
+                            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                        </svg>
+                        <svg class="theme-toggle__icon theme-toggle__icon--dark" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                        </svg>
+                    </button>
+                    
+                    <!-- Search -->
+                    <div class="nav__search">
+                        <form class="search-form">
+                            <div class="form__group">
+                                <input type="text" placeholder="Search products..." class="form__input form__input--search">
+                                <button type="submit" class="btn btn--primary btn--sm">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <circle cx="11" cy="11" r="8"></circle>
+                                        <path d="m21 21-4.35-4.35"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                    
+                    <!-- User Menu -->
+                    <div class="nav__user">
+                        <a href="#" class="btn btn--secondary btn--sm">Login</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Mobile Navigation Drawer -->
+        <nav class="nav nav--mobile" id="mobileNav" style="display:none;">
+            <ul class="nav__list">
+                <li class="nav__item">
+                    <a href="#" class="nav__link nav__link--active">Home</a>
+                </li>
+                <li class="nav__item">
+                    <a href="#" class="nav__link">Store</a>
+                </li>
+                <li class="nav__item">
+                    <a href="#" class="nav__link">FAQ</a>
+                </li>
+            </ul>
+            
+            <div class="nav__actions nav__actions--mobile">
+                <!-- Search in mobile drawer -->
+                <div class="nav__search">
+                    <form class="search-form">
+                        <div class="form__group">
+                            <input type="text" placeholder="Search products..." class="form__input form__input--search">
+                            <button type="submit" class="btn btn--primary btn--sm">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="11" cy="11" r="8"></circle>
+                                    <path d="m21 21-4.35-4.35"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                
+                <!-- Theme toggle in mobile -->
+                <button class="theme-toggle" aria-label="Toggle Dark Mode">
+                    <svg class="theme-toggle__icon theme-toggle__icon--light" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                    <svg class="theme-toggle__icon theme-toggle__icon--dark" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                </button>
+                
+                <!-- User menu in mobile -->
+                <div class="nav__user">
+                    <a href="#" class="btn btn--secondary">Login</a>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main id="main-content">
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="hero__container">
+                <div class="hero__content">
+                    <div class="hero__badge">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+                            <path d="M2 17l10 5 10-5"></path>
+                            <path d="M2 12l10 5 10-5"></path>
+                        </svg>
+                        New Mobile Experience
+                    </div>
+                    
+                    <h1 class="hero__title">Shop Smarter, Anywhere</h1>
+                    <p class="hero__subtitle">Experience our completely redesigned mobile interface with optimized navigation and seamless shopping.</p>
+                    <p class="hero__description">Discover thousands of products with lightning-fast search, intuitive cart management, and a mobile-first design that works perfectly on any device.</p>
+                    
+                    <div class="hero__actions">
+                        <a href="#" class="btn btn--primary">Start Shopping</a>
+                        <a href="#" class="btn btn--secondary">Learn More</a>
+                        <a href="#" class="btn btn--accent">Special Offers</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Test Sections -->
+        <div class="container">
+            <!-- Header Test -->
+            <section class="test-section">
+                <div class="test-info">
+                    <h3>📱 Mobile Header Test</h3>
+                    <p>Header height reduced to 56px on mobile (under 10% of screen space). Cart hover works on desktop, tap on mobile. All buttons accessible.</p>
+                </div>
+                
+                <h2>Mobile Header Features</h2>
+                <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: var(--space-4);">
+                    <div class="card">
+                        <div class="card__body">
+                            <h3>Compact Design</h3>
+                            <p>Header takes only 56px height on mobile, leaving maximum space for content.</p>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card__body">
+                            <h3>Cart Functionality</h3>
+                            <p>Hover to see cart contents on desktop, tap on mobile. Smooth animations and transitions.</p>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card__body">
+                            <h3>Mobile Menu</h3>
+                            <p>Hamburger menu with slide-down animation, includes search and all navigation options.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Hero Test -->
+            <section class="test-section">
+                <div class="test-info">
+                    <h3>🎯 Hero Section Test</h3>
+                    <p>Responsive hero section with mobile-first design. Scales beautifully from mobile to desktop with optimized typography and spacing.</p>
+                </div>
+                
+                <h2>Hero Section Features</h2>
+                <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: var(--space-4);">
+                    <div class="card">
+                        <div class="card__body">
+                            <h3>Mobile Optimized</h3>
+                            <p>Typography and spacing automatically adjust for mobile screens. Buttons stack vertically on small screens.</p>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card__body">
+                            <h3>Modern Design</h3>
+                            <p>Gradient backgrounds, glassmorphism effects, and smooth animations create a premium feel.</p>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card__body">
+                            <h3>Flexible Heights</h3>
+                            <p>Hero height adapts to content and screen size, ensuring optimal viewing on all devices.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Responsive Test -->
+            <section class="test-section">
+                <div class="test-info">
+                    <h3>📐 Responsive Design Test</h3>
+                    <p>Test the responsive behavior by resizing your browser window or rotating your device. All elements adapt smoothly.</p>
+                </div>
+                
+                <h2>Responsive Breakpoints</h2>
+                <div class="alert alert--info">
+                    <p><strong>Mobile:</strong> ≤ 768px | <strong>Tablet:</strong> 769px - 1024px | <strong>Desktop:</strong> ≥ 1025px</p>
+                </div>
+                
+                <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: var(--space-4); margin-top: var(--space-4);">
+                    <div class="card card--hover">
+                        <div class="card__body">
+                            <h4>Mobile First</h4>
+                            <p>Designed for mobile devices first, then enhanced for larger screens.</p>
+                        </div>
+                    </div>
+                    <div class="card card--hover">
+                        <div class="card__body">
+                            <h4>Touch Friendly</h4>
+                            <p>All interactive elements meet minimum 44px touch target requirements.</p>
+                        </div>
+                    </div>
+                    <div class="card card--hover">
+                        <div class="card__body">
+                            <h4>Performance</h4>
+                            <p>Optimized CSS and JavaScript for fast loading on mobile networks.</p>
+                        </div>
+                    </div>
+                    <div class="card card--hover">
+                        <div class="card__body">
+                            <h4>Accessibility</h4>
+                            <p>WCAG 2.1 AA compliant with proper focus management and screen reader support.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Testing Instructions -->
+            <section class="test-section">
+                <h2>🧪 Testing Instructions</h2>
+                <div class="grid" style="grid-template-columns: 1fr 1fr; gap: var(--space-6);">
+                    <div>
+                        <h3>Mobile Testing</h3>
+                        <ul>
+                            <li>Open browser developer tools (F12)</li>
+                            <li>Switch to device emulation mode</li>
+                            <li>Test iPhone, Android, and tablet sizes</li>
+                            <li>Try both portrait and landscape orientations</li>
+                            <li>Test touch interactions (cart, menu, buttons)</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3>Desktop Testing</h3>
+                        <ul>
+                            <li>Resize browser window from 320px to 1920px</li>
+                            <li>Test cart hover functionality</li>
+                            <li>Verify all navigation elements are visible</li>
+                            <li>Check theme toggle functionality</li>
+                            <li>Test keyboard navigation (Tab, Enter, Escape)</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Viewport Indicator -->
+    <div class="viewport-indicator" id="viewportIndicator">
+        <span id="viewportSize">Loading...</span>
+    </div>
+
+    <script src="js/mobile-navigation.js"></script>
+    <script>
+        // Theme toggle functionality
+        function toggleTheme() {
+            const html = document.documentElement;
+            const currentTheme = html.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            html.setAttribute('data-theme', newTheme);
+        }
+
+        // Add theme toggle event listeners
+        document.querySelectorAll('.theme-toggle').forEach(toggle => {
+            toggle.addEventListener('click', toggleTheme);
+        });
+
+        // Viewport size indicator
+        function updateViewportIndicator() {
+            const indicator = document.getElementById('viewportSize');
+            const width = window.innerWidth;
+            const height = window.innerHeight;
+            
+            let deviceType = 'Desktop';
+            if (width <= 768) deviceType = 'Mobile';
+            else if (width <= 1024) deviceType = 'Tablet';
+            
+            indicator.textContent = `${deviceType}: ${width}×${height}px`;
+        }
+
+        window.addEventListener('resize', updateViewportIndicator);
+        updateViewportIndicator();
+    </script>
+</body>
+</html>

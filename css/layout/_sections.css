@@ -2,14 +2,19 @@
    Section Layouts
    ======================================== */
 
-/* Hero Section */
+/* ========================================
+   Modern Hero Section - Mobile First
+   ======================================== */
+
 .hero {
   position: relative;
-  padding: var(--space-12) 0;
+  min-height: 60vh;
+  display: flex;
+  align-items: center;
   background: linear-gradient(135deg, var(--color-primary-600) 0%, var(--color-primary-800) 100%);
   color: var(--color-white);
   overflow: hidden;
-  text-align: center;
+  padding: var(--space-8) 0;
 }
 
 .hero::before {
@@ -19,71 +24,98 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="50" cy="50" r="1" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
-  opacity: 0.3;
+  background: 
+    radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.05) 0%, transparent 50%),
+    radial-gradient(circle at 40% 80%, rgba(255, 255, 255, 0.03) 0%, transparent 50%);
   z-index: 1;
 }
 
 .hero--small {
+  min-height: 40vh;
   padding: var(--space-6) 0;
 }
 
 .hero--large {
-  padding: var(--space-16) 0;
+  min-height: 80vh;
+  padding: var(--space-12) 0;
 }
 
 .hero__container {
   position: relative;
   z-index: 2;
+  max-width: var(--container-max-width);
+  margin: 0 auto;
+  padding: 0 var(--space-4);
 }
 
 .hero__content {
-  max-width: 800px;
+  max-width: 600px;
   margin: 0 auto;
+  text-align: center;
   position: relative;
   z-index: 3;
 }
 
+.hero__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: var(--border-radius-full);
+  padding: var(--space-2) var(--space-4);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  margin-bottom: var(--space-6);
+  color: rgba(255, 255, 255, 0.9);
+}
+
 .hero__title {
-  font-size: var(--font-size-5xl);
+  font-size: var(--font-size-3xl);
   font-weight: var(--font-weight-bold);
   line-height: var(--line-height-tight);
-  margin-bottom: var(--space-6);
+  margin-bottom: var(--space-4);
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .hero__subtitle {
-  font-size: var(--font-size-xl);
+  font-size: var(--font-size-lg);
   font-weight: var(--font-weight-normal);
   line-height: var(--line-height-relaxed);
-  margin-bottom: var(--space-8);
-  opacity: 0.95;
+  margin-bottom: var(--space-6);
+  opacity: 0.9;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
 .hero__description {
-  font-size: var(--font-size-lg);
+  font-size: var(--font-size-base);
   line-height: var(--line-height-relaxed);
-  margin-bottom: var(--space-8);
-  opacity: 0.9;
+  margin-bottom: var(--space-6);
+  opacity: 0.8;
+  max-width: 500px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .hero__actions {
   display: flex;
-  gap: var(--space-4);
-  flex-wrap: wrap;
-  justify-content: center;
+  gap: var(--space-3);
+  flex-direction: column;
   align-items: center;
+  justify-content: center;
 }
 
 .hero__actions .btn {
-  min-width: 160px;
-  padding: var(--space-3) var(--space-6);
+  min-width: 200px;
+  padding: var(--space-4) var(--space-6);
   font-weight: var(--font-weight-semibold);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  font-size: var(--font-size-base);
+  border-radius: var(--border-radius-lg);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   transition: all var(--transition-medium);
+  backdrop-filter: blur(10px);
 }
 
 .hero__actions .btn:hover {
@@ -98,20 +130,110 @@
 }
 
 .hero__actions .btn--primary:hover {
-  background: transparent;
-  color: var(--color-white);
-  border-color: var(--color-white);
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--color-primary-700);
 }
 
 .hero__actions .btn--secondary {
-  background: transparent;
+  background: rgba(255, 255, 255, 0.1);
   color: var(--color-white);
-  border: 2px solid var(--color-white);
+  border: 2px solid rgba(255, 255, 255, 0.3);
 }
 
 .hero__actions .btn--secondary:hover {
-  background: var(--color-white);
-  color: var(--color-primary-600);
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+.hero__actions .btn--accent {
+  background: var(--color-accent-500);
+  color: var(--color-white);
+  border: 2px solid var(--color-accent-500);
+}
+
+.hero__actions .btn--accent:hover {
+  background: var(--color-accent-600);
+  border-color: var(--color-accent-600);
+}
+
+/* Mobile Responsive Design */
+@media (max-width: 768px) {
+  .hero {
+    min-height: 50vh;
+    padding: var(--space-6) 0;
+  }
+  
+  .hero__container {
+    padding: 0 var(--space-3);
+  }
+  
+  .hero__title {
+    font-size: var(--font-size-2xl);
+    margin-bottom: var(--space-3);
+  }
+  
+  .hero__subtitle {
+    font-size: var(--font-size-base);
+    margin-bottom: var(--space-4);
+  }
+  
+  .hero__description {
+    font-size: var(--font-size-sm);
+    margin-bottom: var(--space-4);
+  }
+  
+  .hero__badge {
+    font-size: var(--font-size-xs);
+    padding: var(--space-1) var(--space-3);
+    margin-bottom: var(--space-4);
+  }
+  
+  .hero__actions {
+    gap: var(--space-2);
+  }
+  
+  .hero__actions .btn {
+    min-width: 180px;
+    padding: var(--space-3) var(--space-4);
+    font-size: var(--font-size-sm);
+  }
+}
+
+/* Tablet and Desktop */
+@media (min-width: 769px) {
+  .hero {
+    min-height: 70vh;
+    padding: var(--space-10) 0;
+  }
+  
+  .hero__title {
+    font-size: var(--font-size-4xl);
+    margin-bottom: var(--space-6);
+  }
+  
+  .hero__subtitle {
+    font-size: var(--font-size-xl);
+    margin-bottom: var(--space-8);
+  }
+  
+  .hero__actions {
+    flex-direction: row;
+    gap: var(--space-4);
+  }
+}
+
+@media (min-width: 1024px) {
+  .hero {
+    min-height: 80vh;
+  }
+  
+  .hero__title {
+    font-size: var(--font-size-5xl);
+  }
+  
+  .hero__content {
+    max-width: 700px;
+  }
 }
 
 .hero__image {

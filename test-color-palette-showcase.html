@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WeBuy - New Color Palette Showcase</title>
+    <link rel="stylesheet" href="css/main.css">
+    <style>
+        .color-showcase {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--space-4);
+            margin: var(--space-6) 0;
+        }
+        
+        .color-card {
+            background: var(--color-card);
+            border: 1px solid var(--color-border);
+            border-radius: var(--border-radius-lg);
+            padding: var(--space-4);
+            text-align: center;
+        }
+        
+        .color-swatch {
+            width: 100%;
+            height: 80px;
+            border-radius: var(--border-radius-md);
+            margin-bottom: var(--space-3);
+            border: 1px solid var(--color-border);
+        }
+        
+        .color-name {
+            font-weight: var(--font-weight-semibold);
+            color: var(--color-text);
+            margin-bottom: var(--space-1);
+        }
+        
+        .color-value {
+            font-family: var(--font-family-mono);
+            font-size: var(--font-size-sm);
+            color: var(--color-text-secondary);
+        }
+        
+        .theme-toggle {
+            position: fixed;
+            top: var(--space-4);
+            right: var(--space-4);
+            background: var(--color-primary-600);
+            color: white;
+            border: none;
+            padding: var(--space-3) var(--space-4);
+            border-radius: var(--border-radius-md);
+            cursor: pointer;
+            font-weight: var(--font-weight-medium);
+            z-index: 1000;
+        }
+        
+        .theme-toggle:hover {
+            background: var(--color-primary-700);
+        }
+        
+        .component-section {
+            margin: var(--space-8) 0;
+            padding: var(--space-6);
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: var(--border-radius-lg);
+        }
+        
+        .section-title {
+            font-size: var(--font-size-2xl);
+            font-weight: var(--font-weight-bold);
+            color: var(--color-text);
+            margin-bottom: var(--space-4);
+        }
+    </style>
+</head>
+<body>
+    <button class="theme-toggle" onclick="toggleTheme()">Toggle Theme</button>
+    
+    <div class="container">
+        <header class="section">
+            <h1 class="hero__title">WeBuy New Color Palette Showcase</h1>
+            <p class="hero__subtitle">Modern Blue-Green Primary, Warm Orange Accent, Warm Gray Neutrals</p>
+        </header>
+
+        <!-- Primary Colors -->
+        <section class="component-section">
+            <h2 class="section-title">Primary Colors (Modern Blue-Green)</h2>
+            <div class="color-showcase">
+                <div class="color-card">
+                    <div class="color-swatch" style="background-color: var(--color-primary-50);"></div>
+                    <div class="color-name">Primary 50</div>
+                    <div class="color-value">#f0f9ff</div>
+                </div>
+                <div class="color-card">
+                    <div class="color-swatch" style="background-color: var(--color-primary-100);"></div>
+                    <div class="color-name">Primary 100</div>
+                    <div class="color-value">#e0f2fe</div>
+                </div>
+                <div class="color-card">
+                    <div class="color-swatch" style="background-color: var(--color-primary-500);"></div>
+                    <div class="color-name">Primary 500</div>
+                    <div class="color-value">#0ea5e9</div>
+                </div>
+                <div class="color-card">
+                    <div class="color-swatch" style="background-color: var(--color-primary-600);"></div>
+                    <div class="color-name">Primary 600</div>
+                    <div class="color-value">#0284c7</div>
+                </div>
+                <div class="color-card">
+                    <div class="color-swatch" style="background-color: var(--color-primary-700);"></div>
+                    <div class="color-name">Primary 700</div>
+                    <div class="color-value">#0369a1</div>
+                </div>
+                <div class="color-card">
+                    <div class="color-swatch" style="background-color: var(--color-primary-900);"></div>
+                    <div class="color-name">Primary 900</div>
+                    <div class="color-value">#0c4a6e</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Accent Colors -->
+        <section class="component-section">
+            <h2 class="section-title">Accent Colors (Warm Orange)</h2>
+            <div class="color-showcase">
+                <div class="color-card">
+                    <div class="color-swatch" style="background-color: var(--color-accent-50);"></div>
+                    <div class="color-name">Accent 50</div>
+                    <div class="color-value">#fff7ed</div>
+                </div>
+                <div class="color-card">
+                    <div class="color-swatch" style="background-color: var(--color-accent-100);"></div>
+                    <div class="color-name">Accent 100</div>
+                    <div class="color-value">#ffedd5</div>
+                </div>
+                <div class="color-card">
+                    <div class="color-swatch" style="background-color: var(--color-accent-500);"></div>
+                    <div class="color-name">Accent 500</div>
+                    <div class="color-value">#f97316</div>
+                </div>
+                <div class="color-card">
+                    <div class="color-swatch" style="background-color: var(--color-accent-600);"></div>
+                    <div class="color-name">Accent 600</div>
+                    <div class="color-value">#ea580c</div>
+                </div>
+                <div class="color-card">
+                    <div class="color-swatch" style="background-color: var(--color-accent-700);"></div>
+                    <div class="color-name">Accent 700</div>
+                    <div class="color-value">#c2410c</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Neutral Colors -->
+        <section class="component-section">
+            <h2 class="section-title">Neutral Colors (Warm Grays)</h2>
+            <div class="color-showcase">
+                <div class="color-card">
+                    <div class="color-swatch" style="background-color: var(--color-neutral-50);"></div>
+                    <div class="color-name">Neutral 50</div>
+                    <div class="color-value">#fafafa</div>
+                </div>
+                <div class="color-card">
+                    <div class="color-swatch" style="background-color: var(--color-neutral-100);"></div>
+                    <div class="color-name">Neutral 100</div>
+                    <div class="color-value">#f5f5f5</div>
+                </div>
+                <div class="color-card">
+                    <div class="color-swatch" style="background-color: var(--color-neutral-500);"></div>
+                    <div class="color-name">Neutral 500</div>
+                    <div class="color-value">#737373</div>
+                </div>
+                <div class="color-card">
+                    <div class="color-swatch" style="background-color: var(--color-neutral-700);"></div>
+                    <div class="color-name">Neutral 700</div>
+                    <div class="color-value">#404040</div>
+                </div>
+                <div class="color-card">
+                    <div class="color-swatch" style="background-color: var(--color-neutral-900);"></div>
+                    <div class="color-name">Neutral 900</div>
+                    <div class="color-value">#171717</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Button Components -->
+        <section class="component-section">
+            <h2 class="section-title">Button Components</h2>
+            <div class="flex" style="gap: var(--space-3); flex-wrap: wrap;">
+                <button class="btn btn--primary">Primary Button</button>
+                <button class="btn btn--secondary">Secondary Button</button>
+                <button class="btn btn--success">Success Button</button>
+                <button class="btn btn--danger">Danger Button</button>
+                <button class="btn btn--warning">Warning Button</button>
+                <button class="btn btn--accent">Accent Button</button>
+                <button class="btn btn--ghost">Ghost Button</button>
+            </div>
+            
+            <div class="flex" style="gap: var(--space-3); flex-wrap: wrap; margin-top: var(--space-4);">
+                <button class="btn btn--primary btn--sm">Small</button>
+                <button class="btn btn--primary">Regular</button>
+                <button class="btn btn--primary btn--lg">Large</button>
+                <button class="btn btn--primary btn--xl">Extra Large</button>
+            </div>
+        </section>
+
+        <!-- Form Components -->
+        <section class="component-section">
+            <h2 class="section-title">Form Components</h2>
+            <div class="grid" style="grid-template-columns: 1fr 1fr; gap: var(--space-4);">
+                <div>
+                    <label class="form__label">Email Address</label>
+                    <input type="email" class="form__input" placeholder="Enter your email">
+                </div>
+                <div>
+                    <label class="form__label">Password</label>
+                    <input type="password" class="form__input" placeholder="Enter your password">
+                </div>
+                <div>
+                    <label class="form__label">Message</label>
+                    <textarea class="form__input" rows="4" placeholder="Enter your message"></textarea>
+                </div>
+                <div>
+                    <label class="form__label">Country</label>
+                    <select class="form__input">
+                        <option>Select Country</option>
+                        <option>United States</option>
+                        <option>Canada</option>
+                        <option>United Kingdom</option>
+                    </select>
+                </div>
+            </div>
+        </section>
+
+        <!-- Card Components -->
+        <section class="component-section">
+            <h2 class="section-title">Card Components</h2>
+            <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: var(--space-4);">
+                <div class="card">
+                    <div class="card__header">
+                        <h3 class="card__title">Product Card</h3>
+                    </div>
+                    <div class="card__content">
+                        <p class="card__text">This is a sample product card showcasing the new color palette.</p>
+                        <div class="card__price">$99.99</div>
+                    </div>
+                    <div class="card__footer">
+                        <button class="btn btn--primary btn--sm">Add to Cart</button>
+                    </div>
+                </div>
+                
+                <div class="card card--hover">
+                    <div class="card__header">
+                        <h3 class="card__title">Interactive Card</h3>
+                    </div>
+                    <div class="card__content">
+                        <p class="card__text">This card has hover effects with the new color system.</p>
+                    </div>
+                </div>
+                
+                <div class="card card--featured">
+                    <div class="card__header">
+                        <h3 class="card__title">Featured Card</h3>
+                    </div>
+                    <div class="card__content">
+                        <p class="card__text">This is a featured card with accent colors.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Status/Alert Components -->
+        <section class="component-section">
+            <h2 class="section-title">Status & Alert Components</h2>
+            <div style="display: flex; flex-direction: column; gap: var(--space-3);">
+                <div class="alert alert--success">
+                    <p>Success! Your order has been placed successfully.</p>
+                </div>
+                <div class="alert alert--error">
+                    <p>Error! Please check your input and try again.</p>
+                </div>
+                <div class="alert alert--warning">
+                    <p>Warning! Your session will expire in 5 minutes.</p>
+                </div>
+                <div class="alert alert--info">
+                    <p>Info! New features are now available in your dashboard.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Typography -->
+        <section class="component-section">
+            <h2 class="section-title">Typography</h2>
+            <div>
+                <h1 style="color: var(--color-text);">Heading 1 - Primary Text</h1>
+                <h2 style="color: var(--color-text);">Heading 2 - Primary Text</h2>
+                <h3 style="color: var(--color-text);">Heading 3 - Primary Text</h3>
+                <p style="color: var(--color-text);">Regular paragraph text using primary text color.</p>
+                <p style="color: var(--color-text-secondary);">Secondary text using secondary text color.</p>
+                <p style="color: var(--color-primary-600);">Primary colored text for emphasis.</p>
+                <p style="color: var(--color-accent-600);">Accent colored text for highlights.</p>
+            </div>
+        </section>
+
+        <!-- Theme Information -->
+        <section class="component-section">
+            <h2 class="section-title">Theme Information</h2>
+            <p>Current theme: <span id="current-theme">Light</span></p>
+            <p>Toggle between light and dark themes using the button in the top-right corner.</p>
+            <p>All components automatically adapt to the selected theme using CSS custom properties.</p>
+        </section>
+    </div>
+
+    <script>
+        function toggleTheme() {
+            const html = document.documentElement;
+            const currentTheme = html.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            
+            html.setAttribute('data-theme', newTheme);
+            document.getElementById('current-theme').textContent = 
+                newTheme.charAt(0).toUpperCase() + newTheme.slice(1);
+        }
+        
+        // Update theme indicator on load
+        document.addEventListener('DOMContentLoaded', function() {
+            const theme = document.documentElement.getAttribute('data-theme');
+            document.getElementById('current-theme').textContent = 
+                theme.charAt(0).toUpperCase() + theme.slice(1);
+        });
+    </script>
+</body>
+</html>

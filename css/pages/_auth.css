@@ -321,7 +321,7 @@
   flex: 1;
   height: 8px;
   border-radius: 4px;
-  background: #e0e0e0;
+  background: var(--color-neutral-200);
   transition: width 0.3s, background 0.3s;
   width: 20%;
 }
