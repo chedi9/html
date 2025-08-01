@@ -1,6 +1,6 @@
 <?php
-// Security and compatibility headers
-require_once 'security_integration.php';
+// Simplified index.php without complex security features
+require 'db.php';
 
 // Initialize session if not already started
 if (session_status() === PHP_SESSION_NONE) {
@@ -8,17 +8,16 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 // Set default language if not defined
-if (!isset($lang)) {
-    $lang = $_GET['lang'] ?? $_SESSION['lang'] ?? 'en';
-}
+$lang = $_GET['lang'] ?? $_SESSION['lang'] ?? 'en';
+$_SESSION['lang'] = $lang;
 
-// Include language file if not already included
-if (!function_exists('__')) {
-    require_once 'lang.php';
+// Simple translation function
+$lang_file = __DIR__ . '/lang/' . $lang . '.php';
+$trans = file_exists($lang_file) ? require $lang_file : require __DIR__ . '/lang/ar.php';
+function __($key) {
+    global $trans;
+    return $trans[$key] ?? $key;
 }
-
-require 'db.php';
-require_once 'includes/thumbnail_helper.php';
 
 // Fetch products
 $products = $pdo->query("SELECT p.*, s.is_disabled FROM products p LEFT JOIN sellers s ON p.seller_id = s.id WHERE p.approved = 1 ORDER BY s.is_disabled DESC, p.created_at DESC LIMIT 8")->fetchAll();
@@ -44,9 +43,8 @@ if (!empty($_SESSION['viewed_products'])) {
     }
 }
 
-// Get priority products
-require_once 'priority_products_helper.php';
-$priority_products = getPriorityProducts(6);
+// Get priority products (simple version)
+$priority_products = $pdo->query("SELECT p.*, s.is_disabled FROM products p LEFT JOIN sellers s ON p.seller_id = s.id WHERE p.approved = 1 ORDER BY p.created_at DESC LIMIT 6")->fetchAll();
 ?>
 <!DOCTYPE html>
 <html lang="<?php echo $lang; ?>" dir="<?php echo $lang === 'ar' ? 'rtl' : 'ltr'; ?>" data-theme="light">
@@ -67,13 +65,19 @@ $priority_products = getPriorityProducts(6);
     <!-- JavaScript -->
     <script src="js/theme-controller.js" defer></script>
     <script src="main.js?v=1.5" defer></script>
-<?php include_once 'include_load_analytics.php'; ?>
 </head>
 <body class="page-transition">
     <!-- Skip to main content for accessibility -->
     <a href="#main-content" class="skip-link"><?php echo __('skip_to_main_content'); ?></a>
     
-    <?php include 'header.php'; ?>
+    <?php 
+    // Simple header inclusion - if header.php fails, show basic header
+    try {
+        include 'header.php'; 
+    } catch (Exception $e) {
+        echo '<header><h1>WeBuy</h1><nav><a href="store.php">Store</a> | <a href="login.php">Login</a></nav></header>';
+    }
+    ?>
     
     <!-- Flash Messages -->
     <?php if (isset($_SESSION['flash_message'])): ?>
@@ -149,160 +153,31 @@ $priority_products = getPriorityProducts(6);
                     </p>
                 </div>
                 
-                <div class="grid grid--3">
-                    <?php foreach (array_slice($categories, 0, 6) as $category): ?>
-                        <?php $cat_name = $category['name_' . $lang] ?? $category['name']; ?>
-                        <div class="card card--category">
-                            <a href="store.php?category_id=<?php echo $category['id']; ?>" class="card__link">
-                                <div class="card__image">
-                                    <div class="skeleton skeleton--image"></div>
-                                    <?php if (!empty($category['image'])): ?>
-                                        <?php 
-                                        $optimized_image = get_optimized_image('uploads/' . $category['image'], 'category');
-                                        ?>
-                                        <img src="<?php echo $optimized_image['src']; ?>" 
-                                             srcset="<?php echo $optimized_image['srcset']; ?>"
-                                             sizes="<?php echo $optimized_image['sizes']; ?>"
-                                             alt="<?php echo htmlspecialchars($cat_name); ?>" 
-                                             loading="lazy"
-                                             width="200"
-                                             height="120"
-                                             onload="this.classList.add('loaded'); this.previousElementSibling.style.display='none';">
-                                    <?php elseif (!empty($category['icon'])): ?>
-                                        <?php 
-                                        $optimized_image = get_optimized_image('uploads/' . $category['icon'], 'category');
-                                        ?>
-                                        <img src="<?php echo $optimized_image['src']; ?>" 
-                                             srcset="<?php echo $optimized_image['srcset']; ?>"
-                                             sizes="<?php echo $optimized_image['sizes']; ?>"
-                                             alt="<?php echo htmlspecialchars($cat_name); ?>" 
-                                             loading="lazy"
-                                             width="200"
-                                             height="120"
-                                             onload="this.classList.add('loaded'); this.previousElementSibling.style.display='none';">
-                                    <?php else: ?>
-                                        <div class="card__placeholder">
-                                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-                                                <circle cx="8.5" cy="8.5" r="1.5"></circle>
-                                                <polyline points="21,15 16,10 5,21"></polyline>
-                                            </svg>
-                                        </div>
-                                    <?php endif; ?>
+                <?php if (!empty($categories)): ?>
+                    <div class="categories-grid">
+                        <?php foreach ($categories as $category): ?>
+                            <div class="category-card">
+                                <div class="category-card__content">
+                                    <h3 class="category-card__title"><?php echo htmlspecialchars($category['name']); ?></h3>
+                                    <p class="category-card__description"><?php echo htmlspecialchars($category['description'] ?? ''); ?></p>
+                                    <a href="store.php?category=<?php echo $category['id']; ?>" class="category-card__link">
+                                        <?php echo __('view_products'); ?>
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                                            <polyline points="12,5 19,12 12,19"></polyline>
+                                        </svg>
+                                    </a>
                                 </div>
-                                <div class="card__content">
-                                    <div class="skeleton skeleton--title"></div>
-                                    <h3 class="card__title"><?php echo htmlspecialchars($cat_name); ?></h3>
-                                </div>
-                            </a>
-                        </div>
-                    <?php endforeach; ?>
-                </div>
-            </div>
-        </section>
-        
-        <!-- Priority Products Section -->
-        <?php if (!empty($priority_products)): ?>
-        <section class="section section--highlight">
-            <div class="container">
-                <div class="section__header">
-                    <h2 class="section__title">
-                        🌟 <?php echo __('products_from_disabled_sellers'); ?>
-                    </h2>
-                    <p class="section__subtitle">
-                        <?php echo __('support_disabled_sellers'); ?>
-                    </p>
-                </div>
-                
-                <div class="grid grid--3">
-                    <?php foreach ($priority_products as $product): ?>
-                        <div class="card card--product" data-product-id="<?php echo $product['id']; ?>">
-                            <div class="card__badge card__badge--priority">
-                                🌟 <?php echo __('disabled_seller'); ?>
                             </div>
-                            
-                            <button class="card__wishlist" data-product-id="<?php echo $product['id']; ?>" 
-                                    title="<?php echo __('add_to_wishlist'); ?>">
-                                <?php if (!empty($_SESSION['wishlist']) && in_array($product['id'], $_SESSION['wishlist'])): ?>
-                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2">
-                                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-                                    </svg>
-                                <?php else: ?>
-                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-                                    </svg>
-                                <?php endif; ?>
-                            </button>
-                            
-                            <a href="product.php?id=<?php echo $product['id']; ?>" class="card__link">
-                                <div class="card__image">
-                                    <div class="skeleton skeleton--image"></div>
-                                    <?php 
-                                    $optimized_image = get_optimized_image('uploads/' . $product['image'], 'card');
-                                    ?>
-                                    <img src="<?php echo $optimized_image['src']; ?>" 
-                                         srcset="<?php echo $optimized_image['srcset']; ?>"
-                                         sizes="<?php echo $optimized_image['sizes']; ?>"
-                                         alt="<?php echo htmlspecialchars($product['name']); ?>" 
-                                         loading="lazy"
-                                         width="300"
-                                         height="200"
-                                         onload="this.classList.add('loaded'); this.previousElementSibling.style.display='none';">
-                                </div>
-                                <div class="card__content">
-                                    <div class="skeleton skeleton--title"></div>
-                                    <h3 class="card__title"><?php echo htmlspecialchars($product['name']); ?></h3>
-                                    <div class="skeleton skeleton--text"></div>
-                                    <p class="card__description"><?php echo htmlspecialchars($product['description']); ?></p>
-                                    
-                                    <!-- Rating Section -->
-                                    <?php
-                                    // Get product rating
-                                    $stmt = $pdo->prepare('
-                                        SELECT AVG(rating) as avg_rating, COUNT(*) as review_count 
-                                        FROM reviews 
-                                        WHERE product_id = ? AND status = "approved"
-                                    ');
-                                    $stmt->execute([$product['id']]);
-                                    $rating_data = $stmt->fetch();
-                                    $avg_rating = round($rating_data['avg_rating'] ?? 0, 1);
-                                    $review_count = $rating_data['review_count'] ?? 0;
-                                    ?>
-                                    
-                                    <?php if ($avg_rating > 0): ?>
-                                        <div class="card__rating">
-                                            <div class="card__rating-stars">
-                                                <?php for ($i = 1; $i <= 5; $i++): ?>
-                                                    <span class="star <?php echo $i <= $avg_rating ? 'filled' : ''; ?>">★</span>
-                                                <?php endfor; ?>
-                                            </div>
-                                            <span class="card__rating-count">(<?php echo $review_count; ?>)</span>
-                                        </div>
-                                    <?php endif; ?>
-                                    
-                                    <div class="skeleton skeleton--price"></div>
-                                    <div class="card__price"><?php echo htmlspecialchars($product['price']); ?> <?php echo __('currency'); ?></div>
-                                </div>
-                            </a>
-                            
-                            <form action="add_to_cart.php" method="get" class="card__form">
-                                <input type="hidden" name="id" value="<?php echo $product['id']; ?>">
-                                <button type="submit" class="btn btn--primary btn--sm">
-                                    <?php echo __('add_to_cart'); ?>
-                                </button>
-                            </form>
-                        </div>
-                    <?php endforeach; ?>
-                </div>
-                
-                <div class="section__footer">
-                    <a href="store.php?priority=disabled_sellers" class="btn btn--secondary">
-                        <?php echo __('view_all_disabled_seller_products'); ?>
-                    </a>
-                </div>
+                        <?php endforeach; ?>
+                    </div>
+                <?php else: ?>
+                    <div class="empty-state">
+                        <p><?php echo __('no_categories_found'); ?></p>
+                    </div>
+                <?php endif; ?>
             </div>
         </section>
-        <?php endif; ?>
         
         <!-- Featured Products -->
         <section class="section">
@@ -312,171 +187,61 @@ $priority_products = getPriorityProducts(6);
                         <?php echo __('featured_products'); ?>
                     </h2>
                     <p class="section__subtitle">
-                        <?php echo __('discover_latest_products'); ?>
+                        <?php echo __('hand_picked_items'); ?>
                     </p>
                 </div>
                 
-                <div class="grid grid--4">
-                    <?php foreach ($products as $i => $product): ?>
-                        <div class="card card--product" data-product-id="<?php echo $product['id']; ?>">
-                            <?php if ($i < 3): ?>
-                                <div class="card__badge card__badge--new">
-                                    <?php echo __('new'); ?>
-                                </div>
-                            <?php endif; ?>
-                            
-                            <?php if (!empty($product['is_disabled'])): ?>
-                                <div class="card__badge card__badge--disabled">
-                                    <?php echo __('disabled_seller'); ?>
-                                </div>
-                            <?php endif; ?>
-                            
-                            <button class="card__wishlist" data-product-id="<?php echo $product['id']; ?>" 
-                                    title="<?php echo __('add_to_wishlist'); ?>">
-                                <?php if (!empty($_SESSION['wishlist']) && in_array($product['id'], $_SESSION['wishlist'])): ?>
-                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2">
-                                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-                                    </svg>
-                                <?php else: ?>
-                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-                                    </svg>
-                                <?php endif; ?>
-                            </button>
-                            
-                            <a href="product.php?id=<?php echo $product['id']; ?>" class="card__link">
-                                <div class="card__image">
-                                    <div class="skeleton skeleton--image"></div>
-                                    <?php 
-                                    $optimized_image = get_optimized_image('uploads/' . $product['image'], 'card');
-                                    ?>
-                                    <img src="<?php echo $optimized_image['src']; ?>" 
-                                         srcset="<?php echo $optimized_image['srcset']; ?>"
-                                         sizes="<?php echo $optimized_image['sizes']; ?>"
-                                         alt="<?php echo htmlspecialchars($product['name']); ?>" 
-                                         loading="lazy"
-                                         width="300"
-                                         height="200"
-                                         onload="this.classList.add('loaded'); this.previousElementSibling.style.display='none';">
-                                </div>
-                                <div class="card__content">
-                                    <div class="skeleton skeleton--title"></div>
-                                    <h3 class="card__title"><?php echo htmlspecialchars($product['name']); ?></h3>
-                                    <div class="skeleton skeleton--text"></div>
-                                    <p class="card__description"><?php echo htmlspecialchars($product['description']); ?></p>
-                                    
-                                    <!-- Rating Section -->
-                                    <?php
-                                    // Get product rating
-                                    $stmt = $pdo->prepare('
-                                        SELECT AVG(rating) as avg_rating, COUNT(*) as review_count 
-                                        FROM reviews 
-                                        WHERE product_id = ? AND status = "approved"
-                                    ');
-                                    $stmt->execute([$product['id']]);
-                                    $rating_data = $stmt->fetch();
-                                    $avg_rating = round($rating_data['avg_rating'] ?? 0, 1);
-                                    $review_count = $rating_data['review_count'] ?? 0;
-                                    ?>
-                                    
-                                    <?php if ($avg_rating > 0): ?>
-                                        <div class="card__rating">
-                                            <div class="card__rating-stars">
-                                                <?php for ($i = 1; $i <= 5; $i++): ?>
-                                                    <span class="star <?php echo $i <= $avg_rating ? 'filled' : ''; ?>">★</span>
-                                                <?php endfor; ?>
-                                            </div>
-                                            <span class="card__rating-count">(<?php echo $review_count; ?>)</span>
+                <?php if (!empty($products)): ?>
+                    <div class="products-grid">
+                        <?php foreach ($products as $product): ?>
+                            <div class="product-card">
+                                <div class="product-card__content">
+                                    <h3 class="product-card__title"><?php echo htmlspecialchars($product['name']); ?></h3>
+                                    <p class="product-card__description"><?php echo htmlspecialchars(substr($product['description'] ?? '', 0, 100)) . (strlen($product['description'] ?? '') > 100 ? '...' : ''); ?></p>
+                                    <div class="product-card__price">
+                                        <span class="price"><?php echo number_format($product['price'], 2); ?> <?php echo __('currency'); ?></span>
+                                    </div>
+                                    <?php if ($product['is_disabled']): ?>
+                                        <div class="product-card__badge">
+                                            <span class="badge badge--special"><?php echo __('supporting_disabled_seller'); ?></span>
                                         </div>
                                     <?php endif; ?>
-                                    
-                                    <div class="skeleton skeleton--price"></div>
-                                    <div class="card__price"><?php echo htmlspecialchars($product['price']); ?> <?php echo __('currency'); ?></div>
+                                    <div class="product-card__actions">
+                                        <a href="product.php?id=<?php echo $product['id']; ?>" class="btn btn--primary">
+                                            <?php echo __('view_details'); ?>
+                                        </a>
+                                    </div>
                                 </div>
-                            </a>
-                            
-                            <form action="add_to_cart.php" method="get" class="card__form">
-                                <input type="hidden" name="id" value="<?php echo $product['id']; ?>">
-                                <button type="submit" class="btn btn--primary btn--sm">
-                                    <?php echo __('add_to_cart'); ?>
-                                </button>
-                            </form>
-                        </div>
-                    <?php endforeach; ?>
-                </div>
-            </div>
-        </section>
-        
-        <!-- Recently Viewed Products -->
-        <?php if (!empty($recently_viewed)): ?>
-        <section class="section">
-            <div class="container">
-                <div class="section__header">
-                    <h2 class="section__title">
-                        <?php echo __('recently_viewed'); ?>
-                    </h2>
-                </div>
-                
-                <div class="grid grid--4">
-                    <?php foreach ($recently_viewed as $product): ?>
-                        <?php $prod_name = $product['name_' . $lang] ?? $product['name']; ?>
-                        <div class="card card--product">
-                            <?php if (!empty($product['is_disabled'])): ?>
-                                <div class="card__badge card__badge--disabled">
-                                    <?php echo $lang === 'ar' ? 'بائع ذو إعاقة' : 'Disabled Seller'; ?>
-                                </div>
-                            <?php endif; ?>
-                            
-                            <a href="product.php?id=<?php echo $product['id']; ?>" class="card__link">
-                                <div class="card__image">
-                                    <img src="uploads/<?php echo htmlspecialchars($product['image']); ?>" 
-                                         alt="<?php echo htmlspecialchars($prod_name); ?>" loading="lazy">
-                                </div>
-                                <div class="card__content">
-                                    <h3 class="card__title"><?php echo htmlspecialchars($prod_name); ?></h3>
-                                    <div class="card__price"><?php echo htmlspecialchars($product['price']); ?> <?php echo $lang === 'ar' ? 'د.ت' : 'TND'; ?></div>
-                                </div>
-                            </a>
-                        </div>
-                    <?php endforeach; ?>
-                </div>
-            </div>
-        </section>
-        <?php endif; ?>
-        
-        <!-- About Section -->
-        <section class="section section--highlight">
-            <div class="container">
-                <div class="section__content">
-                    <h2 class="section__title">
-                        <?php echo $lang === 'ar' ? 'من نحن' : 'About Us'; ?>
-                    </h2>
-                    <p class="section__text">
-                        <?php echo $lang === 'ar' ? 'منصة WeBuy هي منصة تسوق إلكتروني مخصصة لدعم وتمكين الأفراد ذوي الإعاقة في تونس. نساعدهم على بيع منتجاتهم وبناء مستقبل مستقل.' : 'WeBuy is an e-commerce platform dedicated to supporting and empowering individuals with disabilities in Tunisia. We help them sell their products and build an independent future.'; ?>
-                    </p>
-                    <div class="section__actions">
-                        <a href="faq.php" class="btn btn--primary">
-                            <?php echo $lang === 'ar' ? 'تعرف على المزيد' : 'Learn More'; ?>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                    
+                    <div class="section__footer">
+                        <a href="store.php" class="btn btn--secondary btn--lg">
+                            <?php echo __('view_all_products'); ?>
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                                <polyline points="12,5 19,12 12,19"></polyline>
+                            </svg>
                         </a>
                     </div>
-                </div>
+                <?php else: ?>
+                    <div class="empty-state">
+                        <p><?php echo __('no_products_found'); ?></p>
+                        <a href="store.php" class="btn btn--primary"><?php echo __('browse_store'); ?></a>
+                    </div>
+                <?php endif; ?>
             </div>
         </section>
-...existing code...
-</main>
-<?php include_once 'include_load_analytics.php'; ?>
+    </main>
     
-    <?php include 'footer.php'; ?>
-    
-    <!-- Optimized JavaScript -->
-    <script src="js/optimized/main.min.js" defer></script>
-    
-    <!-- Performance monitoring -->
-    <script>
-        window.addEventListener('load', function() {
-            const loadTime = performance.now();
-            console.log('Page load time:', loadTime.toFixed(2), 'ms');
-        });
-    </script>
+    <?php 
+    // Simple footer inclusion - if footer.php fails, show basic footer
+    try {
+        include 'footer.php'; 
+    } catch (Exception $e) {
+        echo '<footer><p>&copy; 2025 WeBuy - Online Shopping Platform</p></footer>';
+    }
+    ?>
 </body>
-</html> 
+</html>

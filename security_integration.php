@@ -38,7 +38,7 @@ if (isRateLimitingEnabled()) {
 }
 
 // Initialize security systems
-$rateLimiter = new EnhancedRateLimiting($pdo);
+// $rateLimiter = new EnhancedRateLimiting($pdo); // Temporarily disabled
 
 // Security monitoring and logging
 function logSecurityEvent($event_type, $details = [], $user_id = null) {
@@ -269,11 +269,11 @@ function generateCSRFToken() {
 }
 
 // Basic input sanitization
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'POST') {
     $_POST = array_map('sanitizeInput', $_POST);
 }
 
-if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'GET') {
     $_GET = array_map('sanitizeInput', $_GET);
 }
 
