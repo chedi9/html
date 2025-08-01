@@ -121,35 +121,56 @@ if (!function_exists('__')) {
                             <h3 class="nav__cart-title"><?php echo ($lang ?? 'en') === 'ar' ? 'سلة التسوق' : 'Shopping Cart'; ?></h3>
                         </div>
                         
-                        <?php if (!empty($_SESSION['cart'])): ?>
+                        <?php if (!empty($_SESSION['cart']) && is_array($_SESSION['cart'])): ?>
                             <?php
                             // Fetch cart items for dropdown preview
                             $cart_keys = array_keys($_SESSION['cart']);
-                            $ids = array_map(function($k){ return explode('|', $k)[0]; }, $cart_keys);
-                            $ids_str = implode(',', array_map('intval', $ids));
-                            $stmt = $pdo->query("SELECT * FROM products WHERE id IN ($ids_str) LIMIT 3");
                             $preview_products = [];
-                            while ($row = $stmt->fetch()) {
-                                $preview_products[$row['id']] = $row;
-                            }
-                            $cart_total = 0;
                             $preview_items = [];
-                            $item_count = 0;
-                            foreach ($cart_keys as $cart_key) {
-                                if ($item_count >= 3) break;
-                                $parts = explode('|', $cart_key, 2);
-                                $pid = intval($parts[0]);
-                                if (isset($preview_products[$pid])) {
-                                    $product = $preview_products[$pid];
-                                    $qty = $_SESSION['cart'][$cart_key];
-                                    $subtotal = $qty * $product['price'];
-                                    $cart_total += $subtotal;
-                                    $preview_items[] = [
-                                        'product' => $product,
-                                        'qty' => $qty,
-                                        'subtotal' => $subtotal
-                                    ];
-                                    $item_count++;
+                            $cart_total = 0;
+                            
+                            // Only proceed if we have a database connection
+                            if (isset($pdo) && $pdo instanceof PDO) {
+                                try {
+                                    $ids = array_map(function($k){ return explode('|', $k)[0]; }, $cart_keys);
+                                    $ids = array_filter($ids, 'is_numeric');
+                                    
+                                    if (!empty($ids)) {
+                                        $ids_str = implode(',', array_map('intval', $ids));
+                                        $stmt = $pdo->query("SELECT * FROM products WHERE id IN ($ids_str) LIMIT 3");
+                                        
+                                        if ($stmt) {
+                                            while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                                                if (is_array($row) && isset($row['id'])) {
+                                                    $preview_products[$row['id']] = $row;
+                                                }
+                                            }
+                                        }
+                                    }
+                                    
+                                    $item_count = 0;
+                                    foreach ($cart_keys as $cart_key) {
+                                        if ($item_count >= 3) break;
+                                        $parts = explode('|', $cart_key, 2);
+                                        $pid = intval($parts[0]);
+                                        
+                                        if (isset($preview_products[$pid]) && is_array($preview_products[$pid])) {
+                                            $product = $preview_products[$pid];
+                                            $qty = $_SESSION['cart'][$cart_key];
+                                            $subtotal = $qty * floatval($product['price'] ?? 0);
+                                            $cart_total += $subtotal;
+                                            $preview_items[] = [
+                                                'product' => $product,
+                                                'qty' => $qty,
+                                                'subtotal' => $subtotal
+                                            ];
+                                            $item_count++;
+                                        }
+                                    }
+                                } catch (Exception $e) {
+                                    // Silently handle database errors for dropdown
+                                    $preview_items = [];
+                                    $cart_total = 0;
                                 }
                             }
                             ?>

@@ -82,6 +82,8 @@
     border-radius: 6px;
     box-shadow: 0 1px 3px rgba(0,0,0,0.04);
     position: relative;
+    text-decoration: none;
+    color: var(--color-primary-600);
   }
   .nav__cart--topbar .nav__cart-link svg {
     width: 20px;
@@ -1291,6 +1293,19 @@ html[data-theme="dark"] .language-toggle:hover {
 /* Cart Hover Dropdown */
 .nav__cart {
   position: relative;
+}
+
+.nav__cart-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  color: var(--color-gray-700);
+  transition: color var(--transition-fast);
+}
+
+.nav__cart-link:hover {
+  color: var(--color-primary-600);
 }
 
 .nav__cart-dropdown {
