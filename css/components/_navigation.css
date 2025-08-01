@@ -997,9 +997,9 @@
   align-items: center;
   gap: 6px;
   padding: 8px 12px;
-  background: #fffbe6;
-  color: #b8860b;
-  border: 1.5px solid #ffe066;
+  background: var(--color-accent-50);
+  color: var(--color-accent-700);
+  border: 1.5px solid var(--color-accent-200);
   border-radius: 8px;
   text-decoration: none;
   font-weight: 600;
@@ -1009,9 +1009,9 @@
 }
 
 .nav__seller-dashboard:hover {
-  background: #ffe066;
+  background: var(--color-accent-400);
   color: #fff;
-  border-color: #ffd700;
+  border-color: var(--color-accent-500);
   transform: translateY(-1px);
 }
 
@@ -1040,14 +1040,14 @@
 
 /* Dark theme adjustments */
 html[data-theme="dark"] .nav__seller-dashboard {
-  background: #2d2d2d;
-  color: #ffd700;
-  border-color: #ffd700;
+  background: var(--color-neutral-800);
+  color: var(--color-accent-400);
+  border-color: var(--color-accent-400);
 }
 
 html[data-theme="dark"] .nav__seller-dashboard:hover {
-  background: #ffd700;
-  color: #2d2d2d;
+  background: var(--color-accent-400);
+  color: var(--color-neutral-800);
 } 
 
 /* Language Toggle Button in Header */

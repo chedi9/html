@@ -5,36 +5,36 @@
 /* Dark Theme Colors */
 html[data-theme="dark"] {
   --color-background: #0a0a0a;
-  --color-surface: #171717;
-  --color-text: #fafafa;
-  --color-text-secondary: #a3a3a3;
-  --color-border: #262626;
-  --color-input: #171717;
-  --color-input-border: #404040;
-  --color-card: #171717;
-  --color-card-hover: #262626;
+  --color-surface: var(--color-neutral-900);
+  --color-text: var(--color-neutral-50);
+  --color-text-secondary: var(--color-neutral-400);
+  --color-border: var(--color-neutral-800);
+  --color-input: var(--color-neutral-900);
+  --color-input-border: var(--color-neutral-700);
+  --color-card: var(--color-neutral-900);
+  --color-card-hover: var(--color-neutral-800);
   
   /* Header specific colors */
-  --header-background: #171717;
-  --header-text: #fafafa;
-  --header-border: #262626;
+  --header-background: var(--color-neutral-900);
+  --header-text: var(--color-neutral-50);
+  --header-border: var(--color-neutral-800);
   
   /* Navigation specific colors */
-  --nav-background: #171717;
-  --nav-text: #d4d4d4;
-  --nav-hover: #262626;
-  --nav-active: #0c4a6e;
+  --nav-background: var(--color-neutral-900);
+  --nav-text: var(--color-neutral-300);
+  --nav-hover: var(--color-neutral-800);
+  --nav-active: var(--color-primary-900);
   
   /* Form specific colors */
-  --form-background: #171717;
-  --form-border: #404040;
-  --form-focus: #38bdf8;
+  --form-background: var(--color-neutral-900);
+  --form-border: var(--color-neutral-700);
+  --form-focus: var(--color-primary-400);
   
   /* Button specific colors */
-  --btn-primary-bg: #0ea5e9;
+  --btn-primary-bg: var(--color-primary-500);
   --btn-primary-text: #ffffff;
-  --btn-secondary-bg: #262626;
-  --btn-secondary-text: #d4d4d4;
+  --btn-secondary-bg: var(--color-neutral-800);
+  --btn-secondary-text: var(--color-neutral-300);
   
   /* Additional dark theme adjustments */
   --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);

@@ -21,26 +21,26 @@
   --color-card-hover: #f8f9fa;
   --color-input: #ffffff;
   --color-input-border: #d0d0d0;
-  --color-input-focus: #2196f3;
-  --color-button: #2196f3;
-  --color-button-hover: #1976d2;
+  --color-input-focus: var(--color-primary-500);
+  --color-button: var(--color-primary-600);
+  --color-button-hover: var(--color-primary-700);
   --color-button-text: #ffffff;
   
   /* Header & Navigation */
   --header-background: #ffffff;
-  --header-text: #1a1a1a;
-  --header-border: #e0e0e0;
+  --header-text: var(--color-neutral-900);
+  --header-border: var(--color-neutral-200);
   --nav-background: #ffffff;
-  --nav-text: #666666;
-  --nav-hover: #f5f5f5;
-  --nav-active: #2196f3;
+  --nav-text: var(--color-neutral-600);
+  --nav-hover: var(--color-primary-50);
+  --nav-active: var(--color-primary-600);
   
   /* Form Elements */
   --form-background: #ffffff;
-  --form-border: #d0d0d0;
-  --form-focus: #2196f3;
-  --form-error: #f44336;
-  --form-success: #4caf50;
+  --form-border: var(--color-neutral-300);
+  --form-focus: var(--color-primary-500);
+  --form-error: var(--color-danger-600);
+  --form-success: var(--color-success-600);
   
   /* Shadows */
   --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
@@ -53,10 +53,10 @@
   --modal-background: #ffffff;
   
   /* Status Colors */
-  --status-success: #4caf50;
-  --status-warning: #ff9800;
-  --status-error: #f44336;
-  --status-info: #2196f3;
+  --status-success: var(--color-success-600);
+  --status-warning: var(--color-warning-600);
+  --status-error: var(--color-danger-600);
+  --status-info: var(--color-primary-600);
   
   /* Review System */
   --review-background: #f8f9fa;
@@ -94,40 +94,40 @@
    ======================================== */
 [data-theme="dark"] {
   /* Base Colors */
-  --color-background: #121212;
-  --color-surface: #1e1e1e;
-  --color-text: #ffffff;
-  --color-text-secondary: #b0b0b0;
-  --color-text-muted: #888888;
-  --color-border: #333333;
-  --color-border-light: #2a2a2a;
-  --color-border-dark: #444444;
+  --color-background: #0a0a0a;
+  --color-surface: var(--color-neutral-900);
+  --color-text: var(--color-neutral-50);
+  --color-text-secondary: var(--color-neutral-400);
+  --color-text-muted: var(--color-neutral-500);
+  --color-border: var(--color-neutral-800);
+  --color-border-light: var(--color-neutral-900);
+  --color-border-dark: var(--color-neutral-700);
   
   /* Component Colors */
-  --color-card: #1e1e1e;
-  --color-card-hover: #2a2a2a;
-  --color-input: #1e1e1e;
-  --color-input-border: #444444;
-  --color-input-focus: #42a5f5;
-  --color-button: #2196f3;
-  --color-button-hover: #1976d2;
+  --color-card: var(--color-neutral-900);
+  --color-card-hover: var(--color-neutral-800);
+  --color-input: var(--color-neutral-900);
+  --color-input-border: var(--color-neutral-700);
+  --color-input-focus: var(--color-primary-400);
+  --color-button: var(--color-primary-500);
+  --color-button-hover: var(--color-primary-600);
   --color-button-text: #ffffff;
   
   /* Header & Navigation */
-  --header-background: #1e1e1e;
-  --header-text: #ffffff;
-  --header-border: #333333;
-  --nav-background: #1e1e1e;
-  --nav-text: #cccccc;
-  --nav-hover: #2a2a2a;
-  --nav-active: #42a5f5;
+  --header-background: var(--color-neutral-900);
+  --header-text: var(--color-neutral-50);
+  --header-border: var(--color-neutral-800);
+  --nav-background: var(--color-neutral-900);
+  --nav-text: var(--color-neutral-300);
+  --nav-hover: var(--color-neutral-800);
+  --nav-active: var(--color-primary-600);
   
   /* Form Elements */
-  --form-background: #1e1e1e;
-  --form-border: #444444;
-  --form-focus: #42a5f5;
-  --form-error: #f44336;
-  --form-success: #4caf50;
+  --form-background: var(--color-neutral-900);
+  --form-border: var(--color-neutral-700);
+  --form-focus: var(--color-primary-400);
+  --form-error: var(--color-danger-600);
+  --form-success: var(--color-success-600);
   
   /* Shadows */
   --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
@@ -140,10 +140,10 @@
   --modal-background: #1e1e1e;
   
   /* Status Colors */
-  --status-success: #4caf50;
-  --status-warning: #ff9800;
-  --status-error: #f44336;
-  --status-info: #42a5f5;
+  --status-success: var(--color-success-600);
+  --status-warning: var(--color-warning-600);
+  --status-error: var(--color-danger-600);
+  --status-info: var(--color-primary-500);
   
   /* Review System */
   --review-background: #1a1a1a;

@@ -45,8 +45,8 @@
 
 .btn--secondary {
   background-color: var(--btn-secondary-bg, #fff);
-  color: var(--btn-secondary-text, #0284c7);
-  border-color: #0284c7;
+  color: var(--btn-secondary-text, var(--color-primary-600));
+  border-color: var(--color-primary-600);
   box-shadow: none;
   text-shadow: none;
 }
