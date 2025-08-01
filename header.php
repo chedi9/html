@@ -114,6 +114,55 @@ if (!function_exists('__')) {
                         </svg>
                         <span class="nav__cart-count"><?php echo isset($_SESSION['cart']) ? count($_SESSION['cart']) : 0; ?></span>
                     </a>
+                    
+                    <!-- Cart Dropdown -->
+                    <div class="nav__cart-dropdown">
+                        <div class="nav__cart-header">
+                            <h3 class="nav__cart-title"><?php echo ($lang ?? 'en') === 'ar' ? 'عربة التسوق' : 'Shopping Cart'; ?></h3>
+                        </div>
+                        
+                        <?php if (isset($_SESSION['cart']) && !empty($_SESSION['cart'])): ?>
+                            <div class="nav__cart-items">
+                                <?php 
+                                $cart_total = 0;
+                                foreach (array_slice($_SESSION['cart'], 0, 3) as $item): // Show max 3 items
+                                    $cart_total += $item['price'] * $item['quantity'];
+                                ?>
+                                    <div class="nav__cart-item">
+                                        <img src="<?php echo $item['image'] ?? 'placeholder.jpg'; ?>" alt="<?php echo htmlspecialchars($item['name']); ?>" class="nav__cart-item-image">
+                                        <div class="nav__cart-item-details">
+                                            <div class="nav__cart-item-name"><?php echo htmlspecialchars($item['name']); ?></div>
+                                            <div class="nav__cart-item-price">$<?php echo number_format($item['price'], 2); ?> × <?php echo $item['quantity']; ?></div>
+                                        </div>
+                                    </div>
+                                <?php endforeach; ?>
+                                
+                                <?php if (count($_SESSION['cart']) > 3): ?>
+                                    <div class="nav__cart-item">
+                                        <div class="nav__cart-item-details">
+                                            <div class="nav__cart-item-name">+<?php echo count($_SESSION['cart']) - 3; ?> <?php echo ($lang ?? 'en') === 'ar' ? 'عناصر أخرى' : 'more items'; ?></div>
+                                        </div>
+                                    </div>
+                                <?php endif; ?>
+                            </div>
+                            
+                            <div class="nav__cart-footer">
+                                <div class="nav__cart-total">
+                                    <span><?php echo ($lang ?? 'en') === 'ar' ? 'المجموع:' : 'Total:'; ?></span>
+                                    <span>$<?php echo number_format($cart_total, 2); ?></span>
+                                </div>
+                                <div class="nav__cart-actions">
+                                    <a href="cart.php" class="btn btn--secondary btn--sm"><?php echo ($lang ?? 'en') === 'ar' ? 'عرض السلة' : 'View Cart'; ?></a>
+                                    <a href="checkout.php" class="btn btn--primary btn--sm"><?php echo ($lang ?? 'en') === 'ar' ? 'الدفع' : 'Checkout'; ?></a>
+                                </div>
+                            </div>
+                        <?php else: ?>
+                            <div class="nav__cart-empty">
+                                <p><?php echo ($lang ?? 'en') === 'ar' ? 'عربة التسوق فارغة' : 'Your cart is empty'; ?></p>
+                                <a href="store.php" class="btn btn--primary btn--sm"><?php echo ($lang ?? 'en') === 'ar' ? 'تسوق الآن' : 'Shop Now'; ?></a>
+                            </div>
+                        <?php endif; ?>
+                    </div>
                 </div>
                 <button class="nav__mobile-toggle" id="mobileMenuToggle" aria-label="Open menu">
                     <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
