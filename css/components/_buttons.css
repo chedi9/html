@@ -23,6 +23,50 @@
   min-height: 44px; /* Accessibility: minimum touch target */
 }
 
+/* Mobile Button Styles */
+@media (max-width: 768px) {
+  .btn {
+    min-height: 48px; /* Larger touch target on mobile */
+    padding: var(--space-3) var(--space-4);
+    font-size: var(--font-size-base);
+  }
+  
+  .btn--sm {
+    min-height: 40px;
+    padding: var(--space-2) var(--space-3);
+    font-size: var(--font-size-sm);
+  }
+  
+  .btn--lg {
+    min-height: 56px;
+    padding: var(--space-4) var(--space-6);
+    font-size: var(--font-size-lg);
+  }
+}
+
+@media (max-width: 480px) {
+  .btn {
+    width: 100%;
+    max-width: 320px;
+    margin: 0 auto;
+  }
+  
+  .btn--inline {
+    width: auto;
+    max-width: none;
+    margin: 0;
+  }
+  
+  .btn-group {
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+  
+  .btn-group .btn {
+    width: 100%;
+  }
+}
+
 /* Button Variants */
 .btn--primary {
   background-color: var(--color-primary-600);
