@@ -20,33 +20,60 @@ if (!function_exists('__')) {
 require 'db.php';
 require_once 'includes/thumbnail_helper.php';
 
-// Fetch products
-$products = $pdo->query("SELECT p.*, s.is_disabled FROM products p LEFT JOIN sellers s ON p.seller_id = s.id WHERE p.approved = 1 ORDER BY s.is_disabled DESC, p.created_at DESC LIMIT 8")->fetchAll();
+// Initialize variables
+$products = [];
+$categories = [];
 
-// Fetch categories
-$categories = $pdo->query("SELECT * FROM categories ORDER BY id ASC")->fetchAll();
+try {
+    // Fetch products
+    $products = $pdo->query("SELECT p.*, s.is_disabled FROM products p LEFT JOIN sellers s ON p.seller_id = s.id WHERE p.approved = 1 ORDER BY s.is_disabled DESC, p.created_at DESC LIMIT 8")->fetchAll();
+} catch (PDOException $e) {
+    // If sellers table doesn't exist, try without it
+    try {
+        $products = $pdo->query("SELECT p.* FROM products p WHERE p.approved = 1 ORDER BY p.created_at DESC LIMIT 8")->fetchAll();
+    } catch (PDOException $e2) {
+        $products = [];
+    }
+}
+
+try {
+    // Fetch categories
+    $categories = $pdo->query("SELECT * FROM categories ORDER BY id ASC")->fetchAll();
+} catch (PDOException $e) {
+    $categories = [];
+}
 
 // Fetch recently viewed products
 $recently_viewed = [];
 if (!empty($_SESSION['viewed_products'])) {
-    $ids = array_reverse($_SESSION['viewed_products']);
-    $placeholders = implode(',', array_fill(0, count($ids), '?'));
-    $stmt = $pdo->prepare("SELECT p.*, s.is_disabled FROM products p LEFT JOIN sellers s ON p.seller_id = s.id WHERE p.id IN ($placeholders)");
-    $stmt->execute($ids);
-    $all = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    foreach ($ids as $id) {
-        foreach ($all as $prod) {
-            if ($prod['id'] == $id) {
-                $recently_viewed[] = $prod;
-                break;
+    try {
+        $ids = array_reverse($_SESSION['viewed_products']);
+        $placeholders = implode(',', array_fill(0, count($ids), '?'));
+        $stmt = $pdo->prepare("SELECT p.*, s.is_disabled FROM products p LEFT JOIN sellers s ON p.seller_id = s.id WHERE p.id IN ($placeholders)");
+        $stmt->execute($ids);
+        $all = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        foreach ($ids as $id) {
+            foreach ($all as $prod) {
+                if ($prod['id'] == $id) {
+                    $recently_viewed[] = $prod;
+                    break;
+                }
             }
         }
+    } catch (PDOException $e) {
+        // If there's an error, just skip recently viewed products
+        $recently_viewed = [];
     }
 }
 
 // Get priority products
 require_once 'priority_products_helper.php';
-$priority_products = getPriorityProducts(6);
+$priority_products = [];
+try {
+    $priority_products = getPriorityProducts(6);
+} catch (Exception $e) {
+    $priority_products = [];
+}
 ?>
 <!DOCTYPE html>
 <html lang="<?php echo $lang; ?>" dir="<?php echo $lang === 'ar' ? 'rtl' : 'ltr'; ?>" data-theme="light">
@@ -66,7 +93,6 @@ $priority_products = getPriorityProducts(6);
     
     <!-- JavaScript -->
     <script src="js/theme-controller.js" defer></script>
-    <script src="main.js?v=1.5" defer></script>
 <?php include_once 'include_load_analytics.php'; ?>
 </head>
 <body class="page-transition">
@@ -467,9 +493,6 @@ $priority_products = getPriorityProducts(6);
 <?php include_once 'include_load_analytics.php'; ?>
     
     <?php include 'footer.php'; ?>
-    
-    <!-- Optimized JavaScript -->
-    <script src="js/optimized/main.min.js" defer></script>
     
     <!-- Performance monitoring -->
     <script>
