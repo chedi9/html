@@ -81,9 +81,9 @@
 /* Skeleton loading animation */
 .skeleton {
   background: linear-gradient(90deg, 
-    var(--color-gray-200) 25%, 
-    var(--color-gray-300) 50%, 
-    var(--color-gray-200) 75%
+    var(--color-neutral-200) 25%, 
+    var(--color-neutral-300) 50%, 
+    var(--color-neutral-200) 75%
   );
   background-size: 200% 100%;
   animation: loading 1.5s infinite;

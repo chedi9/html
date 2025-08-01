@@ -45,8 +45,8 @@
 
 .btn--secondary {
   background-color: var(--btn-secondary-bg, #fff);
-  color: var(--btn-secondary-text, #1e88e5);
-  border-color: #1e88e5;
+  color: var(--btn-secondary-text, #0284c7);
+  border-color: #0284c7;
   box-shadow: none;
   text-shadow: none;
 }
@@ -101,6 +101,25 @@
   border-color: var(--color-warning-700);
   transform: translateY(-1px);
   box-shadow: var(--shadow-md);
+}
+
+.btn--accent {
+  background-color: var(--color-accent-500);
+  color: var(--color-white);
+  border-color: var(--color-accent-500);
+}
+
+.btn--accent:hover {
+  background-color: var(--color-accent-600);
+  border-color: var(--color-accent-600);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.btn--accent:active {
+  background-color: var(--color-accent-700);
+  border-color: var(--color-accent-700);
+  transform: translateY(0);
 }
 
 .btn--ghost {

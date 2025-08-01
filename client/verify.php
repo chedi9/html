@@ -93,7 +93,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <?php elseif ($success): ?>
                     <div class="alert alert--success"><?= __('email_verified') ?></div>
                     <div class="auth-links" style="text-align:center;margin-top:16px;">
-                        <a href="login.php" class="btn btn--primary btn--full"><?= __('login') ?></a>
+                        <a href="../login.php" class="btn btn--primary btn--full"><?= __('login') ?></a>
                     </div>
                 <?php else: ?>
                 <form method="post" class="auth-form" autocomplete="off">

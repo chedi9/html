@@ -73,7 +73,7 @@
 .form__select:focus {
   outline: none;
   border-color: var(--color-primary-500);
-  box-shadow: 0 0 0 3px var(--color-primary-100);
+  box-shadow: 0 0 0 3px var(--color-primary-50);
 }
 
 .form__input:focus:not(:focus-visible),

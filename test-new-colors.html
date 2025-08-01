@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Color Palette Test - WeBuy</title>
+    <link rel="stylesheet" href="css/main.css">
+    <style>
+        .color-showcase {
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .color-section {
+            margin-bottom: 3rem;
+        }
+        .color-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        .color-swatch {
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+            color: white;
+            font-weight: 500;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .color-swatch.light {
+            color: #171717;
+            border: 1px solid #e5e5e5;
+        }
+        .color-swatch.dark {
+            color: white;
+        }
+        .button-showcase {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+        }
+        .theme-toggle {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+    <button class="theme-toggle btn btn--secondary" onclick="toggleTheme()">
+        Toggle Theme
+    </button>
+
+    <div class="color-showcase">
+        <h1>🎨 New Color Palette Showcase</h1>
+        <p>Testing the new modern blue-green and warm orange color scheme</p>
+
+        <!-- Primary Colors -->
+        <div class="color-section">
+            <h2>Primary Colors (Modern Blue-Green)</h2>
+            <div class="color-grid">
+                <div class="color-swatch light" style="background-color: var(--color-primary-50);">
+                    Primary 50<br>#f0f9ff
+                </div>
+                <div class="color-swatch light" style="background-color: var(--color-primary-100);">
+                    Primary 100<br>#e0f2fe
+                </div>
+                <div class="color-swatch light" style="background-color: var(--color-primary-200);">
+                    Primary 200<br>#bae6fd
+                </div>
+                <div class="color-swatch light" style="background-color: var(--color-primary-300);">
+                    Primary 300<br>#7dd3fc
+                </div>
+                <div class="color-swatch light" style="background-color: var(--color-primary-400);">
+                    Primary 400<br>#38bdf8
+                </div>
+                <div class="color-swatch dark" style="background-color: var(--color-primary-500);">
+                    Primary 500<br>#0ea5e9
+                </div>
+                <div class="color-swatch dark" style="background-color: var(--color-primary-600);">
+                    Primary 600<br>#0284c7
+                </div>
+                <div class="color-swatch dark" style="background-color: var(--color-primary-700);">
+                    Primary 700<br>#0369a1
+                </div>
+                <div class="color-swatch dark" style="background-color: var(--color-primary-800);">
+                    Primary 800<br>#075985
+                </div>
+                <div class="color-swatch dark" style="background-color: var(--color-primary-900);">
+                    Primary 900<br>#0c4a6e
+                </div>
+            </div>
+        </div>
+
+        <!-- Accent Colors -->
+        <div class="color-section">
+            <h2>Accent Colors (Warm Orange)</h2>
+            <div class="color-grid">
+                <div class="color-swatch light" style="background-color: var(--color-accent-50);">
+                    Accent 50<br>#fff7ed
+                </div>
+                <div class="color-swatch light" style="background-color: var(--color-accent-100);">
+                    Accent 100<br>#ffedd5
+                </div>
+                <div class="color-swatch light" style="background-color: var(--color-accent-200);">
+                    Accent 200<br>#fed7aa
+                </div>
+                <div class="color-swatch light" style="background-color: var(--color-accent-300);">
+                    Accent 300<br>#fdba74
+                </div>
+                <div class="color-swatch light" style="background-color: var(--color-accent-400);">
+                    Accent 400<br>#fb923c
+                </div>
+                <div class="color-swatch dark" style="background-color: var(--color-accent-500);">
+                    Accent 500<br>#f97316
+                </div>
+                <div class="color-swatch dark" style="background-color: var(--color-accent-600);">
+                    Accent 600<br>#ea580c
+                </div>
+                <div class="color-swatch dark" style="background-color: var(--color-accent-700);">
+                    Accent 700<br>#c2410c
+                </div>
+                <div class="color-swatch dark" style="background-color: var(--color-accent-800);">
+                    Accent 800<br>#9a3412
+                </div>
+                <div class="color-swatch dark" style="background-color: var(--color-accent-900);">
+                    Accent 900<br>#7c2d12
+                </div>
+            </div>
+        </div>
+
+        <!-- Neutral Colors -->
+        <div class="color-section">
+            <h2>Neutral Colors (Warm Grays)</h2>
+            <div class="color-grid">
+                <div class="color-swatch light" style="background-color: var(--color-neutral-50);">
+                    Neutral 50<br>#fafafa
+                </div>
+                <div class="color-swatch light" style="background-color: var(--color-neutral-100);">
+                    Neutral 100<br>#f5f5f5
+                </div>
+                <div class="color-swatch light" style="background-color: var(--color-neutral-200);">
+                    Neutral 200<br>#e5e5e5
+                </div>
+                <div class="color-swatch light" style="background-color: var(--color-neutral-300);">
+                    Neutral 300<br>#d4d4d4
+                </div>
+                <div class="color-swatch light" style="background-color: var(--color-neutral-400);">
+                    Neutral 400<br>#a3a3a3
+                </div>
+                <div class="color-swatch dark" style="background-color: var(--color-neutral-500);">
+                    Neutral 500<br>#737373
+                </div>
+                <div class="color-swatch dark" style="background-color: var(--color-neutral-600);">
+                    Neutral 600<br>#525252
+                </div>
+                <div class="color-swatch dark" style="background-color: var(--color-neutral-700);">
+                    Neutral 700<br>#404040
+                </div>
+                <div class="color-swatch dark" style="background-color: var(--color-neutral-800);">
+                    Neutral 800<br>#262626
+                </div>
+                <div class="color-swatch dark" style="background-color: var(--color-neutral-900);">
+                    Neutral 900<br>#171717
+                </div>
+            </div>
+        </div>
+
+        <!-- Button Showcase -->
+        <div class="color-section">
+            <h2>Button Variants</h2>
+            <div class="button-showcase">
+                <button class="btn btn--primary">Primary Button</button>
+                <button class="btn btn--secondary">Secondary Button</button>
+                <button class="btn btn--accent">Accent Button</button>
+                <button class="btn btn--success">Success Button</button>
+                <button class="btn btn--warning">Warning Button</button>
+                <button class="btn btn--danger">Danger Button</button>
+                <button class="btn btn--ghost">Ghost Button</button>
+            </div>
+        </div>
+
+        <!-- Semantic Colors -->
+        <div class="color-section">
+            <h2>Semantic Colors</h2>
+            <div class="color-grid">
+                <div class="color-swatch light" style="background-color: var(--color-success-50);">
+                    Success 50<br>#f0fdf4
+                </div>
+                <div class="color-swatch dark" style="background-color: var(--color-success-500);">
+                    Success 500<br>#22c55e
+                </div>
+                <div class="color-swatch dark" style="background-color: var(--color-success-600);">
+                    Success 600<br>#16a34a
+                </div>
+                <div class="color-swatch light" style="background-color: var(--color-warning-50);">
+                    Warning 50<br>#fffbeb
+                </div>
+                <div class="color-swatch dark" style="background-color: var(--color-warning-500);">
+                    Warning 500<br>#f59e0b
+                </div>
+                <div class="color-swatch dark" style="background-color: var(--color-warning-600);">
+                    Warning 600<br>#d97706
+                </div>
+                <div class="color-swatch light" style="background-color: var(--color-danger-50);">
+                    Danger 50<br>#fef2f2
+                </div>
+                <div class="color-swatch dark" style="background-color: var(--color-danger-500);">
+                    Danger 500<br>#ef4444
+                </div>
+                <div class="color-swatch dark" style="background-color: var(--color-danger-600);">
+                    Danger 600<br>#dc2626
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleTheme() {
+            const html = document.documentElement;
+            const currentTheme = html.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            html.setAttribute('data-theme', newTheme);
+        }
+    </script>
+</body>
+</html> 

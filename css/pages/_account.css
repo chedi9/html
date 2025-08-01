@@ -96,16 +96,16 @@
 
 .account-nav-item:hover {
   background: var(--color-card-hover);
-  color: var(--color-primary);
+  color: var(--color-primary-600);
 }
 
 .account-nav-item--active {
-  background: var(--color-primary);
+  background: var(--color-primary-600);
   color: white;
 }
 
 .account-nav-item--active:hover {
-  background: var(--color-primary);
+  background: var(--color-primary-600);
   color: white;
 }
 
