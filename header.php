@@ -21,7 +21,7 @@ if (!function_exists('__')) {
 <html lang="<?php echo isset($_COOKIE['language']) ? $_COOKIE['language'] : ($lang ?? 'en'); ?>" dir="<?php echo (isset($_COOKIE['language']) ? $_COOKIE['language'] : ($lang ?? 'en')) === 'ar' ? 'rtl' : 'ltr'; ?>" data-theme="light">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
     <title><?php echo isset($page_title) ? $page_title : 'WeBuy - Online Shopping Platform'; ?></title>
     
     <!-- CSS Files - Load in correct order -->
@@ -114,6 +114,93 @@ if (!function_exists('__')) {
                         </svg>
                         <span class="nav__cart-count"><?php echo isset($_SESSION['cart']) ? count($_SESSION['cart']) : 0; ?></span>
                     </a>
+                    
+                    <!-- Cart Dropdown (Desktop Only) -->
+                    <div class="nav__cart-dropdown">
+                        <div class="nav__cart-header">
+                            <h3 class="nav__cart-title"><?php echo ($lang ?? 'en') === 'ar' ? 'سلة التسوق' : 'Shopping Cart'; ?></h3>
+                        </div>
+                        
+                        <?php if (!empty($_SESSION['cart'])): ?>
+                            <?php
+                            // Fetch cart items for dropdown preview
+                            $cart_keys = array_keys($_SESSION['cart']);
+                            $ids = array_map(function($k){ return explode('|', $k)[0]; }, $cart_keys);
+                            $ids_str = implode(',', array_map('intval', $ids));
+                            $stmt = $pdo->query("SELECT * FROM products WHERE id IN ($ids_str) LIMIT 3");
+                            $preview_products = [];
+                            while ($row = $stmt->fetch()) {
+                                $preview_products[$row['id']] = $row;
+                            }
+                            $cart_total = 0;
+                            $preview_items = [];
+                            $item_count = 0;
+                            foreach ($cart_keys as $cart_key) {
+                                if ($item_count >= 3) break;
+                                $parts = explode('|', $cart_key, 2);
+                                $pid = intval($parts[0]);
+                                if (isset($preview_products[$pid])) {
+                                    $product = $preview_products[$pid];
+                                    $qty = $_SESSION['cart'][$cart_key];
+                                    $subtotal = $qty * $product['price'];
+                                    $cart_total += $subtotal;
+                                    $preview_items[] = [
+                                        'product' => $product,
+                                        'qty' => $qty,
+                                        'subtotal' => $subtotal
+                                    ];
+                                    $item_count++;
+                                }
+                            }
+                            ?>
+                            
+                            <div class="nav__cart-items">
+                                <?php foreach ($preview_items as $item): ?>
+                                    <div class="nav__cart-item">
+                                        <img src="<?php echo getThumbnailPath($item['product']['image']); ?>" 
+                                             alt="<?php echo htmlspecialchars($item['product']['name']); ?>" 
+                                             class="nav__cart-item-image">
+                                        <div class="nav__cart-item-details">
+                                            <div class="nav__cart-item-name"><?php echo htmlspecialchars($item['product']['name']); ?></div>
+                                            <div class="nav__cart-item-price">
+                                                <?php echo $item['qty']; ?> × <?php echo number_format($item['product']['price'], 2); ?> TND
+                                            </div>
+                                        </div>
+                                        <div class="nav__cart-item-total">
+                                            <?php echo number_format($item['subtotal'], 2); ?> TND
+                                        </div>
+                                    </div>
+                                <?php endforeach; ?>
+                                
+                                <?php if (count($_SESSION['cart']) > 3): ?>
+                                    <div class="nav__cart-more">
+                                        <?php echo ($lang ?? 'en') === 'ar' ? 'و ' . (count($_SESSION['cart']) - 3) . ' عناصر أخرى' : 'and ' . (count($_SESSION['cart']) - 3) . ' more items'; ?>
+                                    </div>
+                                <?php endif; ?>
+                            </div>
+                            
+                            <div class="nav__cart-footer">
+                                <div class="nav__cart-total">
+                                    <strong><?php echo ($lang ?? 'en') === 'ar' ? 'المجموع: ' : 'Total: '; ?><?php echo number_format($cart_total, 2); ?> TND</strong>
+                                </div>
+                                <div class="nav__cart-actions">
+                                    <a href="cart.php" class="btn btn--secondary btn--sm">
+                                        <?php echo ($lang ?? 'en') === 'ar' ? 'عرض السلة' : 'View Cart'; ?>
+                                    </a>
+                                    <a href="checkout.php" class="btn btn--primary btn--sm">
+                                        <?php echo ($lang ?? 'en') === 'ar' ? 'الدفع' : 'Checkout'; ?>
+                                    </a>
+                                </div>
+                            </div>
+                        <?php else: ?>
+                            <div class="nav__cart-empty">
+                                <p><?php echo ($lang ?? 'en') === 'ar' ? 'سلة التسوق فارغة' : 'Your cart is empty'; ?></p>
+                                <a href="store.php" class="btn btn--primary btn--sm">
+                                    <?php echo ($lang ?? 'en') === 'ar' ? 'تسوق الآن' : 'Shop Now'; ?>
+                                </a>
+                            </div>
+                        <?php endif; ?>
+                    </div>
                 </div>
                 <button class="nav__mobile-toggle" id="mobileMenuToggle" aria-label="Open menu">
                     <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">

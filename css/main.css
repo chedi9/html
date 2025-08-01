@@ -47,6 +47,19 @@
   color: var(--color-text);
 }
 
+/* Mobile Container Adjustments */
+@media (max-width: 768px) {
+  .container {
+    padding: 0 var(--space-3);
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 0 var(--space-2);
+  }
+}
+
 .container--fluid {
   max-width: none;
 }
