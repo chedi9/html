@@ -38,8 +38,9 @@ class ThemeController {
     document.documentElement.setAttribute('data-theme', theme);
     localStorage.setItem('theme', theme);
     
-    // Update theme toggle button if it exists
+    // Update theme toggle buttons if they exist
     this.updateThemeToggle();
+    this.updateMobileThemeToggle();
     
     // Dispatch custom event for other components
     window.dispatchEvent(new CustomEvent('themechange', { 
@@ -58,6 +59,7 @@ class ThemeController {
 
   // Setup theme toggle button
   setupThemeToggle() {
+    // Setup desktop theme toggle
     this.themeToggle = document.getElementById('themeToggle');
     if (this.themeToggle) {
       this.themeToggle.addEventListener('click', (e) => {
@@ -65,6 +67,16 @@ class ThemeController {
         this.toggleTheme();
       });
       this.updateThemeToggle();
+    }
+    
+    // Setup mobile theme toggle
+    this.themeToggleMobile = document.getElementById('themeToggleMobile');
+    if (this.themeToggleMobile) {
+      this.themeToggleMobile.addEventListener('click', (e) => {
+        e.preventDefault();
+        this.toggleTheme();
+      });
+      this.updateMobileThemeToggle();
     }
   }
 
@@ -91,6 +103,29 @@ class ThemeController {
     this.themeToggle.setAttribute('aria-label', newLabel);
   }
 
+  // Update mobile theme toggle button appearance
+  updateMobileThemeToggle() {
+    if (!this.themeToggleMobile) return;
+    
+    const isDark = this.currentTheme === 'dark';
+    const icon = this.themeToggleMobile.querySelector('.theme-toggle__icon');
+    
+    if (icon) {
+      // Update icon visibility
+      const lightIcon = this.themeToggleMobile.querySelector('.theme-toggle__icon--light');
+      const darkIcon = this.themeToggleMobile.querySelector('.theme-toggle__icon--dark');
+      
+      if (lightIcon && darkIcon) {
+        lightIcon.style.display = isDark ? 'block' : 'none';
+        darkIcon.style.display = isDark ? 'none' : 'block';
+      }
+    }
+    
+    // Update aria-label
+    const newLabel = isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode';
+    this.themeToggleMobile.setAttribute('aria-label', newLabel);
+  }
+
   // Setup automatic theme detection based on system preference
   setupAutoThemeDetection() {
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
@@ -110,6 +145,7 @@ class ThemeController {
     window.addEventListener('themechange', (e) => {
       this.currentTheme = e.detail.theme;
       this.updateThemeToggle();
+      this.updateMobileThemeToggle();
     });
   }
 

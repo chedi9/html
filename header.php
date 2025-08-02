@@ -97,6 +97,16 @@ if (!function_exists('__')) {
                         </a>
                     </li>
                     <li class="nav__item">
+                        <a href="about.php" class="nav__link <?php echo basename($_SERVER['PHP_SELF']) === 'about.php' ? 'nav__link--active' : ''; ?>">
+                            <?php echo ($lang ?? 'en') === 'ar' ? 'من نحن' : 'About'; ?>
+                        </a>
+                    </li>
+                    <li class="nav__item">
+                        <a href="contact.php" class="nav__link <?php echo basename($_SERVER['PHP_SELF']) === 'contact.php' ? 'nav__link--active' : ''; ?>">
+                            <?php echo ($lang ?? 'en') === 'ar' ? 'اتصل بنا' : 'Contact'; ?>
+                        </a>
+                    </li>
+                    <li class="nav__item">
                         <a href="faq.php" class="nav__link <?php echo basename($_SERVER['PHP_SELF']) === 'faq.php' ? 'nav__link--active' : ''; ?>">
                             <?php echo ($lang ?? 'en') === 'ar' ? 'الأسئلة الشائعة' : 'FAQ'; ?>
                         </a>
@@ -105,7 +115,7 @@ if (!function_exists('__')) {
             </nav>
             <!-- Right: Cart, Hamburger, Actions -->
             <div class="header__actions-group">
-                <div class="nav__cart nav__cart--topbar">
+                <div class="nav__cart nav__cart--topbar" id="cartContainer">
                     <a href="cart.php" class="nav__cart-link" aria-label="<?php echo ($lang ?? 'en') === 'ar' ? 'عربة التسوق' : 'Shopping Cart'; ?>">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M9 22a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"></path>
@@ -114,6 +124,20 @@ if (!function_exists('__')) {
                         </svg>
                         <span class="nav__cart-count"><?php echo isset($_SESSION['cart']) ? count($_SESSION['cart']) : 0; ?></span>
                     </a>
+                    <!-- Cart Preview Dropdown -->
+                    <div class="cart-preview" id="cartPreview" style="display: none;">
+                        <div class="cart-preview__header">
+                            <h3><?php echo ($lang ?? 'en') === 'ar' ? 'عربة التسوق' : 'Shopping Cart'; ?></h3>
+                        </div>
+                        <div class="cart-preview__content" id="cartPreviewContent">
+                            <!-- Cart items will be loaded here via AJAX -->
+                        </div>
+                        <div class="cart-preview__footer">
+                            <a href="cart.php" class="btn btn--primary btn--sm">
+                                <?php echo ($lang ?? 'en') === 'ar' ? 'عرض العربة' : 'View Cart'; ?>
+                            </a>
+                        </div>
+                    </div>
                 </div>
                 <button class="nav__mobile-toggle" id="mobileMenuToggle" aria-label="Open menu">
                     <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -261,6 +285,16 @@ if (!function_exists('__')) {
                     <li class="nav__item">
                         <a href="store.php" class="nav__link <?php echo basename($_SERVER['PHP_SELF']) === 'store.php' ? 'nav__link--active' : ''; ?>">
                             <?php echo ($lang ?? 'en') === 'ar' ? 'المتجر' : 'Store'; ?>
+                        </a>
+                    </li>
+                    <li class="nav__item">
+                        <a href="about.php" class="nav__link <?php echo basename($_SERVER['PHP_SELF']) === 'about.php' ? 'nav__link--active' : ''; ?>">
+                            <?php echo ($lang ?? 'en') === 'ar' ? 'من نحن' : 'About'; ?>
+                        </a>
+                    </li>
+                    <li class="nav__item">
+                        <a href="contact.php" class="nav__link <?php echo basename($_SERVER['PHP_SELF']) === 'contact.php' ? 'nav__link--active' : ''; ?>">
+                            <?php echo ($lang ?? 'en') === 'ar' ? 'اتصل بنا' : 'Contact'; ?>
                         </a>
                     </li>
                     <li class="nav__item">
