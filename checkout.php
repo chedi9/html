@@ -706,62 +706,10 @@ $shipping_methods = $stmt->fetchAll();
                 <select id="shipping" name="shipping" required style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 5px; font-size: 16px;" onchange="updateShippingCost(this.value)">
                     <option value="">اختر طريقة التوصيل</option>
                     
-                    <!-- First Delivery Options - Default and Always Available -->
-                    <optgroup label="🚚 First Delivery (الخيار الافتراضي)">
-                        <option value="first_delivery_standard" 
-                                data-price="7.00" 
-                                data-delivery-company="first_delivery"
-                                data-delivery-type="standard"
-                                data-free-threshold="105.00">
-                            🚚 التوصيل القياسي - First Delivery
-                            (7.00 دينار)
-                        </option>
-                        <option value="first_delivery_express" 
-                                data-price="12.00" 
-                                data-delivery-company="first_delivery"
-                                data-delivery-type="express"
-                                data-free-threshold="105.00">
-                            ⚡ التوصيل السريع - First Delivery
-                            (12.00 دينار)
-                        </option>
-                    </optgroup>
-                    
-                    <!-- Standard Shipping Methods -->
-                    <optgroup label="📦 التوصيل التقليدي">
-                        <?php if (empty($shipping_methods)): ?>
-                            <option value="standard" data-price="7.00" data-free-threshold="105.00">🚚 التوصيل القياسي (7 دينار)</option>
-                            <option value="express" data-price="12.00" data-free-threshold="105.00">⚡ التوصيل السريع (12 دينار)</option>
-                            <option value="free" data-price="0.00" data-free-threshold="105.00">🆓 التوصيل المجاني (للطلبات فوق 105 دينار)</option>
-                        <?php else: ?>
-                            <?php foreach ($shipping_methods as $method): ?>
-                                <option value="<?php echo htmlspecialchars($method['id']); ?>" 
-                                        data-price="<?php echo htmlspecialchars($method['price']); ?>"
-                                        data-free-threshold="<?php echo htmlspecialchars($method['free_shipping_threshold']); ?>"
-                                        data-estimated-days="<?php echo htmlspecialchars($method['estimated_days']); ?>">
-                                    <?php 
-                                    // Add emoji based on method name
-                                    $emoji = '🚚';
-                                    if (strpos(strtolower($method['name']), 'express') !== false || strpos(strtolower($method['name']), 'سريع') !== false) {
-                                        $emoji = '⚡';
-                                    } elseif (strpos(strtolower($method['name']), 'free') !== false || strpos(strtolower($method['name']), 'مجاني') !== false) {
-                                        $emoji = '🆓';
-                                    } elseif (strpos(strtolower($method['name']), 'premium') !== false || strpos(strtolower($method['name']), 'مميز') !== false) {
-                                        $emoji = '⭐';
-                                    }
-                                    echo $emoji . ' ' . htmlspecialchars($method['name']);
-                                    ?>
-                                    <?php if ($method['price'] > 0): ?>
-                                        (<?php echo number_format($method['price'], 2); ?> دينار)
-                                    <?php else: ?>
-                                        (مجاني)
-                                    <?php endif; ?>
-                                    <?php if ($method['estimated_days']): ?>
-                                        - <?php echo htmlspecialchars($method['estimated_days']); ?> أيام
-                                    <?php endif; ?>
-                                </option>
-                            <?php endforeach; ?>
-                        <?php endif; ?>
-                    </optgroup>
+                    <!-- Delivery Options -->
+                    <option value="standard" data-price="7.00" data-free-threshold="105.00">🚚 التوصيل القياسي (7 دينار)</option>
+                    <option value="express" data-price="12.00" data-free-threshold="105.00">⚡ التوصيل السريع (12 دينار)</option>
+                    <option value="free" data-price="0.00" data-free-threshold="105.00">🆓 التوصيل المجاني (للطلبات فوق 105 دينار)</option>
                 </select>
                 <div id="shipping-info" style="margin-top: 8px; font-size: 0.9em; color: #666; display: none;"></div>
             </div>
