@@ -24,20 +24,23 @@
 }
 
 /* Button Variants */
-.btn--primary {
+.btn--primary,
+.btn-primary {
   background-color: var(--color-primary-600);
   color: var(--color-white);
   border-color: var(--color-primary-600);
 }
 
-.btn--primary:hover {
+.btn--primary:hover,
+.btn-primary:hover {
   background-color: var(--color-primary-700);
   border-color: var(--color-primary-700);
   transform: translateY(-1px);
   box-shadow: var(--shadow-md);
 }
 
-.btn--primary:active {
+.btn--primary:active,
+.btn-primary:active {
   background-color: var(--color-primary-800);
   border-color: var(--color-primary-800);
   transform: translateY(0);

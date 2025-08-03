@@ -97,6 +97,16 @@ if (!function_exists('__')) {
                         </a>
                     </li>
                     <li class="nav__item">
+                        <a href="about.php" class="nav__link <?php echo basename($_SERVER['PHP_SELF']) === 'about.php' ? 'nav__link--active' : ''; ?>">
+                            <?php echo ($lang ?? 'en') === 'ar' ? 'من نحن' : 'About'; ?>
+                        </a>
+                    </li>
+                    <li class="nav__item">
+                        <a href="contact.php" class="nav__link <?php echo basename($_SERVER['PHP_SELF']) === 'contact.php' ? 'nav__link--active' : ''; ?>">
+                            <?php echo ($lang ?? 'en') === 'ar' ? 'اتصل بنا' : 'Contact'; ?>
+                        </a>
+                    </li>
+                    <li class="nav__item">
                         <a href="faq.php" class="nav__link <?php echo basename($_SERVER['PHP_SELF']) === 'faq.php' ? 'nav__link--active' : ''; ?>">
                             <?php echo ($lang ?? 'en') === 'ar' ? 'الأسئلة الشائعة' : 'FAQ'; ?>
                         </a>
@@ -114,6 +124,63 @@ if (!function_exists('__')) {
                         </svg>
                         <span class="nav__cart-count"><?php echo isset($_SESSION['cart']) ? count($_SESSION['cart']) : 0; ?></span>
                     </a>
+                    
+                    <!-- Cart Hover Dropdown -->
+                    <div class="nav__cart-dropdown">
+                        <?php if (isset($_SESSION['cart']) && !empty($_SESSION['cart'])): ?>
+                            <div class="nav__cart-header">
+                                <h3 class="nav__cart-title">
+                                    <?php echo ($lang ?? 'en') === 'ar' ? 'عربة التسوق' : 'Shopping Cart'; ?>
+                                </h3>
+                            </div>
+                            <div class="nav__cart-items">
+                                <?php
+                                require_once 'db.php';
+                                $total = 0;
+                                foreach ($_SESSION['cart'] as $product_id => $quantity):
+                                    $stmt = $pdo->prepare('SELECT * FROM products WHERE id = ?');
+                                    $stmt->execute([$product_id]);
+                                    $product = $stmt->fetch();
+                                    if ($product):
+                                        $subtotal = $product['price'] * $quantity;
+                                        $total += $subtotal;
+                                ?>
+                                <div class="nav__cart-item">
+                                    <img src="<?php echo htmlspecialchars($product['image_url']); ?>" alt="<?php echo htmlspecialchars($product['name']); ?>" class="nav__cart-item-image">
+                                    <div class="nav__cart-item-details">
+                                        <p class="nav__cart-item-name"><?php echo htmlspecialchars($product['name']); ?></p>
+                                        <p class="nav__cart-item-price"><?php echo number_format($subtotal, 2); ?> <?php echo ($lang ?? 'en') === 'ar' ? 'د.ت' : 'TND'; ?></p>
+                                        <p class="nav__cart-item-qty"><?php echo ($lang ?? 'en') === 'ar' ? 'الكمية' : 'Qty'; ?>: <?php echo $quantity; ?></p>
+                                    </div>
+                                </div>
+                                <?php 
+                                    endif;
+                                endforeach; 
+                                ?>
+                            </div>
+                            <div class="nav__cart-footer">
+                                <div class="nav__cart-total">
+                                    <span class="nav__cart-total-label"><?php echo ($lang ?? 'en') === 'ar' ? 'المجموع' : 'Total'; ?>:</span>
+                                    <span class="nav__cart-total-amount"><?php echo number_format($total, 2); ?> <?php echo ($lang ?? 'en') === 'ar' ? 'د.ت' : 'TND'; ?></span>
+                                </div>
+                                <div class="nav__cart-actions">
+                                    <a href="cart.php" class="nav__cart-btn nav__cart-btn--secondary">
+                                        <?php echo ($lang ?? 'en') === 'ar' ? 'عرض السلة' : 'View Cart'; ?>
+                                    </a>
+                                    <a href="checkout.php" class="nav__cart-btn nav__cart-btn--primary">
+                                        <?php echo ($lang ?? 'en') === 'ar' ? 'إتمام الشراء' : 'Checkout'; ?>
+                                    </a>
+                                </div>
+                            </div>
+                        <?php else: ?>
+                            <div class="nav__cart-empty">
+                                <div class="nav__cart-empty-icon">🛒</div>
+                                <p class="nav__cart-empty-text">
+                                    <?php echo ($lang ?? 'en') === 'ar' ? 'عربة التسوق فارغة' : 'Your cart is empty'; ?>
+                                </p>
+                            </div>
+                        <?php endif; ?>
+                    </div>
                 </div>
                 <button class="nav__mobile-toggle" id="mobileMenuToggle" aria-label="Open menu">
                     <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -261,6 +328,16 @@ if (!function_exists('__')) {
                     <li class="nav__item">
                         <a href="store.php" class="nav__link <?php echo basename($_SERVER['PHP_SELF']) === 'store.php' ? 'nav__link--active' : ''; ?>">
                             <?php echo ($lang ?? 'en') === 'ar' ? 'المتجر' : 'Store'; ?>
+                        </a>
+                    </li>
+                    <li class="nav__item">
+                        <a href="about.php" class="nav__link <?php echo basename($_SERVER['PHP_SELF']) === 'about.php' ? 'nav__link--active' : ''; ?>">
+                            <?php echo ($lang ?? 'en') === 'ar' ? 'من نحن' : 'About'; ?>
+                        </a>
+                    </li>
+                    <li class="nav__item">
+                        <a href="contact.php" class="nav__link <?php echo basename($_SERVER['PHP_SELF']) === 'contact.php' ? 'nav__link--active' : ''; ?>">
+                            <?php echo ($lang ?? 'en') === 'ar' ? 'اتصل بنا' : 'Contact'; ?>
                         </a>
                     </li>
                     <li class="nav__item">
