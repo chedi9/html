@@ -425,7 +425,7 @@ $orders = $orders->fetchAll();
             <form method="post" action="update_credentials.php" class="modern-form">
                 <div class="form-group">
                         <label for="email"><?= __('email') ?>:</label>
-                    <input type="email" id="email" name="email" value="<?php echo htmlspecialchars($user['email']); ?>" placeholder="<?= __('email_placeholder') ?>" autocomplete="email">
+                    <input type="email" id="email" name="email" value="<?php echo htmlspecialchars($user['email'] ?? ''); ?>" placeholder="<?= __('email_placeholder') ?>" autocomplete="email">
                 </div>
                 <button type="submit" class="save-btn"><?= __('update_email') ?></button>
             </form>
