@@ -11,6 +11,12 @@ header('Cache-Control: public, max-age=3600');
 header('X-Content-Type-Options: nosniff');
 header("Content-Security-Policy: frame-ancestors 'self'");
 if (session_status() === PHP_SESSION_NONE) session_start();
+
+// Include language support
+if (!function_exists('__')) {
+    require_once 'lang.php';
+}
+
 require 'db.php';
 require_once 'includes/thumbnail_helper.php';
 if (!isset($_SESSION['cart'])) {

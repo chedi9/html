@@ -906,6 +906,201 @@ function initRatingDisplay() {
 }
 
 // ========================================
+// Cart Preview Functionality
+// ========================================
+
+function initCartPreview() {
+  const cartContainer = document.getElementById('cartContainer');
+  const cartPreview = document.getElementById('cartPreview');
+  const cartPreviewContent = document.getElementById('cartPreviewContent');
+  
+  if (!cartContainer || !cartPreview || !cartPreviewContent) return;
+  
+  let hoverTimeout;
+  let isPreviewVisible = false;
+  
+  // Show cart preview on hover
+  cartContainer.addEventListener('mouseenter', function() {
+    clearTimeout(hoverTimeout);
+    if (!isPreviewVisible) {
+      loadCartPreview();
+      cartPreview.style.display = 'block';
+      isPreviewVisible = true;
+    }
+  });
+  
+  // Hide cart preview when mouse leaves
+  cartContainer.addEventListener('mouseleave', function() {
+    hoverTimeout = setTimeout(() => {
+      cartPreview.style.display = 'none';
+      isPreviewVisible = false;
+    }, 300); // Small delay to allow moving mouse to preview
+  });
+  
+  // Keep preview open when hovering over it
+  cartPreview.addEventListener('mouseenter', function() {
+    clearTimeout(hoverTimeout);
+  });
+  
+  cartPreview.addEventListener('mouseleave', function() {
+    cartPreview.style.display = 'none';
+    isPreviewVisible = false;
+  });
+}
+
+function loadCartPreview() {
+  const cartPreviewContent = document.getElementById('cartPreviewContent');
+  if (!cartPreviewContent) return;
+  
+  // Show loading state
+  cartPreviewContent.innerHTML = '<div class="cart-preview__loading">Loading...</div>';
+  
+  fetch('get_cart_preview.php')
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        renderCartPreview(data);
+      } else {
+        cartPreviewContent.innerHTML = '<div class="cart-preview__error">Error loading cart</div>';
+      }
+    })
+    .catch(error => {
+      console.error('Error loading cart preview:', error);
+      cartPreviewContent.innerHTML = '<div class="cart-preview__error">Error loading cart</div>';
+    });
+}
+
+function renderCartPreview(data) {
+  const cartPreviewContent = document.getElementById('cartPreviewContent');
+  if (!cartPreviewContent) return;
+  
+  if (data.items.length === 0) {
+    cartPreviewContent.innerHTML = `
+      <div class="cart-preview__empty">
+        <p>${data.empty_message}</p>
+      </div>
+    `;
+    return;
+  }
+  
+  let html = '<div class="cart-preview__items">';
+  
+  data.items.forEach(item => {
+    html += `
+      <div class="cart-preview__item">
+        <img src="${item.image}" alt="${item.name}" class="cart-preview__item-image" onerror="this.src='uploads/products/default.jpg'">
+        <div class="cart-preview__item-details">
+          <h4 class="cart-preview__item-name">${item.name}</h4>
+          ${item.variant ? `<p class="cart-preview__item-variant">${item.variant}</p>` : ''}
+          <div class="cart-preview__item-price">
+            ${item.quantity} × ${item.price} ${data.currency}
+          </div>
+        </div>
+        <div class="cart-preview__item-total">
+          ${item.subtotal.toFixed(2)} ${data.currency}
+        </div>
+      </div>
+    `;
+  });
+  
+  html += '</div>';
+  html += `
+    <div class="cart-preview__total">
+      <strong>${data.total_label} ${data.total.toFixed(2)} ${data.currency}</strong>
+    </div>
+  `;
+  
+  cartPreviewContent.innerHTML = html;
+}
+
+// ========================================
+// Header Hover Functions
+// ========================================
+
+function initHeaderHoverFunctions() {
+  // User menu hover
+  const userMenu = document.querySelector('.nav__user-menu');
+  const userDropdown = document.querySelector('.nav__user-dropdown');
+  
+  if (userMenu && userDropdown) {
+    userMenu.addEventListener('mouseenter', function() {
+      userDropdown.style.display = 'block';
+    });
+    
+    userMenu.addEventListener('mouseleave', function() {
+      setTimeout(() => {
+        if (!userDropdown.matches(':hover')) {
+          userDropdown.style.display = 'none';
+        }
+      }, 100);
+    });
+    
+    userDropdown.addEventListener('mouseleave', function() {
+      userDropdown.style.display = 'none';
+    });
+  }
+  
+  // Language select hover enhancement
+  const languageSelects = document.querySelectorAll('.language-select');
+  languageSelects.forEach(select => {
+    const button = select.querySelector('.language-select__button');
+    const dropdown = select.querySelector('.language-select__dropdown');
+    
+    if (button && dropdown) {
+      select.addEventListener('mouseenter', function() {
+        dropdown.classList.add('language-select__dropdown--open');
+        button.setAttribute('aria-expanded', 'true');
+      });
+      
+      select.addEventListener('mouseleave', function() {
+        setTimeout(() => {
+          if (!select.matches(':hover')) {
+            dropdown.classList.remove('language-select__dropdown--open');
+            button.setAttribute('aria-expanded', 'false');
+          }
+        }, 100);
+      });
+    }
+  });
+  
+  // Navigation links hover effects
+  const navLinks = document.querySelectorAll('.nav__link');
+  navLinks.forEach(link => {
+    link.addEventListener('mouseenter', function() {
+      this.style.transform = 'translateY(-1px)';
+    });
+    
+    link.addEventListener('mouseleave', function() {
+      this.style.transform = 'translateY(0)';
+    });
+  });
+  
+  // Cart icon hover effect
+  const cartLink = document.querySelector('.nav__cart-link');
+  if (cartLink) {
+    cartLink.addEventListener('mouseenter', function() {
+      this.style.transform = 'scale(1.05)';
+    });
+    
+    cartLink.addEventListener('mouseleave', function() {
+      this.style.transform = 'scale(1)';
+    });
+  }
+  
+  // Theme toggle hover effect
+  const themeToggles = document.querySelectorAll('.theme-toggle');
+  themeToggles.forEach(toggle => {
+    toggle.addEventListener('mouseenter', function() {
+      this.style.transform = 'rotate(180deg)';
+    });
+    
+    toggle.addEventListener('mouseleave', function() {
+      this.style.transform = 'rotate(0deg)';
+    });
+  });
+}
+
+// ========================================
 // Initialize All Features
 // ========================================
 
@@ -913,6 +1108,8 @@ document.addEventListener('DOMContentLoaded', function() {
   initImageLoading();
   initProductCards();
   initRatingDisplay();
+  initCartPreview();
+  initHeaderHoverFunctions();
   
   // Initialize existing features
   if (typeof setupWishlist === 'function') {
