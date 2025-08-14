@@ -1,11 +1,41 @@
 <?php
 // Database connection settings
 // users table will be used for client login/signup
+
+// Load .env if present (simple parser) so getenv works on shared hosts
+$__envPath = __DIR__ . '/.env';
+if (is_file($__envPath) && is_readable($__envPath)) {
+    $lines = @file($__envPath, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+    if (is_array($lines)) {
+        foreach ($lines as $ln) {
+            if ($ln === '' || $ln[0] === '#') continue;
+            $parts = explode('=', $ln, 2);
+            if (count($parts) !== 2) continue;
+            $k = trim($parts[0]);
+            $v = trim($parts[1]);
+            $v = trim($v, "\"' ");
+            if ($k !== '') {
+                putenv("$k=$v");
+                $_ENV[$k] = $v;
+                $_SERVER[$k] = $v;
+            }
+        }
+    }
+}
+
+// Defaults (fallbacks)
 $host = 'sql211.byetcluster.com';
 $db   = 'if0_38059826_if0_38059826_db'; // Change to your database name
 $user = 'if0_38059826'; // Change to your database user
-$pass = 'asZ4rPSDF180wSJ'; // Change to your database password
+$pass = 'asZ4rPSDF180wSJ';
 $charset = 'utf8mb4';
+
+// Override from environment if provided
+$host = getenv('DB_HOST') ?: $host;
+$db   = getenv('DB_NAME') ?: $db;
+$user = getenv('DB_USER') ?: $user;
+$envPass = getenv('DB_PASSWORD');
+if ($envPass !== false && is_string($envPass) && $envPass !== '') { $pass = $envPass; }
 
 $dsn = "mysql:host=$host;dbname=$db;charset=$charset";
 $options = [
