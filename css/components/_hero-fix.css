@@ -1,0 +1,148 @@
+/* ========================================
+   Hero Banner Alignment Fixes
+   ======================================== */
+
+/* Ensure hero carousel doesn't overlay categories */
+.hero-carousel {
+  position: relative;
+  margin-bottom: var(--space-8);
+  z-index: 1;
+}
+
+/* Add proper spacing after hero */
+.hero-carousel + .section,
+.hero-carousel + #categories {
+  margin-top: var(--space-8);
+}
+
+/* Ensure hero content is perfectly centered */
+.hero-content {
+  position: relative;
+  z-index: 3; /* Increased z-index to ensure it is above the overlay */
+  max-width: 600px;
+  padding: var(--space-8);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: var(--space-4);
+}
+
+/* Adjust hero overlay z-index */
+.hero-overlay {
+  z-index: 1; /* Lowered z-index to prevent overlap with categories */
+}
+
+/* Perfect alignment for hero title */
+.hero-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin: 0;
+  line-height: 1.2;
+  text-align: center;
+  width: 100%;
+}
+
+/* Perfect alignment for hero subtitle */
+.hero-subtitle {
+  font-size: 1.25rem;
+  margin: 0;
+  opacity: 0.9;
+  text-align: center;
+  width: 100%;
+}
+
+/* Perfect alignment for hero CTA */
+.hero-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  background: var(--color-primary-600);
+  color: white;
+  padding: var(--space-4) var(--space-6);
+  border-radius: var(--border-radius-md);
+  text-decoration: none;
+  font-weight: 600;
+  transition: all var(--transition-fast);
+  margin-top: var(--space-4);
+  min-height: 48px;
+}
+
+/* Ensure carousel navigation is perfectly positioned */
+.carousel-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255, 255, 255, 0.9);
+  border: none;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-fast);
+  z-index: 10;
+}
+
+.carousel-prev {
+  left: var(--space-4);
+}
+
+.carousel-next {
+  right: var(--space-4);
+}
+
+/* Ensure indicators are perfectly centered */
+.carousel-indicators {
+  position: absolute;
+  bottom: var(--space-4);
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: var(--space-2);
+  z-index: 10;
+}
+
+/* Responsive adjustments for perfect alignment */
+@media (max-width: 768px) {
+  .hero-content {
+    padding: var(--space-4);
+    max-width: 90%;
+  }
+
+  .hero-title {
+    font-size: 2rem;
+  }
+
+  .hero-subtitle {
+    font-size: 1.1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-content {
+    padding: var(--space-3);
+    max-width: 95%;
+  }
+
+  .hero-title {
+    font-size: 1.5rem;
+  }
+
+  .hero-subtitle {
+    font-size: 1rem;
+  }
+}
+
+/* Ensure no overlay issues */
+.hero-carousel {
+  isolation: isolate;
+}
+
+.hero-carousel + * {
+  margin-top: var(--space-8);
+}

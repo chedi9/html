@@ -17,6 +17,9 @@
 @import 'components/_cards.css';
 @import 'components/_navigation.css';
 @import 'components/_reviews.css';
+@import 'components/_carousel.css';
+@import 'components/_quick-view.css';
+@import 'components/_hero-fix.css';
 
 /* Import Layout Files */
 @import 'layout/_grid.css';

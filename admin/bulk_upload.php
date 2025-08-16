@@ -122,9 +122,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['csv_file'])) {
                             }
                         }
                         
-                        // Insert product
-                        $stmt = $pdo->prepare('INSERT INTO products (name, name_ar, name_fr, name_en, description, price, stock, category_id, seller_name, seller_story, disabled_seller_id, is_priority_product, approved, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, NOW())');
-                        $stmt->execute([$name_ar, $name_ar, $name_fr, $name_en, $description, $price, $stock, $category_id, $seller_name, $seller_story, $disabled_seller_id, $is_priority]);
+$product_id = $pdo->lastInsertId();
+$uploaded_products[] = [
+    'id' => $product_id,
+    'name' => $name_ar,
+    'price' => $price,
+    'stock' => $stock
+];
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['csv_file'])) {
+    // Existing upload logic...
+    
+    // Handle image uploads
+    if (isset($_FILES['images'])) {
+        foreach ($_FILES['images']['tmp_name'] as $key => $tmp_name) {
+            $image_name = $_FILES['images']['name'][$key];
+            $image_tmp = $_FILES['images']['tmp_name'][$key];
+            
+            // Move the uploaded image to the desired directory
+            move_uploaded_file($image_tmp, "uploads/$image_name");
+            
+$stmt = $pdo->prepare('INSERT INTO product_images (product_id, image_path, is_main, sort_order) VALUES (?, ?, ?, ?)');
+$stmt->execute([$product_id, $image_name, 0, 0]); // Default values for is_main and sort_order
+        }
+    }
+}
                         
                         $product_id = $pdo->lastInsertId();
                         $uploaded_products[] = [
@@ -196,7 +218,7 @@ $disabled_sellers = $pdo->query('SELECT id, name, disability_type FROM disabled_
     <form method="post" enctype="multipart/form-data">
         <div class="form-group">
             <label for="csv_file">اختر ملف CSV:</label>
-            <input type="file" id="csv_file" name="csv_file" accept=".csv" required>
+<input type="file" id="csv_file" name="csv_file" accept=".xlsx" required multiple>
             <small>يجب أن يكون الملف بصيغة CSV مع الأعمدة المطلوبة</small>
         </div>
         <button type="submit" class="btn btn-primary">رفع المنتجات</button>
