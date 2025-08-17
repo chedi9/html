@@ -46,43 +46,53 @@
   transform: translateY(0);
 }
 
+/* Ensure secondary buttons are visible in all contexts */
 .btn--secondary {
-  background-color: var(--btn-secondary-bg, transparent);
-  color: var(--btn-secondary-text, var(--color-primary-600));
-  border: 2px solid var(--color-primary-600);
+  background-color: transparent;
+  color: #0284c7;
+  border: 2px solid #0284c7;
   box-shadow: none;
   text-shadow: none;
   position: relative;
   z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  font-weight: var(--font-weight-medium);
+  transition: all var(--transition-fast);
 }
 
 .btn--secondary:hover {
-  background-color: var(--color-primary-600);
-  color: var(--color-white);
-  border-color: var(--color-primary-600);
+  background-color: #0284c7;
+  color: #ffffff;
+  border-color: #0284c7;
   transform: translateY(-1px);
   box-shadow: var(--shadow-md);
+  text-decoration: none;
 }
 
 .btn--secondary:active {
-  background-color: var(--color-primary-700);
-  border-color: var(--color-primary-700);
+  background-color: #0369a1;
+  border-color: #0369a1;
   transform: translateY(0);
 }
 
 /* Hero specific secondary button styling */
 .hero .btn--secondary {
   background-color: transparent;
-  color: var(--color-white);
+  color: #ffffff;
   border: 2px solid rgba(255, 255, 255, 0.8);
   backdrop-filter: blur(10px);
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  position: relative;
+  z-index: 5;
 }
 
 .hero .btn--secondary:hover {
-  background-color: var(--color-white);
-  color: var(--color-primary-600);
-  border-color: var(--color-white);
+  background-color: #ffffff;
+  color: #0284c7;
+  border-color: #ffffff;
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
 }
 
