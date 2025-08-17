@@ -21,7 +21,7 @@ if (session_status() === PHP_SESSION_NONE) {
 // Basic rate limiting function
 function checkRateLimit($identifier, $max_requests = 100, $time_window = 3600) {
     // Simple file-based rate limiting
-    $cache_dir = '../cache/rate_limits/';
+    $cache_dir = dirname(__DIR__) . '/cache/rate_limits/';
     if (!is_dir($cache_dir)) {
         mkdir($cache_dir, 0755, true);
     }
@@ -69,7 +69,7 @@ function validateCSRFToken($token) {
 
 // Basic logging function
 function logSecurityEvent($event_type, $details = []) {
-    $log_file = '../logs/security.log';
+    $log_file = dirname(__DIR__) . '/logs/security.log';
     $log_dir = dirname($log_file);
     
     if (!is_dir($log_dir)) {

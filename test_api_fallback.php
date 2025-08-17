@@ -8,8 +8,8 @@ echo "=== Featured Products API Fallback Security Test ===\n\n";
 
 // Test 1: Check if main security file exists
 echo "1. Checking security files...\n";
-$main_security = '../security_integration.php';
-$fallback_security = 'security_fallback.php';
+$main_security = dirname(__DIR__) . '/security_integration.php';
+$fallback_security = __DIR__ . '/security_fallback.php';
 
 if (file_exists($main_security)) {
     echo "✓ Main security file exists\n";
