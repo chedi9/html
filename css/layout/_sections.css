@@ -809,7 +809,6 @@ main {
     font-size: var(--font-size-base);
     padding: var(--space-3) var(--space-6);
   }
-}
   
   .features {
     padding: var(--space-8) 0;
@@ -897,7 +896,7 @@ main {
     font-size: var(--font-size-lg);
     font-weight: var(--font-weight-semibold);
   }
-
+}
 
 @media (max-width: 480px) {
   .hero {
@@ -963,6 +962,4 @@ main {
   .gallery__item:hover .gallery__image {
     transform: none;
   }
-} 
-
-
+}
