@@ -500,6 +500,13 @@ return [
     'add_to_wishlist' => 'Ajouter aux favoris',
     'featured_products' => 'Produits en vedette',
     'discover_latest_products' => 'Découvrez les derniers et meilleurs produits de vendeurs de confiance',
+    'featured_products_subtitle' => 'Produits en vedette de vendeurs de confiance avec un soutien spécial pour les vendeurs handicapés',
+    'load_more_products' => 'Charger plus',
+    'loading_products' => 'Chargement...',
+    'no_more_products' => 'Plus de produits',
+    'error_loading_products' => 'Erreur lors du chargement des produits',
+    'product_from_disabled_seller' => 'Produit d\'un vendeur handicapé',
+    'new_product' => 'Nouveau',
     'guest_checkout' => 'Achat en tant qu\'invité',
     'note' => 'Note',
 ]; 
