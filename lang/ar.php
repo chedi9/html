@@ -357,6 +357,7 @@ return [
     'checkout' => 'إتمام الشراء',
     'fast_delivery' => 'توصيل سريع',
     'secure_payment' => 'دفع آمن',
+    'platform_features' => 'مميزات المنصة',
     'welcome_back' => 'مرحباً بعودتك!',
     'enter_email' => 'أدخل بريدك الإلكتروني',
     'enter_password' => 'أدخل كلمة المرور',

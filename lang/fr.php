@@ -349,6 +349,7 @@ return [
     'checkout' => 'Commander',
     'fast_delivery' => 'Livraison rapide',
     'secure_payment' => 'Paiement sécurisé',
+    'platform_features' => 'Fonctionnalités de la plateforme',
     'welcome_back' => 'Bon retour !',
     'enter_email' => 'Entrez votre email',
     'enter_password' => 'Entrez votre mot de passe',

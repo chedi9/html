@@ -95,44 +95,44 @@ $priority_products = getPriorityProducts(6);
     <!-- Main Content -->
     <main id="main-content" role="main">
         <!-- Hero Section -->
-        <section class="hero">
+        <section class="hero" role="banner" aria-labelledby="hero-title">
             <div class="container">
                 <div class="hero__content">
                     <div class="hero__text">
-                        <h1 class="hero__title">
+                        <h1 class="hero__title" id="hero-title">
                             <?php echo __('discover_tunisian_talents'); ?>
                         </h1>
                         <p class="hero__subtitle">
                             <?php echo __('webuy_platform_description'); ?>
                         </p>
-                        <div class="hero__features">
-                            <div class="hero__feature">
-                                <span class="hero__feature-icon">🌟</span>
+                        <div class="hero__features" role="list" aria-label="<?php echo __('platform_features'); ?>">
+                            <div class="hero__feature" role="listitem">
+                                <span class="hero__feature-icon" aria-hidden="true">🌟</span>
                                 <span class="hero__feature-text"><?php echo __('support_disabled_sellers'); ?></span>
                             </div>
-                            <div class="hero__feature">
-                                <span class="hero__feature-icon">🚚</span>
+                            <div class="hero__feature" role="listitem">
+                                <span class="hero__feature-icon" aria-hidden="true">🚚</span>
                                 <span class="hero__feature-text"><?php echo __('fast_delivery'); ?></span>
                             </div>
-                            <div class="hero__feature">
-                                <span class="hero__feature-icon">💳</span>
+                            <div class="hero__feature" role="listitem">
+                                <span class="hero__feature-icon" aria-hidden="true">💳</span>
                                 <span class="hero__feature-text"><?php echo __('secure_payment'); ?></span>
                             </div>
                         </div>
                         <div class="hero__actions">
-                            <a href="#categories" class="btn btn--primary btn--lg hero__btn">
+                            <a href="#categories" class="btn btn--primary btn--lg hero__btn" aria-label="<?php echo __('browse_categories'); ?>">
                                 <?php echo __('browse_categories'); ?>
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                                     <line x1="5" y1="12" x2="19" y2="12"></line>
                                     <polyline points="12,5 19,12 12,19"></polyline>
                                 </svg>
                             </a>
-                            <a href="store.php" class="btn btn--secondary btn--lg hero__btn">
+                            <a href="store.php" class="btn btn--secondary btn--lg hero__btn" aria-label="<?php echo __('shop_now'); ?>">
                                 <?php echo __('shop_now'); ?>
                             </a>
                         </div>
                     </div>
-                    <div class="hero__visual">
+                    <div class="hero__visual" aria-hidden="true">
                         <!-- Hero images removed for mobile/cleaner look -->
                     </div>
                 </div>

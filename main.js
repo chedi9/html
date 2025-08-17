@@ -608,46 +608,8 @@ document.addEventListener('DOMContentLoaded', function() {
     ajaxNavigate(window.location.href, false);
   });
 
-  // Hero Carousel Logic
-  const hero = document.getElementById('heroCarousel');
-  if (hero) {
-    const slides = hero.querySelectorAll('.hero-slide');
-    const left = hero.querySelector('#heroArrowLeft');
-    const right = hero.querySelector('#heroArrowRight');
-    const dotsContainer = hero.querySelector('#heroDots');
-    let idx = 0;
-    let auto = true;
-    let timer = null;
-    function show(i, user) {
-      slides.forEach((s, j) => s.classList.toggle('active', j === i));
-      if (dotsContainer) {
-        dotsContainer.innerHTML = '';
-        slides.forEach((_, j) => {
-          const dot = document.createElement('span');
-          dot.className = 'dot' + (j === i ? ' active' : '');
-          dot.onclick = () => { show(j, true); resetAuto(); };
-          dotsContainer.appendChild(dot);
-        });
-      }
-      idx = i;
-      if (user) resetAuto();
-    }
-    function next() { show((idx+1)%slides.length); }
-    function prev() { show((idx-1+slides.length)%slides.length); }
-    function resetAuto() {
-      auto = false;
-      clearInterval(timer);
-      setTimeout(() => { auto = true; timer = setInterval(()=>{ if(auto) next(); }, 5000); }, 7000);
-    }
-    if (left) left.onclick = () => { prev(); resetAuto(); };
-    if (right) right.onclick = () => { next(); resetAuto(); };
-    hero.addEventListener('mouseenter', ()=>{auto=false;clearInterval(timer);});
-    hero.addEventListener('mouseleave', ()=>{auto=true;timer=setInterval(()=>{if(auto)next();},5000);});
-    hero.addEventListener('touchstart', ()=>{auto=false;clearInterval(timer);});
-    hero.addEventListener('touchend', ()=>{auto=true;timer=setInterval(()=>{if(auto)next();},5000);});
-    show(0);
-    timer = setInterval(()=>{ if(auto) next(); }, 5000);
-  }
+  // Hero section is now static with features and actions
+  // No carousel functionality needed
 
   // Category Carousel Logic
   const catCarousel = document.getElementById('categoryCarousel');

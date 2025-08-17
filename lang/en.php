@@ -535,4 +535,5 @@ return [
     'checkout' => 'Checkout',
     'fast_delivery' => 'Fast Delivery',
     'secure_payment' => 'Secure Payment',
+    'platform_features' => 'Platform Features',
 ]; 
