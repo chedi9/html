@@ -1,4 +1,4 @@
-ke<?php
+<?php
 // Security and compatibility headers
 require_once 'security_integration.php';
 
@@ -92,72 +92,64 @@ $priority_products = getPriorityProducts(6);
     
     <!-- Main Content -->
     <main id="main-content" role="main">
-    <!-- Hero Carousel -->
-    <section class="hero-carousel" aria-label="Hero Banner">
-        <div class="carousel-slide active" style="background: linear-gradient(135deg, #1A237E 0%, #3949AB 100%);">
-            <div class="hero-overlay"></div>
-            <div class="hero-content">
-                <h1 class="hero-title"><?php echo __('discover_tunisian_talents'); ?></h1>
-                <p class="hero-subtitle"><?php echo __('webuy_platform_description'); ?></p>
-                <a href="#categories" class="hero-cta">
-                    <?php echo __('browse_categories'); ?>
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <line x1="5" y1="12" x2="19" y2="12"></line>
-                        <polyline points="12,5 19,12 12,19"></polyline>
-                    </svg>
-                </a>
+        <!-- Hero Section -->
+        <section class="hero">
+            <!-- Floating Elements for Visual Appeal -->
+            <div class="hero__floating-elements">
+                <div class="hero__floating-element">🌟</div>
+                <div class="hero__floating-element">💎</div>
+                <div class="hero__floating-element">✨</div>
             </div>
-        </div>
-        
-        <div class="carousel-slide" style="background: linear-gradient(135deg, #FFD600 0%, #FFAB00 100%);">
-            <div class="hero-overlay"></div>
-            <div class="hero-content">
-                <h1 class="hero-title">🌟 <?php echo __('products_from_disabled_sellers'); ?></h1>
-                <p class="hero-subtitle"><?php echo __('support_disabled_sellers'); ?></p>
-                <a href="store.php?priority=disabled_sellers" class="hero-cta">
-                    <?php echo __('view_all_disabled_seller_products'); ?>
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <line x1="5" y1="12" x2="19" y2="12"></line>
-                        <polyline points="12,5 19,12 12,19"></polyline>
-                    </svg>
-                </a>
+            
+            <div class="container">
+                <div class="hero__content">
+                    <div class="hero__text">
+                        <h1 class="hero__title">
+                            <?php echo __('discover_tunisian_talents'); ?>
+                        </h1>
+                        <p class="hero__subtitle">
+                            <?php echo __('webuy_platform_description'); ?>
+                        </p>
+                        <div class="hero__features">
+                            <div class="hero__feature" onclick="scrollToSection('categories')">
+                                <span class="hero__feature-icon">🌟</span>
+                                <span class="hero__feature-text"><?php echo __('support_disabled_sellers'); ?></span>
+                            </div>
+                            <div class="hero__feature" onclick="scrollToSection('categories')">
+                                <span class="hero__feature-icon">🚚</span>
+                                <span class="hero__feature-text"><?php echo __('fast_delivery'); ?></span>
+                            </div>
+                            <div class="hero__feature" onclick="scrollToSection('categories')">
+                                <span class="hero__feature-icon">💳</span>
+                                <span class="hero__feature-text"><?php echo __('secure_payment'); ?></span>
+                            </div>
+                        </div>
+                        <div class="hero__actions">
+                            <a href="#categories" class="btn btn--primary btn--lg hero__btn" onclick="scrollToSection('categories')">
+                                <?php echo __('browse_categories'); ?>
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                                    <polyline points="12,5 19,12 12,19"></polyline>
+                                </svg>
+                            </a>
+                            <a href="store.php" class="btn btn--secondary btn--lg hero__btn">
+                                <?php echo __('shop_now'); ?>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="hero__visual">
+                        <!-- Hero images removed for mobile/cleaner look -->
+                    </div>
+                </div>
             </div>
-        </div>
-        
-        <div class="carousel-slide" style="background: linear-gradient(135deg, #00BFAE 0%, #00897B 100%);">
-            <div class="hero-overlay"></div>
-            <div class="hero-content">
-                <h1 class="hero-title"><?php echo __('fast_delivery'); ?></h1>
-                <p class="hero-subtitle"><?php echo __('secure_payment'); ?></p>
-                <a href="store.php" class="hero-cta">
-                    <?php echo __('shop_now'); ?>
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <line x1="5" y1="12" x2="19" y2="12"></line>
-                        <polyline points="12,5 19,12 12,19"></polyline>
-                    </svg>
-                </a>
+            
+            <!-- Scroll Indicator -->
+            <div class="hero__scroll-indicator" onclick="scrollToSection('categories')">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="6,9 12,15 18,9"></polyline>
+                </svg>
             </div>
-        </div>
-        <button class="carousel-nav carousel-prev" aria-label="Previous slide">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <polyline points="15,18 9,12 15,6"></polyline>
-            </svg>
-        </button>
-        
-        <button class="carousel-nav carousel-next" aria-label="Next slide">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <polyline points="9,18 15,12 9,6"></polyline>
-            </svg>
-        </button>
-        
-        <div class="carousel-indicators">
-            <button class="carousel-indicator active" aria-label="Go to slide 1"></button>
-            <button class="carousel-indicator" aria-label="Go to slide 2"></button>
-            <button class="carousel-indicator" aria-label="Go to slide 3"></button>
-        </div>
-        
-        <div class="carousel-progress"></div>
-    </section>
+        </section>
         
         <!-- Featured Categories -->
         <section class="section" id="categories">
@@ -484,16 +476,14 @@ $priority_products = getPriorityProducts(6);
                 </div>
             </div>
         </section>
+...existing code...
 </main>
 <?php include_once 'include_load_analytics.php'; ?>
     
     <?php include 'footer.php'; ?>
     
-    <!-- Enhanced JavaScript -->
-    <script src="js/carousel-controller.js" defer></script>
-    <script src="js/quick-view-modal.js" defer></script>
+    <!-- Optimized JavaScript -->
     <script src="js/optimized/main.min.js" defer></script>
-
     
     <!-- Performance monitoring -->
     <script>
