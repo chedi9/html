@@ -57,6 +57,7 @@ $priority_products = getPriorityProducts(6);
     
     <!-- CSS Files - Load in correct order -->
     <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/components/featured-products.css">
     
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="favicon.ico">
@@ -67,6 +68,7 @@ $priority_products = getPriorityProducts(6);
     <!-- JavaScript -->
     <script src="js/theme-controller.js" defer></script>
     <script src="main.js?v=1.5" defer></script>
+    <script src="js/featured-products.js" defer></script>
 <?php include_once 'include_load_analytics.php'; ?>
 </head>
 <body class="page-transition">
@@ -404,6 +406,21 @@ $priority_products = getPriorityProducts(6);
                         </div>
                     <?php endforeach; ?>
                 </div>
+            </div>
+        </section>
+        
+        <!-- Featured Products Section (AJAX Loaded) -->
+        <section class="section section--highlight featured-products" id="featured-products">
+            <div class="container">
+                <div class="section__header">
+                    <h2 class="section__title">
+                        <?php echo __('featured_products'); ?>
+                    </h2>
+                    <p class="section__subtitle">
+                        <?php echo __('featured_products_subtitle'); ?>
+                    </p>
+                </div>
+                <!-- Products will be loaded here via JavaScript -->
             </div>
         </section>
         

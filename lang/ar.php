@@ -508,6 +508,13 @@ return [
     'add_to_wishlist' => 'إضافة إلى المفضلة',
     'featured_products' => 'المنتجات المميزة',
     'discover_latest_products' => 'اكتشف أحدث وأفضل المنتجات من بائعين موثوقين',
+    'featured_products_subtitle' => 'منتجات مميزة من بائعين موثوقين مع دعم خاص للبائعين ذوي الإعاقة',
+    'load_more_products' => 'عرض المزيد',
+    'loading_products' => 'جاري التحميل...',
+    'no_more_products' => 'لا توجد منتجات أخرى',
+    'error_loading_products' => 'حدث خطأ أثناء تحميل المنتجات',
+    'product_from_disabled_seller' => 'منتج من ذوي الإعاقة',
+    'new_product' => 'جديد',
     'guest_checkout' => 'الشراء كضيف',
     'note' => 'ملاحظة',
 ];
