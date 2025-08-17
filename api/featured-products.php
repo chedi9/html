@@ -3,22 +3,34 @@
 $security_file = dirname(__DIR__) . '/security_integration.php';
 $fallback_security = __DIR__ . '/security_fallback.php';
 
-if (file_exists($security_file)) {
-    require_once $security_file;
-} else if (file_exists($fallback_security)) {
-    require_once $fallback_security;
-} else {
-    // Minimal fallback security headers if no security files are available
+try {
+    if (file_exists($security_file)) {
+        require_once $security_file;
+    } else if (file_exists($fallback_security)) {
+        require_once $fallback_security;
+    } else {
+        // Minimal fallback security headers if no security files are available
+        header('X-Content-Type-Options: nosniff');
+        header('X-Frame-Options: DENY');
+        header('X-XSS-Protection: 1; mode=block');
+        header('Referrer-Policy: strict-origin-when-cross-origin');
+        
+        // Basic session security
+        if (session_status() === PHP_SESSION_NONE) {
+            ini_set('session.cookie_httponly', 1);
+            ini_set('session.cookie_secure', 1);
+            ini_set('session.use_strict_mode', 1);
+            session_start();
+        }
+    }
+} catch (Exception $e) {
+    // If security integration fails, use minimal fallback
     header('X-Content-Type-Options: nosniff');
     header('X-Frame-Options: DENY');
     header('X-XSS-Protection: 1; mode=block');
     header('Referrer-Policy: strict-origin-when-cross-origin');
     
-    // Basic session security
     if (session_status() === PHP_SESSION_NONE) {
-        ini_set('session.cookie_httponly', 1);
-        ini_set('session.cookie_secure', 1);
-        ini_set('session.use_strict_mode', 1);
         session_start();
     }
 }
@@ -77,7 +89,7 @@ require_once $cache_file;
 
 try {
     // Check if database is connected
-    if (!$db_connected) {
+    if (!$db_connected || !isset($pdo) || $pdo === null) {
         // Provide fallback response for testing
         $fallback_response = [
             'success' => true,
@@ -135,28 +147,98 @@ try {
     }
     
     // Build the query to get featured products
-    // Featured products are those with is_priority_product = 1 or from disabled sellers
-    $sql = "
-        SELECT 
-            p.*,
-            s.is_disabled,
-            s.name as seller_name,
-            ds.name AS disabled_seller_name,
-            ds.disability_type,
-            ds.priority_level,
-            CASE 
-                WHEN ds.id IS NOT NULL THEN 1 
-                WHEN p.is_priority_product = 1 THEN 2 
-                ELSE 3 
-            END as priority_order
-        FROM products p
-        LEFT JOIN sellers s ON p.seller_id = s.id
-        LEFT JOIN disabled_sellers ds ON p.disabled_seller_id = ds.id
-        WHERE p.approved = 1 
-        AND (p.is_priority_product = 1 OR ds.id IS NOT NULL)
-        ORDER BY priority_order ASC, ds.priority_level DESC, p.created_at DESC
-        LIMIT :limit OFFSET :offset
-    ";
+    // First check if the required columns exist
+    $check_columns_sql = "SHOW COLUMNS FROM products LIKE 'is_priority_product'";
+    $check_disabled_sellers_sql = "SHOW TABLES LIKE 'disabled_sellers'";
+    
+    try {
+        $check_columns = $pdo->query($check_columns_sql);
+        $has_priority_column = $check_columns->rowCount() > 0;
+        
+        $check_disabled_table = $pdo->query($check_disabled_sellers_sql);
+        $has_disabled_sellers_table = $check_disabled_table->rowCount() > 0;
+        
+        // Build query based on available columns and tables
+        if ($has_priority_column && $has_disabled_sellers_table) {
+            // Full featured products query
+            $sql = "
+                SELECT 
+                    p.*,
+                    s.is_disabled,
+                    s.name as seller_name,
+                    ds.name AS disabled_seller_name,
+                    ds.disability_type,
+                    ds.priority_level,
+                    CASE 
+                        WHEN ds.id IS NOT NULL THEN 1 
+                        WHEN p.is_priority_product = 1 THEN 2 
+                        ELSE 3 
+                    END as priority_order
+                FROM products p
+                LEFT JOIN sellers s ON p.seller_id = s.id
+                LEFT JOIN disabled_sellers ds ON p.disabled_seller_id = ds.id
+                WHERE p.approved = 1 
+                AND (p.is_priority_product = 1 OR ds.id IS NOT NULL)
+                ORDER BY priority_order ASC, ds.priority_level DESC, p.created_at DESC
+                LIMIT :limit OFFSET :offset
+            ";
+        } elseif ($has_priority_column) {
+            // Only priority products
+            $sql = "
+                SELECT 
+                    p.*,
+                    s.is_disabled,
+                    s.name as seller_name,
+                    NULL AS disabled_seller_name,
+                    NULL AS disability_type,
+                    NULL AS priority_level,
+                    CASE 
+                        WHEN p.is_priority_product = 1 THEN 1 
+                        ELSE 2 
+                    END as priority_order
+                FROM products p
+                LEFT JOIN sellers s ON p.seller_id = s.id
+                WHERE p.approved = 1 
+                AND p.is_priority_product = 1
+                ORDER BY priority_order ASC, p.created_at DESC
+                LIMIT :limit OFFSET :offset
+            ";
+        } else {
+            // Fallback to recent approved products
+            $sql = "
+                SELECT 
+                    p.*,
+                    s.is_disabled,
+                    s.name as seller_name,
+                    NULL AS disabled_seller_name,
+                    NULL AS disability_type,
+                    NULL AS priority_level,
+                    1 as priority_order
+                FROM products p
+                LEFT JOIN sellers s ON p.seller_id = s.id
+                WHERE p.approved = 1 
+                ORDER BY p.created_at DESC
+                LIMIT :limit OFFSET :offset
+            ";
+        }
+    } catch (Exception $e) {
+        // If table structure check fails, use fallback query
+        $sql = "
+            SELECT 
+                p.*,
+                s.is_disabled,
+                s.name as seller_name,
+                NULL AS disabled_seller_name,
+                NULL AS disability_type,
+                NULL AS priority_level,
+                1 as priority_order
+            FROM products p
+            LEFT JOIN sellers s ON p.seller_id = s.id
+            WHERE p.approved = 1 
+            ORDER BY p.created_at DESC
+            LIMIT :limit OFFSET :offset
+        ";
+    }
     
     $stmt = $pdo->prepare($sql);
     $stmt->bindValue(':limit', $per_page, PDO::PARAM_INT);
@@ -165,13 +247,37 @@ try {
     $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
     
     // Get total count for pagination
-    $count_sql = "
-        SELECT COUNT(*) as total
-        FROM products p
-        LEFT JOIN disabled_sellers ds ON p.disabled_seller_id = ds.id
-        WHERE p.approved = 1 
-        AND (p.is_priority_product = 1 OR ds.id IS NOT NULL)
-    ";
+    if (isset($has_priority_column) && isset($has_disabled_sellers_table)) {
+        if ($has_priority_column && $has_disabled_sellers_table) {
+            $count_sql = "
+                SELECT COUNT(*) as total
+                FROM products p
+                LEFT JOIN disabled_sellers ds ON p.disabled_seller_id = ds.id
+                WHERE p.approved = 1 
+                AND (p.is_priority_product = 1 OR ds.id IS NOT NULL)
+            ";
+        } elseif ($has_priority_column) {
+            $count_sql = "
+                SELECT COUNT(*) as total
+                FROM products p
+                WHERE p.approved = 1 
+                AND p.is_priority_product = 1
+            ";
+        } else {
+            $count_sql = "
+                SELECT COUNT(*) as total
+                FROM products p
+                WHERE p.approved = 1
+            ";
+        }
+    } else {
+        // Fallback count query
+        $count_sql = "
+            SELECT COUNT(*) as total
+            FROM products p
+            WHERE p.approved = 1
+        ";
+    }
     
     $count_stmt = $pdo->prepare($count_sql);
     $count_stmt->execute();

@@ -47,24 +47,43 @@
 }
 
 .btn--secondary {
-  background-color: var(--btn-secondary-bg, #fff);
-  color: var(--btn-secondary-text, #0284c7);
-  border-color: #0284c7;
+  background-color: var(--btn-secondary-bg, transparent);
+  color: var(--btn-secondary-text, var(--color-primary-600));
+  border: 2px solid var(--color-primary-600);
   box-shadow: none;
   text-shadow: none;
+  position: relative;
+  z-index: 1;
 }
 
 .btn--secondary:hover {
-  background-color: var(--color-primary-50);
-  border-color: var(--color-primary-700);
+  background-color: var(--color-primary-600);
+  color: var(--color-white);
+  border-color: var(--color-primary-600);
   transform: translateY(-1px);
   box-shadow: var(--shadow-md);
 }
 
 .btn--secondary:active {
-  background-color: var(--color-primary-100);
-  border-color: var(--color-primary-800);
+  background-color: var(--color-primary-700);
+  border-color: var(--color-primary-700);
   transform: translateY(0);
+}
+
+/* Hero specific secondary button styling */
+.hero .btn--secondary {
+  background-color: transparent;
+  color: var(--color-white);
+  border: 2px solid rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.hero .btn--secondary:hover {
+  background-color: var(--color-white);
+  color: var(--color-primary-600);
+  border-color: var(--color-white);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
 }
 
 .btn--success {

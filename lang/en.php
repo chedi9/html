@@ -98,6 +98,7 @@ return [
     'address_and_phone' => 'Address and Phone',
     'change_email_password' => 'Change Email or Password',
     'remove' => 'Remove',
+    'featured_products' => 'Featured Products',
     'no_products_in_wishlist' => 'No products in wishlist yet.',
     'no_products_viewed_yet' => 'No products viewed yet.',
     'address_placeholder' => 'Enter your address',

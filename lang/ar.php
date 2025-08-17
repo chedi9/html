@@ -98,6 +98,7 @@ return [
     'address_and_phone' => 'العنوان ورقم الهاتف',
     'change_email_password' => 'تغيير البريد الإلكتروني أو كلمة المرور',
     'remove' => 'إزالة',
+    'featured_products' => 'المنتجات المميزة',
     'no_products_in_wishlist' => 'لا توجد منتجات في المفضلة بعد.',
     'no_products_viewed_yet' => 'لم يتم تصفح أي منتجات بعد.',
     'address_placeholder' => 'أدخل عنوانك',

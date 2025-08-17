@@ -15,6 +15,11 @@ require_once 'db.php';
 function isSecurityFeatureEnabled($feature_name, $default = true) {
     global $pdo;
     
+    // If PDO is not available, return default
+    if (!isset($pdo) || $pdo === null) {
+        return $default;
+    }
+    
     try {
         $stmt = $pdo->prepare("SELECT is_enabled FROM security_features WHERE feature_name = ?");
         $stmt->execute([$feature_name]);

@@ -98,6 +98,7 @@ return [
     'address_and_phone' => 'Adresse et téléphone',
     'change_email_password' => 'Changer l\'e-mail ou le mot de passe',
     'remove' => 'Supprimer',
+    'featured_products' => 'Produits en Vedette',
     'no_products_in_wishlist' => 'Aucun produit dans les favoris pour le moment.',
     'no_products_viewed_yet' => 'Aucun produit consulté pour le moment.',
     'address_placeholder' => 'Entrez votre adresse',

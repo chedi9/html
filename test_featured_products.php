@@ -136,9 +136,12 @@ try {
 // Test 5: Test language files
 echo "\n5. Testing language files...\n";
 $lang_files = ['lang/ar.php', 'lang/en.php', 'lang/fr.php'];
+
+// Include the language system
+require_once 'lang.php';
+
 foreach ($lang_files as $lang_file) {
     if (file_exists($lang_file)) {
-        include $lang_file;
         if (function_exists('__')) {
             $test_key = 'featured_products';
             $translation = __($test_key);
