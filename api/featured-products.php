@@ -1,6 +1,27 @@
 <?php
-// Security and compatibility headers
-require_once '../security_integration.php';
+// Security and compatibility headers - with fallback for missing dependencies
+$security_file = '../security_integration.php';
+$fallback_security = 'security_fallback.php';
+
+if (file_exists($security_file)) {
+    require_once $security_file;
+} else if (file_exists($fallback_security)) {
+    require_once $fallback_security;
+} else {
+    // Minimal fallback security headers if no security files are available
+    header('X-Content-Type-Options: nosniff');
+    header('X-Frame-Options: DENY');
+    header('X-XSS-Protection: 1; mode=block');
+    header('Referrer-Policy: strict-origin-when-cross-origin');
+    
+    // Basic session security
+    if (session_status() === PHP_SESSION_NONE) {
+        ini_set('session.cookie_httponly', 1);
+        ini_set('session.cookie_secure', 1);
+        ini_set('session.use_strict_mode', 1);
+        session_start();
+    }
+}
 
 // Initialize session if not already started
 if (session_status() === PHP_SESSION_NONE) {
@@ -17,9 +38,34 @@ if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
     exit;
 }
 
-require '../db.php';
-require_once '../includes/thumbnail_helper.php';
-require_once '../includes/featured_products_cache.php';
+// Database connection with error handling
+$db_file = '../db.php';
+if (!file_exists($db_file)) {
+    http_response_code(500);
+    echo json_encode(['error' => 'Database configuration not found']);
+    exit;
+}
+require $db_file;
+
+// Include required files with error handling
+$thumbnail_helper = '../includes/thumbnail_helper.php';
+$cache_file = '../includes/featured_products_cache.php';
+
+if (!file_exists($thumbnail_helper)) {
+    // Fallback function if thumbnail helper is missing
+    function get_optimized_image($image_path, $size = 'card') {
+        return $image_path; // Return original image if helper is not available
+    }
+} else {
+    require_once $thumbnail_helper;
+}
+
+if (!file_exists($cache_file)) {
+    http_response_code(500);
+    echo json_encode(['error' => 'Cache system not found']);
+    exit;
+}
+require_once $cache_file;
 
 try {
     // Get pagination parameters

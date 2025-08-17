@@ -81,40 +81,56 @@ try {
     echo "✗ Database test failed: " . $e->getMessage() . "\n";
 }
 
-// Test 4: Test API endpoint (simulated)
+// Test 4: Testing API endpoint...
 echo "\n4. Testing API endpoint...\n";
 try {
-    // Simulate API request
+    // Set up test environment
+    $_SERVER['REQUEST_METHOD'] = 'GET';
     $_GET['page'] = 1;
     $_GET['lang'] = 'en';
     $_SESSION['lang'] = 'en';
     
-    // Capture output
+    // Check if security integration file exists
+    $security_file = 'security_integration.php';
+    if (!file_exists($security_file)) {
+        echo "⚠ security_integration.php not found - API will use fallback security\n";
+    } else {
+        echo "✓ security_integration.php found\n";
+    }
+    
+    // Capture output with error handling
     ob_start();
-    include 'api/featured-products.php';
+    $include_result = @include 'api/featured-products.php';
     $output = ob_get_clean();
     
-    $response = json_decode($output, true);
-    if ($response && isset($response['success'])) {
-        echo "✓ API endpoint responds correctly\n";
-        if ($response['success']) {
-            echo "✓ API returned success response\n";
-            if (isset($response['data']['products'])) {
-                echo "✓ Products data structure correct\n";
-                echo "  - Found " . count($response['data']['products']) . " products\n";
-            }
-            if (isset($response['data']['pagination'])) {
-                echo "✓ Pagination data structure correct\n";
+    if ($include_result === false) {
+        echo "✗ Failed to include API file\n";
+        echo "  Error output: " . $output . "\n";
+    } else {
+        $response = json_decode($output, true);
+        if ($response && isset($response['success'])) {
+            echo "✓ API endpoint responds correctly\n";
+            if ($response['success']) {
+                echo "✓ API returned success response\n";
+                if (isset($response['data']['products'])) {
+                    echo "✓ Products data structure correct\n";
+                    echo "  - Found " . count($response['data']['products']) . " products\n";
+                }
+                if (isset($response['data']['pagination'])) {
+                    echo "✓ Pagination data structure correct\n";
+                }
+            } else {
+                echo "✗ API returned error: " . ($response['error'] ?? 'Unknown error') . "\n";
             }
         } else {
-            echo "✗ API returned error: " . ($response['error'] ?? 'Unknown error') . "\n";
+            echo "✗ API response format invalid\n";
+            echo "  Raw output: " . substr($output, 0, 200) . "...\n";
         }
-    } else {
-        echo "✗ API response format invalid\n";
     }
     
 } catch (Exception $e) {
     echo "✗ API test failed: " . $e->getMessage() . "\n";
+    echo "  File: " . $e->getFile() . " Line: " . $e->getLine() . "\n";
 }
 
 // Test 5: Test language files
