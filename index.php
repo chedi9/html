@@ -138,7 +138,6 @@ $priority_products = getPriorityProducts(6);
                 </a>
             </div>
         </div>
-        
         <button class="carousel-nav carousel-prev" aria-label="Previous slide">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <polyline points="15,18 9,12 15,6"></polyline>
@@ -494,6 +493,7 @@ $priority_products = getPriorityProducts(6);
     <script src="js/carousel-controller.js" defer></script>
     <script src="js/quick-view-modal.js" defer></script>
     <script src="js/optimized/main.min.js" defer></script>
+
     
     <!-- Performance monitoring -->
     <script>
