@@ -476,8 +476,7 @@ $priority_products = getPriorityProducts(6);
                 </div>
             </div>
         </section>
-...existing code...
-</main>
+    </main>
 <?php include_once 'include_load_analytics.php'; ?>
     
     <?php include 'footer.php'; ?>
