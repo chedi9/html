@@ -9,10 +9,10 @@ ini_set('display_errors', 1);
 header('Content-Type: text/html; charset=utf-8');
 header('Cache-Control: public, max-age=3600');
 header('X-Content-Type-Options: nosniff');
-header("Content-Security-Policy: frame-ancestors 'self'");
 if (session_status() === PHP_SESSION_NONE) session_start();
 require 'db.php';
 require_once 'includes/thumbnail_helper.php';
+require_once 'lang.php';
 if (!isset($_SESSION['cart'])) {
     $_SESSION['cart'] = [];
 }
@@ -111,7 +111,7 @@ $lang = $_GET['lang'] ?? $_SESSION['lang'] ?? 'ar';
         th { background: #f4f4f4; }
         .remove-btn { background: #c00; color: #fff; padding: 6px 16px; border-radius: 5px; text-decoration: none; font-size: 0.95em; margin: 0 4px; }
         .remove-btn:hover { background: #a00; }
-        .checkout-btn { background: var(--primary-color); color: #fff; padding: 12px 30px; border-radius: 5px; text-decoration: none; font-size: 1.1em; display: inline-block !important; margin-top: 20px; border: none; cursor: pointer; }
+        .checkout-btn { background: var(--primary-color); color: #fff; padding: 12px 30px; border-radius: 5px; text-decoration: none; font-size: 1.1em; display: inline-block !important; margin-top: 20px; border: none; cursor: pointer; width: auto; max-width: 100%; white-space: nowrap; }
         .checkout-btn:hover { background: var(--secondary-color); }
         .cart-container .checkout-btn { display: inline-block !important; visibility: visible !important; opacity: 1 !important; }
         .cart-container button.checkout-btn { display: inline-block !important; }
@@ -173,18 +173,18 @@ $lang = $_GET['lang'] ?? $_SESSION['lang'] ?? 'ar';
                   <button type="submit" name="update" class="checkout-btn" style="background:var(--secondary-color);margin-top:20px;display:inline-block !important;visibility:visible !important;opacity:1 !important;">تحديث الكميات</button>
         </form>
         <h3 style="text-align:left; margin-top:30px;">الإجمالي: <?php echo $total; ?> د.ت</h3>
-                  <a href="checkout.php" class="checkout-btn">إتمام الشراء</a>
+                  <a href="checkout.php" class="checkout-btn" style="width:auto;display:inline-block;">إتمام الشراء</a>
             <?php if (!isset($_SESSION['user_id'])): ?>
-                <a href="checkout.php?guest=1" class="checkout-btn" style="background: #28a745; margin-top: 10px;">🛒 <?php echo __('continue_as_guest'); ?></a>
+                <a href="checkout.php?guest=1" class="checkout-btn" style="background: #28a745; margin-top: 10px; width:auto;display:inline-block;">🛒 <?php echo __('continue_as_guest'); ?></a>
             <?php endif; ?>
           <?php else: ?>
           <p style="text-align:center;">سلة التسوق فارغة</p>
         <?php endif; ?>
-                  <a href="index.php" class="checkout-btn" style="background:var(--secondary-color);margin-top:30px;display:inline-block !important;visibility:visible !important;opacity:1 !important;">العودة للتسوق</a>
+                  <a href="index.php" class="checkout-btn" style="background:var(--secondary-color);margin-top:30px;display:inline-block !important;visibility:visible !important;opacity:1 !important;width:auto;">العودة للتسوق</a>
     </div>
 </div>
 
 <!-- Cookie Consent Banner -->
 <?php include 'cookie_consent_banner.php'; ?>
 </body>
-</html> 
+</html>
