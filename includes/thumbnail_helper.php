@@ -23,16 +23,28 @@ function get_thumbnail_path($image_path, $size = 'medium') {
     
     $size_value = $sizes[$size] ?? 300;
     $filename = pathinfo($image_path, PATHINFO_FILENAME);
-    $extension = pathinfo($image_path, PATHINFO_EXTENSION);
     
-    // Check if thumbnail exists
-    $thumb_path = "uploads/thumbnails/{$filename}_{$size_value}.jpg";
+    // Use a hash of the full image path to avoid collisions between same-named files
+    $path_hash = substr(sha1($image_path), 0, 12);
     
-    if (file_exists($thumb_path)) {
-        return $thumb_path;
+    // Build relative web paths (what <img src> should use)
+    $hashed_thumb_rel = "uploads/thumbnails/{$filename}_{$path_hash}_{$size_value}.jpg";
+    $legacy_thumb_rel = "uploads/thumbnails/{$filename}_{$size_value}.jpg"; // backward compatibility
+    
+    // Map to filesystem paths for existence checks (works from any include location)
+    $hashed_thumb_fs = __DIR__ . '/../' . $hashed_thumb_rel;
+    $legacy_thumb_fs = __DIR__ . '/../' . $legacy_thumb_rel;
+    
+    if (file_exists($hashed_thumb_fs)) {
+        return $hashed_thumb_rel;
     }
     
-    // If thumbnail doesn't exist, return original
+    // Fallback to legacy naming if previously generated thumbnails exist
+    if (file_exists($legacy_thumb_fs)) {
+        return $legacy_thumb_rel;
+    }
+    
+    // If thumbnail doesn't exist, return original path (as provided)
     return $image_path;
 }
 
