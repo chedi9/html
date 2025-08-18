@@ -155,7 +155,7 @@ $priority_products = getPriorityProducts(6);
                     <?php foreach (array_slice($categories, 0, 6) as $category): ?>
                         <?php $cat_name = $category['name_' . $lang] ?? $category['name']; ?>
                         <div class="card card--category">
-                            <a href="store.php?category_id=<?php echo $category['id']; ?>" class="card__link">
+                            <a href="store.php?category=<?php echo $category['id']; ?>" class="card__link">
                                 <div class="card__image">
                                     <div class="skeleton skeleton--image"></div>
                                     <?php if (!empty($category['image'])): ?>
@@ -479,8 +479,7 @@ $priority_products = getPriorityProducts(6);
                 </div>
             </div>
         </section>
-...existing code...
-</main>
+    </main>
 <?php include_once 'include_load_analytics.php'; ?>
     
     <?php include 'footer.php'; ?>
