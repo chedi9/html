@@ -160,51 +160,8 @@
   margin-top: var(--space-8);
 }
 
-/* Enhanced Hero Section */
-.hero {
-  position: relative;
-  padding: var(--space-12) 0;
-  background: linear-gradient(135deg, var(--color-primary-600) 0%, var(--color-primary-800) 100%);
-  color: var(--color-white);
-  overflow: hidden;
-}
-
-.hero__content {
-  max-width: 600px;
-}
-
-.hero__title {
-  font-size: var(--font-size-4xl);
-  font-weight: var(--font-weight-bold);
-  line-height: var(--line-height-tight);
-  margin-bottom: var(--space-4);
-}
-
-.hero__subtitle {
-  font-size: var(--font-size-xl);
-  font-weight: var(--font-weight-normal);
-  line-height: var(--line-height-relaxed);
-  margin-bottom: var(--space-6);
-  opacity: 0.9;
-}
-
-.hero__actions {
-  display: flex;
-  gap: var(--space-3);
-  flex-wrap: wrap;
-}
-
-.hero__image {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.hero__image img {
-  max-width: 100%;
-  height: auto;
-  border-radius: var(--border-radius-lg);
-}
+/* Hero section styles are defined in layout/_sections.css.
+   Avoid overriding them here to keep a single source of truth. */
 
 /* Enhanced Alert System */
 .alert {
