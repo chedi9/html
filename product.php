@@ -41,10 +41,31 @@ try {
     $images = [];
 }
 
-// If no additional images, use main product image
+// If no additional images, use images from products table (image, image2, image3, image4)
 if (empty($images)) {
-    $images = [['image_path' => $product['image'], 'is_main' => 1]];
+    $images = [];
+    if (!empty($product['image'])) {
+        $images[] = ['image_path' => $product['image'], 'is_main' => 1];
+    }
+    foreach (['image2', 'image3', 'image4'] as $field) {
+        if (!empty($product[$field])) {
+            $images[] = ['image_path' => $product[$field], 'is_main' => 0];
+        }
+    }
 }
+
+// Determine main image from images list
+$main_image_entry = null;
+foreach ($images as $img) {
+    if (!empty($img['is_main'])) {
+        $main_image_entry = $img;
+        break;
+    }
+}
+if (!$main_image_entry) {
+    $main_image_entry = $images[0];
+}
+$main_image_full = 'uploads/' . $main_image_entry['image_path'];
 
 // Get related products
 $stmt = $pdo->prepare('
@@ -313,32 +334,20 @@ $page_title = $product['name'] . ' - WeBuy';
                     <!-- Product Gallery -->
                     <div class="product-gallery">
                         <div class="product-gallery__main">
-                            <img id="main-image" src="uploads/<?php echo htmlspecialchars($product['image']); ?>" 
+                            <img id="main-image" src="<?php echo htmlspecialchars($main_image_full); ?>" 
                                  alt="<?php echo htmlspecialchars($product['name']); ?>">
                         </div>
                         <div class="product-gallery__thumbnails">
-                            <div class="product-gallery__thumbnail product-gallery__thumbnail--active" onclick="changeImage('uploads/<?php echo htmlspecialchars($product['image']); ?>')">
-                                <img src="uploads/<?php echo htmlspecialchars($product['image']); ?>" 
-                                     alt="<?php echo htmlspecialchars($product['name']); ?>">
-                            </div>
-                            <?php if (!empty($product['image2'])): ?>
-                                <div class="product-gallery__thumbnail" onclick="changeImage('uploads/<?php echo htmlspecialchars($product['image2']); ?>')">
-                                    <img src="uploads/<?php echo htmlspecialchars($product['image2']); ?>" 
+                            <?php foreach ($images as $img): ?>
+                                <?php 
+                                $img_full = 'uploads/' . $img['image_path'];
+                                $is_active = !empty($img['is_main']);
+                                ?>
+                                <div class="product-gallery__thumbnail <?php echo $is_active ? 'product-gallery__thumbnail--active' : ''; ?>" onclick="changeImage('<?php echo htmlspecialchars($img_full); ?>')">
+                                    <img src="<?php echo htmlspecialchars($img_full); ?>" 
                                          alt="<?php echo htmlspecialchars($product['name']); ?>">
                                 </div>
-                            <?php endif; ?>
-                            <?php if (!empty($product['image3'])): ?>
-                                <div class="product-gallery__thumbnail" onclick="changeImage('uploads/<?php echo htmlspecialchars($product['image3']); ?>')">
-                                    <img src="uploads/<?php echo htmlspecialchars($product['image3']); ?>" 
-                                         alt="<?php echo htmlspecialchars($product['name']); ?>">
-                                </div>
-                            <?php endif; ?>
-                            <?php if (!empty($product['image4'])): ?>
-                                <div class="product-gallery__thumbnail" onclick="changeImage('uploads/<?php echo htmlspecialchars($product['image4']); ?>')">
-                                    <img src="uploads/<?php echo htmlspecialchars($product['image4']); ?>" 
-                                         alt="<?php echo htmlspecialchars($product['name']); ?>">
-                                </div>
-                            <?php endif; ?>
+                            <?php endforeach; ?>
                         </div>
                     </div>
                     
