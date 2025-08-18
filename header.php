@@ -17,59 +17,6 @@ if (!function_exists('__')) {
     require_once 'lang.php';
 }
 ?>
-<!DOCTYPE html>
-<html lang="<?php echo isset($_COOKIE['language']) ? $_COOKIE['language'] : ($lang ?? 'en'); ?>" dir="<?php echo (isset($_COOKIE['language']) ? $_COOKIE['language'] : ($lang ?? 'en')) === 'ar' ? 'rtl' : 'ltr'; ?>" data-theme="light">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo isset($page_title) ? $page_title : 'WeBuy - Online Shopping Platform'; ?></title>
-    
-    <!-- CSS Files - Load in correct order -->
-    <link rel="stylesheet" href="../css/main.css">
-    
-    <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="favicon.ico">
-    
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Amiri&display=swap" rel="stylesheet">
-    
-    <!-- Additional styles for specific pages -->
-    <?php if (isset($additional_css)): ?>
-        <?php foreach ($additional_css as $css): ?>
-            <link rel="stylesheet" href="<?php echo $css; ?>">
-        <?php endforeach; ?>
-    <?php endif; ?>
-    
-    <!-- JavaScript -->
-    <script src="../js/theme-controller.js" defer></script>
-    <script src="../main.js?v=1.5" defer></script>
-    <script src="../js/mobile-header.js" defer></script>
-    <?php include_once __DIR__ . '/include_load_analytics.php'; ?>
-    
-    <!-- Google Analytics (only if consent is given) -->
-    <?php
-    // Check if user has given consent for analytics cookies
-    $cookie_preferences = $_COOKIE['cookie_preferences'] ?? null;
-    $analytics_enabled = false;
-    
-    if ($cookie_preferences) {
-        $prefs = json_decode($cookie_preferences, true);
-        $analytics_enabled = $prefs['analytics'] ?? false;
-    }
-    ?>
-    
-    <?php if ($analytics_enabled): ?>
-    <!-- Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-PVP8CCFQPL"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
-        gtag('config', 'G-PVP8CCFQPL');
-    </script>
-    <?php endif; ?>
-</head>
-<body class="page-transition">
     <!-- Skip to main content for accessibility -->
     <a href="#main-content" class="skip-link">Skip to main content</a>
     
@@ -79,7 +26,7 @@ if (!function_exists('__')) {
             <!-- Left: Logo -->
             <div class="nav__brand">
                 <a href="index.php" class="nav__logo">
-                    <img src="../webuy-logo-transparent.jpg" alt="WeBuy Logo" style="height: 40px; width: auto;">
+                    <img src="webuy-logo-transparent.jpg" alt="WeBuy Logo" style="height: 40px; width: auto;">
                     <span class="nav__logo-text">WeBuy</span>
                 </a>
             </div>
@@ -398,6 +345,3 @@ if (!function_exists('__')) {
             </nav>
         </div>
     </header>
-    
-    <!-- Main Content -->
-    <main id="main-content" role="main"> 
