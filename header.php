@@ -17,59 +17,6 @@ if (!function_exists('__')) {
     require_once 'lang.php';
 }
 ?>
-<!DOCTYPE html>
-<html lang="<?php echo isset($_COOKIE['language']) ? $_COOKIE['language'] : ($lang ?? 'en'); ?>" dir="<?php echo (isset($_COOKIE['language']) ? $_COOKIE['language'] : ($lang ?? 'en')) === 'ar' ? 'rtl' : 'ltr'; ?>" data-theme="light">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo isset($page_title) ? $page_title : 'WeBuy - Online Shopping Platform'; ?></title>
-    
-    <!-- CSS Files - Load in correct order -->
-    <link rel="stylesheet" href="../css/main.css">
-    
-    <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="favicon.ico">
-    
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Amiri&display=swap" rel="stylesheet">
-    
-    <!-- Additional styles for specific pages -->
-    <?php if (isset($additional_css)): ?>
-        <?php foreach ($additional_css as $css): ?>
-            <link rel="stylesheet" href="<?php echo $css; ?>">
-        <?php endforeach; ?>
-    <?php endif; ?>
-    
-    <!-- JavaScript -->
-    <script src="../js/theme-controller.js" defer></script>
-    <script src="../main.js?v=1.5" defer></script>
-    <script src="../js/mobile-header.js" defer></script>
-    <?php include_once __DIR__ . '/include_load_analytics.php'; ?>
-    
-    <!-- Google Analytics (only if consent is given) -->
-    <?php
-    // Check if user has given consent for analytics cookies
-    $cookie_preferences = $_COOKIE['cookie_preferences'] ?? null;
-    $analytics_enabled = false;
-    
-    if ($cookie_preferences) {
-        $prefs = json_decode($cookie_preferences, true);
-        $analytics_enabled = $prefs['analytics'] ?? false;
-    }
-    ?>
-    
-    <?php if ($analytics_enabled): ?>
-    <!-- Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-PVP8CCFQPL"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
-        gtag('config', 'G-PVP8CCFQPL');
-    </script>
-    <?php endif; ?>
-</head>
-<body class="page-transition">
     <!-- Skip to main content for accessibility -->
     <a href="#main-content" class="skip-link">Skip to main content</a>
     
@@ -79,7 +26,7 @@ if (!function_exists('__')) {
             <!-- Left: Logo -->
             <div class="nav__brand">
                 <a href="index.php" class="nav__logo">
-                    <img src="../webuy-logo-transparent.jpg" alt="WeBuy Logo" style="height: 40px; width: auto;">
+                    <img src="webuy-logo-transparent.jpg" alt="WeBuy Logo" style="height: 40px; width: auto;">
                     <span class="nav__logo-text">WeBuy</span>
                 </a>
             </div>
@@ -112,8 +59,63 @@ if (!function_exists('__')) {
                             <path d="M20 22a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"></path>
                             <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
                         </svg>
-                        <span class="nav__cart-count"><?php echo isset($_SESSION['cart']) ? count($_SESSION['cart']) : 0; ?></span>
+                        <span class="nav__cart-count"><?php echo isset($_SESSION['cart']) && is_array($_SESSION['cart']) ? array_sum($_SESSION['cart']) : 0; ?></span>
                     </a>
+                    <div class="nav__cart-dropdown">
+                        <div class="nav__cart-header">
+                            <h4 class="nav__cart-title"><?php echo ($lang ?? 'en') === 'ar' ? 'سلة التسوق' : 'Your Cart'; ?></h4>
+                        </div>
+                        <div class="nav__cart-items">
+                            <?php
+                            $mini_total = 0;
+                            $mini_items = [];
+                            if (!empty($_SESSION['cart']) && is_array($_SESSION['cart'])) {
+                                $ids = array_keys($_SESSION['cart']);
+                                if (!empty($ids)) {
+                                    $placeholders = implode(',', array_fill(0, count($ids), '?'));
+                                    $stmtMini = $pdo->prepare("SELECT id, name, price, image FROM products WHERE id IN ($placeholders)");
+                                    $stmtMini->execute($ids);
+                                    $productById = [];
+                                    while ($row = $stmtMini->fetch(PDO::FETCH_ASSOC)) { $productById[$row['id']] = $row; }
+                                    foreach ($_SESSION['cart'] as $pid => $qty) {
+                                        if (isset($productById[$pid])) {
+                                            $p = $productById[$pid];
+                                            $mini_items[] = ['id'=>$pid,'name'=>$p['name'],'image'=>$p['image'],'price'=>$p['price'],'qty'=>(int)$qty];
+                                            $mini_total += ((float)$p['price']) * (int)$qty;
+                                        }
+                                    }
+                                }
+                            }
+                            ?>
+                            <?php if (!empty($mini_items)): ?>
+                                <?php foreach ($mini_items as $mi): ?>
+                                    <div class="nav__cart-item">
+                                        <img class="nav__cart-item-image" src="uploads/<?php echo htmlspecialchars($mi['image']); ?>" alt="<?php echo htmlspecialchars($mi['name']); ?>">
+                                        <div class="nav__cart-item-details">
+                                            <div class="nav__cart-item-name"><?php echo htmlspecialchars($mi['name']); ?></div>
+                                            <div class="nav__cart-item-price"><?php echo number_format($mi['price'], 2); ?> <?php echo function_exists('__') ? __('currency') : 'TND'; ?></div>
+                                            <div class="nav__cart-item-qty"><?php echo ($lang ?? 'en') === 'ar' ? 'الكمية' : 'Qty'; ?>: <?php echo $mi['qty']; ?></div>
+                                        </div>
+                                    </div>
+                                <?php endforeach; ?>
+                            <?php else: ?>
+                                <div class="nav__cart-empty">
+                                    <div class="nav__cart-empty-icon">🛒</div>
+                                    <p class="nav__cart-empty-text"><?php echo ($lang ?? 'en') === 'ar' ? 'سلة التسوق فارغة' : 'Your cart is empty'; ?></p>
+                                </div>
+                            <?php endif; ?>
+                        </div>
+                        <div class="nav__cart-footer">
+                            <div class="nav__cart-total">
+                                <span class="nav__cart-total-label"><?php echo ($lang ?? 'en') === 'ar' ? 'الإجمالي' : 'Total'; ?></span>
+                                <span class="nav__cart-total-amount"><?php echo number_format($mini_total, 2); ?> <?php echo function_exists('__') ? __('currency') : 'TND'; ?></span>
+                            </div>
+                            <div class="nav__cart-actions">
+                                <a href="cart.php" class="nav__cart-btn nav__cart-btn--secondary"><?php echo ($lang ?? 'en') === 'ar' ? 'عرض السلة' : 'View Cart'; ?></a>
+                                <a href="checkout.php" class="nav__cart-btn nav__cart-btn--primary"><?php echo ($lang ?? 'en') === 'ar' ? 'إتمام الشراء' : 'Checkout'; ?></a>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <button class="nav__mobile-toggle" id="mobileMenuToggle" aria-label="Open menu">
                     <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -401,3 +403,5 @@ if (!function_exists('__')) {
     
     <!-- Main Content -->
     <main id="main-content" role="main"> 
+
+    </header>

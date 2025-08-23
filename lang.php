@@ -9,5 +9,5 @@ $trans = file_exists($lang_file) ? require $lang_file : require __DIR__ . '/lang
 function __($key) {
     global $trans;
     return $trans[$key] ?? $key;
-    
+
 } 
