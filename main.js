@@ -608,46 +608,7 @@ document.addEventListener('DOMContentLoaded', function() {
     ajaxNavigate(window.location.href, false);
   });
 
-  // Hero Carousel Logic
-  const hero = document.getElementById('heroCarousel');
-  if (hero) {
-    const slides = hero.querySelectorAll('.hero-slide');
-    const left = hero.querySelector('#heroArrowLeft');
-    const right = hero.querySelector('#heroArrowRight');
-    const dotsContainer = hero.querySelector('#heroDots');
-    let idx = 0;
-    let auto = true;
-    let timer = null;
-    function show(i, user) {
-      slides.forEach((s, j) => s.classList.toggle('active', j === i));
-      if (dotsContainer) {
-        dotsContainer.innerHTML = '';
-        slides.forEach((_, j) => {
-          const dot = document.createElement('span');
-          dot.className = 'dot' + (j === i ? ' active' : '');
-          dot.onclick = () => { show(j, true); resetAuto(); };
-          dotsContainer.appendChild(dot);
-        });
-      }
-      idx = i;
-      if (user) resetAuto();
-    }
-    function next() { show((idx+1)%slides.length); }
-    function prev() { show((idx-1+slides.length)%slides.length); }
-    function resetAuto() {
-      auto = false;
-      clearInterval(timer);
-      setTimeout(() => { auto = true; timer = setInterval(()=>{ if(auto) next(); }, 5000); }, 7000);
-    }
-    if (left) left.onclick = () => { prev(); resetAuto(); };
-    if (right) right.onclick = () => { next(); resetAuto(); };
-    hero.addEventListener('mouseenter', ()=>{auto=false;clearInterval(timer);});
-    hero.addEventListener('mouseleave', ()=>{auto=true;timer=setInterval(()=>{if(auto)next();},5000);});
-    hero.addEventListener('touchstart', ()=>{auto=false;clearInterval(timer);});
-    hero.addEventListener('touchend', ()=>{auto=true;timer=setInterval(()=>{if(auto)next();},5000);});
-    show(0);
-    timer = setInterval(()=>{ if(auto) next(); }, 5000);
-  }
+  // Hero Carousel Logic - Removed (no longer needed with new hero design)
 
   // Category Carousel Logic
   const catCarousel = document.getElementById('categoryCarousel');
@@ -906,6 +867,85 @@ function initRatingDisplay() {
 }
 
 // ========================================
+// Hero Section Enhancements
+// ========================================
+
+// Smooth scroll to section function
+function scrollToSection(sectionId) {
+  const section = document.getElementById(sectionId);
+  if (section) {
+    section.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start'
+    });
+  }
+}
+
+// Hero parallax effect
+function initHeroParallax() {
+  const hero = document.querySelector('.hero');
+  if (!hero) return;
+  
+  window.addEventListener('scroll', () => {
+    const scrolled = window.pageYOffset;
+    const rate = scrolled * -0.5;
+    
+    // Apply parallax to floating elements
+    const floatingElements = hero.querySelectorAll('.hero__floating-element');
+    floatingElements.forEach((element, index) => {
+      const speed = 0.3 + (index * 0.1);
+      element.style.transform = `translateY(${scrolled * speed}px) rotate(${scrolled * 0.02}deg)`;
+    });
+    
+    // Apply parallax to background
+    if (hero.querySelector('.hero__background')) {
+      hero.querySelector('.hero__background').style.transform = `translateY(${rate}px)`;
+    }
+  });
+}
+
+// Hero feature interactions
+function initHeroFeatures() {
+  const features = document.querySelectorAll('.hero__feature');
+  
+  features.forEach(feature => {
+    feature.addEventListener('mouseenter', function() {
+      this.style.transform = 'translateY(-6px) scale(1.05)';
+    });
+    
+    feature.addEventListener('mouseleave', function() {
+      this.style.transform = 'translateY(0) scale(1)';
+    });
+    
+    feature.addEventListener('click', function() {
+      // Add click animation
+      this.style.transform = 'translateY(-2px) scale(0.98)';
+      setTimeout(() => {
+        this.style.transform = 'translateY(0) scale(1)';
+      }, 150);
+    });
+  });
+}
+
+// Hero scroll indicator animation
+function initHeroScrollIndicator() {
+  const scrollIndicator = document.querySelector('.hero__scroll-indicator');
+  if (!scrollIndicator) return;
+  
+  // Hide scroll indicator when scrolled down
+  window.addEventListener('scroll', () => {
+    const scrolled = window.pageYOffset;
+    if (scrolled > 100) {
+      scrollIndicator.style.opacity = '0';
+      scrollIndicator.style.pointerEvents = 'none';
+    } else {
+      scrollIndicator.style.opacity = '0.8';
+      scrollIndicator.style.pointerEvents = 'auto';
+    }
+  });
+}
+
+// ========================================
 // Initialize All Features
 // ========================================
 
@@ -913,6 +953,11 @@ document.addEventListener('DOMContentLoaded', function() {
   initImageLoading();
   initProductCards();
   initRatingDisplay();
+  
+  // Initialize hero enhancements
+  initHeroParallax();
+  initHeroFeatures();
+  initHeroScrollIndicator();
   
   // Initialize existing features
   if (typeof setupWishlist === 'function') {

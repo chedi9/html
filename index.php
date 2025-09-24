@@ -96,6 +96,13 @@ $priority_products = getPriorityProducts(6);
     <main id="main-content" role="main">
         <!-- Hero Section -->
         <section class="hero">
+            <!-- Floating Elements for Visual Appeal -->
+            <div class="hero__floating-elements">
+                <div class="hero__floating-element">🌟</div>
+                <div class="hero__floating-element">💎</div>
+                <div class="hero__floating-element">✨</div>
+            </div>
+            
             <div class="container">
                 <div class="hero__content">
                     <div class="hero__text">
@@ -106,21 +113,21 @@ $priority_products = getPriorityProducts(6);
                             <?php echo __('webuy_platform_description'); ?>
                         </p>
                         <div class="hero__features">
-                            <div class="hero__feature">
+                            <div class="hero__feature" onclick="scrollToSection('categories')">
                                 <span class="hero__feature-icon">🌟</span>
                                 <span class="hero__feature-text"><?php echo __('support_disabled_sellers'); ?></span>
                             </div>
-                            <div class="hero__feature">
+                            <div class="hero__feature" onclick="scrollToSection('categories')">
                                 <span class="hero__feature-icon">🚚</span>
                                 <span class="hero__feature-text"><?php echo __('fast_delivery'); ?></span>
                             </div>
-                            <div class="hero__feature">
+                            <div class="hero__feature" onclick="scrollToSection('categories')">
                                 <span class="hero__feature-icon">💳</span>
                                 <span class="hero__feature-text"><?php echo __('secure_payment'); ?></span>
                             </div>
                         </div>
                         <div class="hero__actions">
-                            <a href="#categories" class="btn btn--primary btn--lg hero__btn">
+                            <a href="#categories" class="btn btn--primary btn--lg hero__btn" onclick="scrollToSection('categories')">
                                 <?php echo __('browse_categories'); ?>
                                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <line x1="5" y1="12" x2="19" y2="12"></line>
@@ -136,6 +143,13 @@ $priority_products = getPriorityProducts(6);
                         <!-- Hero images removed for mobile/cleaner look -->
                     </div>
                 </div>
+            </div>
+            
+            <!-- Scroll Indicator -->
+            <div class="hero__scroll-indicator" onclick="scrollToSection('categories')">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="6,9 12,15 18,9"></polyline>
+                </svg>
             </div>
         </section>
         
