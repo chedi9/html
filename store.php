@@ -223,7 +223,7 @@ $page_title = __('store') . ' - WeBuy';
                 <?php else: ?>
                     <div class="row g-4">
                         <?php foreach ($products as $product): ?>
-                            <div class="col-md-6 col-lg-4 col-xl-3">
+                            <div class="col-6 col-md-4 col-lg-3">
                                 <div class="card h-100 shadow-sm">
                                     <div class="position-relative">
                                         <div class="card-img-top" style="height: 200px; overflow: hidden;">
