@@ -230,27 +230,20 @@ if (isset($_GET['display_results']) && $_GET['display_results'] === '1') {
 $brands = $pdo->query("SELECT DISTINCT s.store_name FROM sellers s JOIN products p ON s.id = p.seller_id WHERE p.approved = 1 AND s.store_name IS NOT NULL AND s.store_name != '' ORDER BY s.store_name")->fetchAll();
 ?>
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="<?php echo $lang; ?>" dir="<?php echo $lang === 'ar' ? 'rtl' : 'ltr'; ?>" data-bs-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>البحث في المنتجات</title>
+    <title><?php echo __('search_products'); ?> - WeBuy</title>
     
-    <!-- CSS Files - Load in correct order -->
-    <link rel="stylesheet" href="css/base/_variables.css">
-    <link rel="stylesheet" href="css/base/_reset.css">
-    <link rel="stylesheet" href="css/base/_typography.css">
-    <link rel="stylesheet" href="css/base/_utilities.css">
-    <link rel="stylesheet" href="css/components/_buttons.css">
-    <link rel="stylesheet" href="css/components/_forms.css">
-    <link rel="stylesheet" href="css/components/_cards.css">
-    <link rel="stylesheet" href="css/components/_navigation.css">
-    <link rel="stylesheet" href="css/layout/_grid.css">
-    <link rel="stylesheet" href="css/layout/_sections.css">
-    <link rel="stylesheet" href="css/layout/_footer.css">
-    <link rel="stylesheet" href="css/themes/_light.css">
-    <link rel="stylesheet" href="css/themes/_dark.css">
-    <link rel="stylesheet" href="css/build.css">
+    <!-- Bootstrap 5.3+ CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- WeBuy Custom Bootstrap Configuration -->
+    <link rel="stylesheet" href="css/bootstrap-custom.css">
+    
+    <!-- Legacy CSS for gradual migration -->
+    <link rel="stylesheet" href="css/main.css">
     
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="favicon.ico">
@@ -259,42 +252,46 @@ $brands = $pdo->query("SELECT DISTINCT s.store_name FROM sellers s JOIN products
     <link href="https://fonts.googleapis.com/css2?family=Amiri&display=swap" rel="stylesheet">
     
     <!-- JavaScript -->
+    <script src="js/theme-controller.js" defer></script>
     <script src="main.js?v=1.4" defer></script>
-    
-    <?php if (!empty($_SESSION['is_mobile'])): ?>
-    <link rel="stylesheet" href="mobile.css">
-    <?php endif; ?>
     <style>
-        .search-container { max-width: 1200px; margin: 40px auto; background: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-        .search-container h2 { text-align: center; margin-bottom: 30px; }
-        .search-form { display: flex; flex-wrap: wrap; gap: 20px; margin-bottom: 30px; }
-        .search-form input, .search-form select { padding: 10px; border-radius: 5px; border: 1px solid #ccc; min-width: 120px; }
-        .search-form button { padding: 10px 24px; border-radius: 5px; background: var(--primary-color); color: #fff; border: none; font-size: 1em; }
-        .product-grid { display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; }
-        .product-card { width: 220px; background: #fafafa; border: 1px solid #eee; border-radius: 10px; padding: 16px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.05); position: relative; }
-        .product-card img { width: 100%; height: 140px; object-fit: cover; border-radius: 8px; }
-        .product-card h3 { margin: 10px 0 5px; font-size: 1.1em; }
-        .product-card .price { color: var(--secondary-color); font-weight: bold; }
-        .product-card .stock { color: #228B22; font-size: 0.95em; }
-        .product-card .out-stock { color: #c00; font-size: 0.95em; }
-        .add-cart-btn { margin-top: 10px; padding: 8px 18px; background: var(--primary-color); color: #fff; border: none; border-radius: 5px; font-size: 1em; cursor: pointer; }
-        .add-cart-btn:disabled { background: #ccc; cursor: not-allowed; }
-        .autocomplete-suggestions { position: absolute; top: 100%; left: 0; right: 0; background: white; border: 1px solid #ddd; border-top: none; border-radius: 0 0 5px 5px; max-height: 200px; overflow-y: auto; z-index: 1000; }
-        .autocomplete-suggestion { padding: 10px; cursor: pointer; border-bottom: 1px solid #eee; }
-        .autocomplete-suggestion:hover { background: #f5f5f5; }
-        .autocomplete-suggestion:last-child { border-bottom: none; }
-        .search-input-container { position: relative; flex: 1; }
-        .filter-tags { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0; }
-        .filter-tag { background: var(--primary-color); color: white; padding: 4px 12px; border-radius: 20px; font-size: 0.9em; display: flex; align-items: center; gap: 8px; }
-        .filter-tag .remove { cursor: pointer; font-weight: bold; }
-        .results-info { text-align: center; margin: 20px 0; color: #666; }
+        .autocomplete-suggestions { 
+            position: absolute; 
+            top: 100%; 
+            left: 0; 
+            right: 0; 
+            background: white; 
+            border: 1px solid var(--bs-border-color); 
+            border-top: none; 
+            border-radius: 0 0 0.375rem 0.375rem; 
+            max-height: 200px; 
+            overflow-y: auto; 
+            z-index: 1000; 
+        }
+        .autocomplete-suggestion { 
+            padding: 10px; 
+            cursor: pointer; 
+            border-bottom: 1px solid var(--bs-border-color); 
+        }
+        .autocomplete-suggestion:hover { 
+            background: var(--bs-light); 
+        }
+        .autocomplete-suggestion:last-child { 
+            border-bottom: none; 
+        }
+        .search-input-container { 
+            position: relative; 
+        }
+        .rating-stars .star {
+            color: #fbbf24;
+            font-size: 1.25rem;
+        }
+        .rating-stars .star:not(.filled) {
+            color: #d1d5db;
+        }
     </style>
 </head>
-<body>
-<?php
-if (session_status() === PHP_SESSION_NONE) session_start();
-?>
-
+<body class="page-transition">
 <?php include 'header.php'; ?>
 
 <div class="search-container">

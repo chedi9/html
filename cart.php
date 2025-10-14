@@ -67,29 +67,23 @@ if ($_SESSION['cart']) {
     }
 }
 $lang = $_GET['lang'] ?? $_SESSION['lang'] ?? 'ar';
+$page_title = __('shopping_cart') . ' - WeBuy';
 ?>
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="<?php echo $lang; ?>" dir="<?php echo $lang === 'ar' ? 'rtl' : 'ltr'; ?>" data-bs-theme="light">
 <head>
     <meta charset="UTF-8">
-    <title>سلة التسوق</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><?php echo htmlspecialchars($page_title); ?></title>
     
-    <!-- CSS Files - Load in correct order -->
-    <link rel="stylesheet" href="css/base/_variables.css">
-    <link rel="stylesheet" href="css/base/_reset.css">
-    <link rel="stylesheet" href="css/base/_typography.css">
-    <link rel="stylesheet" href="css/base/_utilities.css">
-    <link rel="stylesheet" href="css/components/_buttons.css">
-    <link rel="stylesheet" href="css/components/_forms.css">
-    <link rel="stylesheet" href="css/components/_cards.css">
-    <link rel="stylesheet" href="css/components/_navigation.css">
-    <link rel="stylesheet" href="css/layout/_grid.css">
-    <link rel="stylesheet" href="css/layout/_sections.css">
-    <link rel="stylesheet" href="css/layout/_footer.css">
-    <link rel="stylesheet" href="css/themes/_light.css">
-    <link rel="stylesheet" href="css/themes/_dark.css">
-    <link rel="stylesheet" href="css/build.css">
+    <!-- Bootstrap 5.3+ CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- WeBuy Custom Bootstrap Configuration -->
+    <link rel="stylesheet" href="css/bootstrap-custom.css">
+    
+    <!-- Legacy CSS for gradual migration -->
+    <link rel="stylesheet" href="css/main.css">
     
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="favicon.ico">
@@ -98,97 +92,158 @@ $lang = $_GET['lang'] ?? $_SESSION['lang'] ?? 'ar';
     <link href="https://fonts.googleapis.com/css2?family=Amiri&display=swap" rel="stylesheet">
     
     <!-- JavaScript -->
+    <script src="js/theme-controller.js" defer></script>
     <script src="main.js?v=1.4" defer></script>
-    
-    <?php if (!empty($_SESSION['is_mobile'])): ?>
-    <link rel="stylesheet" href="mobile.css">
-    <?php endif; ?>
-    <style>
-        .cart-container { max-width: 900px; margin: 40px auto; background: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-        .cart-container h2 { text-align: center; margin-bottom: 30px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { padding: 12px; border-bottom: 1px solid #eee; text-align: center; }
-        th { background: #f4f4f4; }
-        .remove-btn { background: #c00; color: #fff; padding: 6px 16px; border-radius: 5px; text-decoration: none; font-size: 0.95em; margin: 0 4px; }
-        .remove-btn:hover { background: #a00; }
-        .checkout-btn { background: var(--primary-color); color: #fff; padding: 12px 30px; border-radius: 5px; text-decoration: none; font-size: 1.1em; display: inline-block !important; margin-top: 20px; border: none; cursor: pointer; width: auto; max-width: 100%; white-space: nowrap; }
-        .checkout-btn:hover { background: var(--secondary-color); }
-        .cart-container .checkout-btn { display: inline-block !important; visibility: visible !important; opacity: 1 !important; }
-        .cart-container button.checkout-btn { display: inline-block !important; }
-        .cart-container a.checkout-btn { display: inline-block !important; }
-    </style>
 </head>
-<body>
-<div id="pageContent">
-    <div class="cart-container">
-        <h2>سلة التسوق</h2>
-        <?php if ($cart_items): ?>
-        <form method="post">
-        <table>
-            <thead>
-                <tr>
-                    <th>الصورة</th>
-                    <th>المنتج</th>
-                    <th>السعر</th>
-                    <th>الكمية</th>
-                    <th>المجموع الفرعي</th>
-                    <th>إزالة</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($cart_items as $idx => $item): ?>
-  <?php $prod_name = $item['name_' . $lang] ?? $item['name']; ?>
-  <?php $cart_key = array_keys($_SESSION['cart'])[$idx]; ?>
-  <tr>
-    <td><?php if ($item['image']): ?>
-            <div class="product-img-wrap" style="position: relative; overflow: hidden;">
-                <div class="skeleton skeleton--image"></div>
-                <?php 
-                $optimized_image = get_optimized_image('uploads/' . $item['image'], 'card');
-                ?>
-                <img src="<?php echo $optimized_image['src']; ?>" 
-                     srcset="<?php echo $optimized_image['srcset']; ?>" 
-                     sizes="<?php echo $optimized_image['sizes']; ?>"
-                     alt="<?php echo htmlspecialchars($item['name']); ?>" 
-                     loading="lazy" 
-                     width="80" 
-                     height="80" 
-                     style="position: relative; z-index: 2; object-fit: cover; border-radius: 4px;"
-                     onload="this.classList.add('loaded'); this.previousElementSibling.style.display='none';">
+<body class="page-transition">
+    <?php include 'header.php'; ?>
+    
+    <main id="main-content" role="main">
+        <!-- Cart Section -->
+        <section class="py-5">
+            <div class="container">
+                <h1 class="h2 mb-4"><?php echo $lang === 'ar' ? 'سلة التسوق' : 'Shopping Cart'; ?></h1>
+                
+                <?php if ($cart_items): ?>
+                    <div class="row">
+                        <div class="col-lg-8">
+                            <div class="card shadow-sm mb-4">
+                                <div class="card-body">
+                                    <form method="post">
+                                        <div class="table-responsive">
+                                            <table class="table align-middle">
+                                                <thead class="table-light">
+                                                    <tr>
+                                                        <th><?php echo $lang === 'ar' ? 'الصورة' : 'Image'; ?></th>
+                                                        <th><?php echo $lang === 'ar' ? 'المنتج' : 'Product'; ?></th>
+                                                        <th><?php echo $lang === 'ar' ? 'السعر' : 'Price'; ?></th>
+                                                        <th><?php echo $lang === 'ar' ? 'الكمية' : 'Quantity'; ?></th>
+                                                        <th><?php echo $lang === 'ar' ? 'المجموع' : 'Subtotal'; ?></th>
+                                                        <th><?php echo $lang === 'ar' ? 'إزالة' : 'Remove'; ?></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <?php foreach ($cart_items as $idx => $item): ?>
+                                                        <?php $prod_name = $item['name_' . $lang] ?? $item['name']; ?>
+                                                        <?php $cart_key = array_keys($_SESSION['cart'])[$idx]; ?>
+                                                        <tr>
+                                                            <td>
+                                                                <?php if ($item['image']): ?>
+                                                                    <?php 
+                                                                    $optimized_image = get_optimized_image('uploads/' . $item['image'], 'card');
+                                                                    ?>
+                                                                    <img src="<?php echo $optimized_image['src']; ?>" 
+                                                                         srcset="<?php echo $optimized_image['srcset']; ?>" 
+                                                                         alt="<?php echo htmlspecialchars($item['name']); ?>" 
+                                                                         loading="lazy" 
+                                                                         class="img-thumbnail"
+                                                                         style="width: 80px; height: 80px; object-fit: cover;">
+                                                                <?php endif; ?>
+                                                            </td>
+                                                            <td>
+                                                                <a href="product.php?id=<?php echo $item['id']; ?>" class="text-decoration-none text-dark fw-semibold">
+                                                                    <?php echo htmlspecialchars($item['name']); ?>
+                                                                </a>
+                                                                <?php if (!empty($item['variant'])): ?>
+                                                                    <div class="text-muted small"><?php echo htmlspecialchars($item['variant']); ?></div>
+                                                                <?php endif; ?>
+                                                            </td>
+                                                            <td class="fw-semibold"><?php echo number_format($item['price'], 2); ?> <?php echo __('currency'); ?></td>
+                                                            <td>
+                                                                <input type="number" 
+                                                                       name="qty[<?php echo htmlspecialchars($cart_key); ?>]" 
+                                                                       value="<?php echo $item['qty']; ?>" 
+                                                                       min="1" 
+                                                                       class="form-control form-control-sm" 
+                                                                       style="width: 80px;">
+                                                            </td>
+                                                            <td class="fw-bold text-primary"><?php echo number_format($item['subtotal'], 2); ?> <?php echo __('currency'); ?></td>
+                                                            <td>
+                                                                <a href="cart.php?remove=<?php echo urlencode($cart_key); ?>" 
+                                                                   class="btn btn-sm btn-danger">
+                                                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                                        <polyline points="3 6 5 6 21 6"></polyline>
+                                                                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                                                    </svg>
+                                                                </a>
+                                                            </td>
+                                                        </tr>
+                                                    <?php endforeach; ?>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        
+                                        <div class="d-flex justify-content-between mt-3">
+                                            <a href="store.php" class="btn btn-outline-secondary">
+                                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-2">
+                                                    <polyline points="15 18 9 12 15 6"></polyline>
+                                                </svg>
+                                                <?php echo $lang === 'ar' ? 'متابعة التسوق' : 'Continue Shopping'; ?>
+                                            </a>
+                                            <button type="submit" name="update" class="btn btn-primary">
+                                                <?php echo $lang === 'ar' ? 'تحديث السلة' : 'Update Cart'; ?>
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Cart Summary -->
+                        <div class="col-lg-4">
+                            <div class="card shadow-sm">
+                                <div class="card-header bg-primary text-white">
+                                    <h3 class="h5 mb-0"><?php echo $lang === 'ar' ? 'ملخص الطلب' : 'Order Summary'; ?></h3>
+                                </div>
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between mb-3">
+                                        <span><?php echo $lang === 'ar' ? 'المجموع الفرعي' : 'Subtotal'; ?>:</span>
+                                        <span class="fw-semibold"><?php echo number_format($total, 2); ?> <?php echo __('currency'); ?></span>
+                                    </div>
+                                    
+                                    <div class="d-flex justify-content-between mb-3 pb-3 border-bottom">
+                                        <span><?php echo $lang === 'ar' ? 'الشحن' : 'Shipping'; ?>:</span>
+                                        <span class="text-muted"><?php echo $lang === 'ar' ? 'يتم حسابه عند الدفع' : 'Calculated at checkout'; ?></span>
+                                    </div>
+                                    
+                                    <div class="d-flex justify-content-between mb-4">
+                                        <span class="h5 mb-0"><?php echo $lang === 'ar' ? 'الإجمالي' : 'Total'; ?>:</span>
+                                        <span class="h4 mb-0 text-primary fw-bold"><?php echo number_format($total, 2); ?> <?php echo __('currency'); ?></span>
+                                    </div>
+                                    
+                                    <div class="d-grid gap-2">
+                                        <a href="checkout.php" class="btn btn-primary btn-lg">
+                                            <?php echo $lang === 'ar' ? 'إتمام الشراء' : 'Proceed to Checkout'; ?>
+                                        </a>
+                                        
+                                        <?php if (!isset($_SESSION['user_id'])): ?>
+                                            <a href="checkout.php?guest=1" class="btn btn-success">
+                                                🛒 <?php echo __('continue_as_guest'); ?>
+                                            </a>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                <?php else: ?>
+                    <!-- Empty Cart -->
+                    <div class="text-center py-5">
+                        <div class="display-1 mb-4">🛒</div>
+                        <h2 class="h3 mb-3"><?php echo $lang === 'ar' ? 'سلة التسوق فارغة' : 'Your cart is empty'; ?></h2>
+                        <p class="text-muted mb-4"><?php echo $lang === 'ar' ? 'ابدأ التسوق واضف المنتجات إلى سلتك' : 'Start shopping and add products to your cart'; ?></p>
+                        <a href="store.php" class="btn btn-primary btn-lg">
+                            <?php echo $lang === 'ar' ? 'تسوق الآن' : 'Shop Now'; ?>
+                        </a>
+                    </div>
+                <?php endif; ?>
             </div>
-    <?php endif; ?></td>
-    <td><a href="product.php?id=<?php echo $item['id']; ?>"><?php echo htmlspecialchars($item['name']); ?></a>
-    <?php if (!empty($item['variant'])): ?>
-      <div style="font-size:0.98em;color:#1A237E;margin-top:4px;">(<?php echo htmlspecialchars($item['variant']); ?>)</div>
-    <?php endif; ?>
-    </td>
-          <td><?php echo htmlspecialchars($item['price']); ?> <?php echo __('currency'); ?></td>
-    <td><input type="number" name="qty[<?php echo htmlspecialchars($cart_key); ?>]" value="<?php echo $item['qty']; ?>" min="1" style="width:60px;"></td>
-          <td><?php echo $item['subtotal']; ?> <?php echo __('currency'); ?></td>
-                        <td><a href="cart.php?remove=<?php echo urlencode($cart_key); ?>" class="remove-btn"><?php echo __('remove'); ?></a></td>
-  </tr>
-<?php endforeach; ?>
-            </tbody>
-        </table>
-                  <button type="submit" name="update" class="checkout-btn" style="background:var(--secondary-color);margin-top:20px;display:inline-block !important;visibility:visible !important;opacity:1 !important;">تحديث الكميات</button>
-        </form>
-        <h3 style="text-align:left; margin-top:30px;">الإجمالي: <?php echo $total; ?> د.ت</h3>
-                  <a href="checkout.php" class="checkout-btn" style="width:auto;display:inline-block;">إتمام الشراء</a>
-            <?php if (!isset($_SESSION['user_id'])): ?>
-                <a href="checkout.php?guest=1" class="checkout-btn" style="background: #28a745; margin-top: 10px; width:auto;display:inline-block;">🛒 <?php echo __('continue_as_guest'); ?></a>
-            <?php endif; ?>
-          <?php else: ?>
-          <p style="text-align:center;">سلة التسوق فارغة</p>
-        <?php endif; ?>
-<<<<<<< Current (Your changes)
-        <a href="index.php" class="checkout-btn" style="background:var(--secondary-color);margin-top:30px;display:inline-block !important;visibility:visible !important;opacity:1 !important;width:auto;">العودة للتسوق</a>
-=======
-                  <a href="index.php" class="checkout-btn" style="background:var(--secondary-color);margin-top:30px;display:inline-block !important;visibility:visible !important;opacity:1 !important;width:auto;">العودة للتسوق</a>
->>>>>>> Incoming (Background Agent changes)
-    </div>
-</div>
-
-<!-- Cookie Consent Banner -->
-<?php include 'cookie_consent_banner.php'; ?>
+        </section>
+    </main>
+    
+    <?php include 'footer.php'; ?>
+    
+    <!-- Cookie Consent Banner -->
+    <?php include 'cookie_consent_banner.php'; ?>
 </body>
-</html> 
+</html>
