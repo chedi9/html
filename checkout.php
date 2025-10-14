@@ -277,20 +277,6 @@ $shipping_methods = $stmt->fetchAll();
     <title>إتمام الشراء</title>
     
     <!-- CSS Files - Load in correct order -->
-    <link rel="stylesheet" href="css/base/_variables.css">
-    <link rel="stylesheet" href="css/base/_reset.css">
-    <link rel="stylesheet" href="css/base/_typography.css">
-    <link rel="stylesheet" href="css/base/_utilities.css">
-    <link rel="stylesheet" href="css/components/_buttons.css">
-    <link rel="stylesheet" href="css/components/_forms.css">
-    <link rel="stylesheet" href="css/components/_cards.css">
-    <link rel="stylesheet" href="css/components/_navigation.css">
-    <link rel="stylesheet" href="css/layout/_grid.css">
-    <link rel="stylesheet" href="css/layout/_sections.css">
-    <link rel="stylesheet" href="css/layout/_footer.css">
-    <link rel="stylesheet" href="css/themes/_light.css">
-    <link rel="stylesheet" href="css/themes/_dark.css">
-    <link rel="stylesheet" href="css/build.css">
     
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="favicon.ico">
@@ -301,48 +287,7 @@ $shipping_methods = $stmt->fetchAll();
     <!-- JavaScript -->
     <script src="main.js?v=1.2" defer></script>
     
-    <?php if (!empty($_SESSION['is_mobile'])): ?>
-    <link rel="stylesheet" href="mobile.css">
-    <?php endif; ?>
-    <style>
-        .checkout-container { max-width: 700px; margin: 40px auto; background: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-        .checkout-container h2 { text-align: center; margin-bottom: 30px; }
-        .progress-steps { display: flex; justify-content: center; align-items: center; gap: 18px; margin-bottom: 30px; }
-        .step { display: flex; flex-direction: column; align-items: center; font-size: 1em; color: #888; }
-        .step.active { color: var(--primary-color); font-weight: bold; }
-        .step-circle { width: 32px; height: 32px; border-radius: 50%; background: #eee; display: flex; align-items: center; justify-content: center; font-size: 1.1em; margin-bottom: 4px; }
-        .step.active .step-circle { background: var(--primary-color); color: #fff; }
-        .step-line { width: 40px; height: 3px; background: #eee; margin: 0 4px; }
-        .step.active ~ .step-line { background: var(--primary-color); }
-        label { display: block; margin-bottom: 8px; }
-        input, select { width: 100%; padding: 14px; margin-bottom: 15px; border-radius: 5px; border: 1px solid #ccc; font-size: 1em; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { padding: 10px; border-bottom: 1px solid #eee; text-align: center; }
-        th { background: #f4f4f4; }
-        .order-success { background: #e6ffe6; color: #228B22; border: 1px solid #b2ffb2; padding: 10px 16px; border-radius: 6px; margin-bottom: 15px; text-align: center; font-weight: bold; }
-        .checkout-btn { width: 100%; padding: 16px; font-size: 1.1em; border-radius: 6px; margin-top: 18px; }
-        
-        /* Tunisia Address Autocomplete Styles */
-        .suggestion-item:hover {
-            background-color: #f5f5f5 !important;
-        }
-        
-        #address-suggestions {
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-            border: 1px solid #ddd;
-        }
-        
-        #address-search:focus {
-            border-color: var(--primary-color);
-            outline: none;
-            box-shadow: 0 0 0 2px rgba(0, 191, 174, 0.2);
-        }
-        
-        @media (max-width: 700px) {
-            .checkout-container { padding: 10px; }
-            table, th, td { font-size: 0.95em; }
-        }
-    </style>
+    
 </head>
 <body>
 <div id="pageContent">
@@ -367,51 +312,51 @@ $shipping_methods = $stmt->fetchAll();
         <h2>إتمام الشراء</h2>
         
         <!-- Order Summary -->
-        <div class="order-summary" style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 30px;">
-            <h3 style="margin-top: 0; color: #1A237E;">ملخص الطلب</h3>
-            <table style="width: 100%; border-collapse: collapse;">
+        <div class="order-summary">
+            <h3>ملخص الطلب</h3>
+            <table>
                 <thead>
-                    <tr style="background: #e3f2fd;">
-                        <th style="padding: 10px; text-align: right; border-bottom: 1px solid #ddd;">المنتج</th>
-                        <th style="padding: 10px; text-align: center; border-bottom: 1px solid #ddd;">الكمية</th>
-                        <th style="padding: 10px; text-align: center; border-bottom: 1px solid #ddd;">السعر</th>
-                        <th style="padding: 10px; text-align: center; border-bottom: 1px solid #ddd;">المجموع</th>
+                    <tr>
+                        <th>المنتج</th>
+                        <th>الكمية</th>
+                        <th>السعر</th>
+                        <th>المجموع</th>
                     </tr>
                 </thead>
                 <tbody>
                     <?php foreach ($cart_items as $item): ?>
                     <tr>
-                        <td style="padding: 10px; text-align: right; border-bottom: 1px solid #eee;">
-                            <div style="display: flex; align-items: center; gap: 10px;">
+                        <td>
+                            <div>
                                 <?php if ($item['image']): ?>
-                                    <img src="uploads/<?php echo htmlspecialchars($item['image']); ?>" alt="صورة المنتج" style="width: 40px; height: 40px; object-fit: cover; border-radius: 4px;">
+                                    <img src="uploads/<?php echo htmlspecialchars($item['image']); ?>" alt="صورة المنتج">
                                 <?php endif; ?>
                                 <div>
-                                    <div style="font-weight: bold;"><?php echo htmlspecialchars($item['name']); ?></div>
+                                    <div><?php echo htmlspecialchars($item['name']); ?></div>
                                     <?php if (!empty($item['variant'])): ?>
-                                        <div style="font-size: 0.9em; color: #1A237E;">(<?php echo htmlspecialchars($item['variant']); ?>)</div>
+                                        <div>(<?php echo htmlspecialchars($item['variant']); ?>)</div>
                                     <?php endif; ?>
                                 </div>
                             </div>
                         </td>
-                        <td style="padding: 10px; text-align: center; border-bottom: 1px solid #eee;"><?php echo $item['qty']; ?></td>
-                        <td style="padding: 10px; text-align: center; border-bottom: 1px solid #eee;"><?php echo $item['price']; ?> د.ت</td>
-                        <td style="padding: 10px; text-align: center; border-bottom: 1px solid #eee; font-weight: bold;"><?php echo $item['subtotal']; ?> د.ت</td>
+                        <td><?php echo $item['qty']; ?></td>
+                        <td><?php echo $item['price']; ?> د.ت</td>
+                        <td><?php echo $item['subtotal']; ?> د.ت</td>
                     </tr>
                     <?php endforeach; ?>
                 </tbody>
                 <tfoot>
-                    <tr style="background: #f8f9fa;">
-                        <td colspan="3" style="padding: 12px; text-align: left; font-weight: bold;">الإجمالي الفرعي:</td>
-                        <td style="padding: 12px; text-align: center; font-weight: bold;"><?php echo $total; ?> د.ت</td>
+                    <tr>
+                        <td colspan="3">الإجمالي الفرعي:</td>
+                        <td><?php echo $total; ?> د.ت</td>
                     </tr>
-                    <tr style="background: #f0f8ff;" id="shipping-row" style="display: none;">
-                        <td colspan="3" style="padding: 12px; text-align: left; font-weight: bold;">رسوم التوصيل:</td>
-                        <td style="padding: 12px; text-align: center; font-weight: bold;" id="shipping-cost">0.00 د.ت</td>
+                    <tr id="shipping-row">
+                        <td colspan="3">رسوم التوصيل:</td>
+                        <td id="shipping-cost">0.00 د.ت</td>
                     </tr>
-                    <tr style="background: #e8f5e8;">
-                        <td colspan="3" style="padding: 15px; text-align: left; font-weight: bold; font-size: 1.1em;">المجموع الكلي:</td>
-                        <td style="padding: 15px; text-align: center; font-weight: bold; font-size: 1.1em; color: #1A237E;" class="order-total"><?php echo $total; ?> د.ت</td>
+                    <tr>
+                        <td colspan="3">المجموع الكلي:</td>
+                        <td class="order-total"><?php echo $total; ?> د.ت</td>
                     </tr>
                 </tfoot>
             </table>
@@ -424,26 +369,26 @@ $shipping_methods = $stmt->fetchAll();
         
         <!-- Guest Checkout Notice -->
         <?php if (!$is_logged_in): ?>
-            <div style="background: #fff3cd; border: 1px solid #ffeaa7; color: #856404; padding: 15px; border-radius: 8px; margin-bottom: 20px; text-align: center;">
+            <div>
                 <strong>🛒 <?php echo __('guest_checkout'); ?></strong><br>
                 <?php echo __('guest_checkout_notice'); ?> 
                 <strong><?php echo __('note'); ?>:</strong> <?php echo __('guest_checkout_note'); ?>
             </div>
         <?php endif; ?>
         
-        <form method="post" style="margin-top: 20px;">
-            <div style="margin-bottom: 15px;">
-                <label for="name" style="display: block; margin-bottom: 5px; font-weight: bold;">الاسم الكامل:</label>
-                <input type="text" name="name" id="name" required style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 5px; font-size: 16px;" value="<?php echo htmlspecialchars($user['name'] ?? ''); ?>">
+        <form method="post">
+            <div>
+                <label for="name">الاسم الكامل:</label>
+                <input type="text" name="name" id="name" required value="<?php echo htmlspecialchars($user['name'] ?? ''); ?>">
             </div>
             
-            <div style="margin-bottom: 15px;">
-                <label for="address" style="display: block; margin-bottom: 5px; font-weight: bold;">العنوان:</label>
+            <div>
+                <label for="address">العنوان:</label>
                 
                 <?php if (!empty($saved_addresses)): ?>
-                    <div style="margin-bottom: 10px;">
-                        <label style="display: block; margin-bottom: 5px; color: #666; font-size: 0.9em;">العناوين المحفوظة:</label>
-                        <select id="saved-address-select" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 5px; margin-bottom: 10px;" onchange="selectSavedAddress(this.value)">
+                    <div>
+                        <label>العناوين المحفوظة:</label>
+                        <select id="saved-address-select" onchange="selectSavedAddress(this.value)">
                             <option value="">اختر عنوان محفوظ أو أدخل عنوان جديد</option>
                             <?php foreach ($saved_addresses as $address): ?>
                                 <option value="<?php echo $address['id']; ?>">
@@ -458,41 +403,41 @@ $shipping_methods = $stmt->fetchAll();
                 <?php endif; ?>
                 
                 <!-- Tunisia Address Autocomplete -->
-                <div style="position: relative;">
-                    <input type="text" id="address-search" placeholder="🔍 ابحث عن مدينة أو محافظة في تونس..." style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 5px; font-size: 16px; margin-bottom: 10px;">
-                    <div id="address-suggestions" style="position: absolute; top: 100%; left: 0; right: 0; background: white; border: 1px solid #ddd; border-top: none; border-radius: 0 0 5px 5px; max-height: 200px; overflow-y: auto; z-index: 1000; display: none;"></div>
+                <div>
+                    <input type="text" id="address-search" placeholder="🔍 ابحث عن مدينة أو محافظة في تونس...">
+                    <div id="address-suggestions"></div>
                 </div>
                 
-                <textarea id="address" name="address" required style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 5px; font-size: 16px; resize: vertical; min-height: 80px;" placeholder="أدخل عنوان الشحن الكامل (الشارع، الحي، إلخ)"><?php echo htmlspecialchars($user['address'] ?? ''); ?></textarea>
+                <textarea id="address" name="address" required placeholder="أدخل عنوان الشحن الكامل (الشارع، الحي، إلخ)"><?php echo htmlspecialchars($user['address'] ?? ''); ?></textarea>
                 
-                <div style="margin-top: 8px; font-size: 0.9em; color: #666;">
+                <div>
                     💡 <strong>نصيحة:</strong> ابحث عن مدينتك أولاً، ثم أضف تفاصيل العنوان
                 </div>
                 
                 <?php if ($is_logged_in): ?>
-                    <div style="margin-top: 10px;">
-                        <a href="client/manage_addresses.php" style="color: var(--primary-color); text-decoration: none; font-size: 0.9em;">إدارة العناوين المحفوظة</a>
+                    <div>
+                        <a href="client/manage_addresses.php">إدارة العناوين المحفوظة</a>
                     </div>
                 <?php endif; ?>
             </div>
             
-            <div style="margin-bottom: 15px;">
-                <label for="phone" style="display: block; margin-bottom: 5px; font-weight: bold;">رقم الهاتف:</label>
-                <input type="tel" name="phone" id="phone" required style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 5px; font-size: 16px;" maxlength="8" value="">
+            <div>
+                <label for="phone">رقم الهاتف:</label>
+                <input type="tel" name="phone" id="phone" required maxlength="8" value="">
             </div>
             
-            <div style="margin-bottom: 15px;">
-                <label for="email" style="display: block; margin-bottom: 5px; font-weight: bold;">البريد الإلكتروني:</label>
-                <input type="email" name="email" id="email" required style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 5px; font-size: 16px;" value="<?php echo htmlspecialchars($user['email'] ?? ''); ?>">
+            <div>
+                <label for="email">البريد الإلكتروني:</label>
+                <input type="email" name="email" id="email" required value="<?php echo htmlspecialchars($user['email'] ?? ''); ?>">
             </div>
             
-            <div style="margin-bottom: 15px;">
-                <label for="payment" style="display: block; margin-bottom: 5px; font-weight: bold;">طريقة الدفع:</label>
+            <div>
+                <label for="payment">طريقة الدفع:</label>
                 
                 <?php if (!empty($saved_payment_methods)): ?>
-                    <div style="margin-bottom: 10px;">
-                        <label style="display: block; margin-bottom: 5px; color: #666; font-size: 0.9em;">طرق الدفع المحفوظة:</label>
-                        <select id="saved-payment-select" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 5px; margin-bottom: 10px;" onchange="selectSavedPayment(this.value)">
+                    <div>
+                        <label>طرق الدفع المحفوظة:</label>
+                        <select id="saved-payment-select" onchange="selectSavedPayment(this.value)">
                             <option value="">اختر طريقة دفع محفوظة أو طريقة جديدة</option>
                             <?php foreach ($saved_payment_methods as $payment): ?>
                                 <option value="<?php echo $payment['id']; ?>">
@@ -511,7 +456,7 @@ $shipping_methods = $stmt->fetchAll();
                     </div>
                 <?php endif; ?>
                 
-                <select id="payment" name="payment" required style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 5px; font-size: 16px;" onchange="handlePaymentChange(this.value)">
+                <select id="payment" name="payment" required onchange="handlePaymentChange(this.value)">
                     <option value="">اختر طريقة الدفع</option>
                     <option value="card">💳 بطاقة بنكية (Online Payment)</option>
                     <option value="d17">📱 D17 (Online Payment)</option>
@@ -523,43 +468,43 @@ $shipping_methods = $stmt->fetchAll();
                     <?php endif; ?>
                 </select>
                 <?php if (!$is_logged_in): ?>
-                    <div id="cod-notice" style="display: none; background: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; padding: 10px; border-radius: 5px; margin-top: 8px; font-size: 0.9em;">
+                    <div id="cod-notice">
                         <strong>⚠️ Login Required:</strong> Cash on delivery requires account registration to prevent fraud and ensure payment security.
-                        <br><a href="login.php" style="color: #721c24; text-decoration: underline;">Login or Register</a>
+                        <br><a href="login.php">Login or Register</a>
                     </div>
                 <?php endif; ?>
                 
                 <?php if ($is_logged_in): ?>
-                    <div style="margin-top: 10px;">
-                        <a href="client/manage_payment_methods.php" style="color: var(--primary-color); text-decoration: none; font-size: 0.9em;">إدارة طرق الدفع المحفوظة</a>
+                    <div>
+                        <a href="client/manage_payment_methods.php">إدارة طرق الدفع المحفوظة</a>
                     </div>
                 <?php endif; ?>
             </div>
             
             <!-- Dynamic Payment Fields -->
-            <div id="payment-fields" style="display: none; margin-bottom: 15px;">
+            <div id="payment-fields">
                 <!-- Credit Card Fields -->
-                <div id="card-fields" style="display: none;">
-                    <div style="background: #f8f9fa; border: 1px solid #e9ecef; border-radius: 8px; padding: 15px; margin-bottom: 15px;">
-                        <h4 style="margin: 0 0 15px 0; color: #495057;">💳 تفاصيل البطاقة البنكية</h4>
+                <div id="card-fields">
+                    <div>
+                        <h4>💳 تفاصيل البطاقة البنكية</h4>
                         
-                        <div style="margin-bottom: 15px;">
-                            <label for="card_number" style="display: block; margin-bottom: 5px; font-weight: bold;">رقم البطاقة:</label>
+                        <div>
+                            <label for="card_number">رقم البطاقة:</label>
                             <input type="text" id="card_number" name="card_number" placeholder="1234 5678 9012 3456" 
-                                   style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 5px; font-size: 16px; font-family: monospace;"
+                                  
                                    maxlength="19" oninput="formatCardNumber(this)" required>
-                            <div id="card-type-indicator" style="margin-top: 5px; font-size: 0.9em; color: #666;"></div>
+                            <div id="card-type-indicator"></div>
                         </div>
                         
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+                        <div>
                             <div>
-                                <label for="card_holder" style="display: block; margin-bottom: 5px; font-weight: bold;">اسم حامل البطاقة:</label>
+                                <label for="card_holder">اسم حامل البطاقة:</label>
                                 <input type="text" id="card_holder" name="card_holder" placeholder="اسم حامل البطاقة"
-                                       style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 5px; font-size: 16px;" required>
+                                       required>
                             </div>
                             <div>
-                                <label for="card_type" style="display: block; margin-bottom: 5px; font-weight: bold;">نوع البطاقة:</label>
-                                <select id="card_type" name="card_type" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 5px; font-size: 16px;" required>
+                                <label for="card_type">نوع البطاقة:</label>
+                                <select id="card_type" name="card_type" required>
                                     <option value="">اختر نوع البطاقة</option>
                                     <option value="visa">Visa</option>
                                     <option value="mastercard">Mastercard</option>
@@ -569,10 +514,10 @@ $shipping_methods = $stmt->fetchAll();
                             </div>
                         </div>
                         
-                        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px;">
+                        <div>
                             <div>
-                                <label for="expiry_month" style="display: block; margin-bottom: 5px; font-weight: bold;">شهر الانتهاء:</label>
-                                <select id="expiry_month" name="expiry_month" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 5px; font-size: 16px;" required>
+                                <label for="expiry_month">شهر الانتهاء:</label>
+                                <select id="expiry_month" name="expiry_month" required>
                                     <option value="">الشهر</option>
                                     <?php for ($i = 1; $i <= 12; $i++): ?>
                                         <option value="<?php echo str_pad($i, 2, '0', STR_PAD_LEFT); ?>"><?php echo str_pad($i, 2, '0', STR_PAD_LEFT); ?></option>
@@ -580,8 +525,8 @@ $shipping_methods = $stmt->fetchAll();
                                 </select>
                             </div>
                             <div>
-                                <label for="expiry_year" style="display: block; margin-bottom: 5px; font-weight: bold;">سنة الانتهاء:</label>
-                                <select id="expiry_year" name="expiry_year" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 5px; font-size: 16px;" required>
+                                <label for="expiry_year">سنة الانتهاء:</label>
+                                <select id="expiry_year" name="expiry_year" required>
                                     <option value="">السنة</option>
                                     <?php for ($i = date('Y'); $i <= date('Y') + 15; $i++): ?>
                                         <option value="<?php echo $i; ?>"><?php echo $i; ?></option>
@@ -589,82 +534,82 @@ $shipping_methods = $stmt->fetchAll();
                                 </select>
                             </div>
                             <div>
-                                <label for="cvv" style="display: block; margin-bottom: 5px; font-weight: bold;">CVV:</label>
+                                <label for="cvv">CVV:</label>
                                 <input type="text" id="cvv" name="cvv" placeholder="123" 
-                                       style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 5px; font-size: 16px; font-family: monospace;"
+                                      
                                        maxlength="4" oninput="formatCVV(this)" required>
                             </div>
                         </div>
                         
-                        <div style="margin-top: 15px; padding: 10px; background: #e7f3ff; border-radius: 5px; font-size: 0.9em; color: #0066cc;">
+                        <div>
                             <strong>🔒 أمان:</strong> جميع بيانات البطاقة مشفرة ومؤمنة. لن يتم حفظ رقم البطاقة الكامل.
                         </div>
                     </div>
                 </div>
                 
                 <!-- D17 Fields -->
-                <div id="d17-fields" style="display: none;">
-                    <div style="background: #f8f9fa; border: 1px solid #e9ecef; border-radius: 8px; padding: 15px; margin-bottom: 15px;">
-                        <h4 style="margin: 0 0 15px 0; color: #495057;">📱 تفاصيل D17</h4>
+                <div id="d17-fields">
+                    <div>
+                        <h4>📱 تفاصيل D17</h4>
                         
-                        <div style="margin-bottom: 15px;">
-                            <label for="d17_phone" style="display: block; margin-bottom: 5px; font-weight: bold;">رقم الهاتف المرتبط بـ D17:</label>
+                        <div>
+                            <label for="d17_phone">رقم الهاتف المرتبط بـ D17:</label>
                             <input type="tel" id="d17_phone" name="d17_phone" placeholder="+216 XX XXX XXX"
-                                   style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 5px; font-size: 16px;" required>
+                                   required>
                         </div>
                         
-                        <div style="margin-bottom: 15px;">
-                            <label for="d17_email" style="display: block; margin-bottom: 5px; font-weight: bold;">البريد الإلكتروني المرتبط بـ D17:</label>
+                        <div>
+                            <label for="d17_email">البريد الإلكتروني المرتبط بـ D17:</label>
                             <input type="email" id="d17_email" name="d17_email" placeholder="example@email.com"
-                                   style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 5px; font-size: 16px;" required>
+                                   required>
                         </div>
                         
-                        <div style="padding: 10px; background: #fff3cd; border-radius: 5px; font-size: 0.9em; color: #856404;">
+                        <div>
                             <strong>ℹ️ ملاحظة:</strong> سيتم إرسال رابط الدفع إلى رقم الهاتف والبريد الإلكتروني المحددين.
                         </div>
                     </div>
                 </div>
                 
                 <!-- Flouci Fields -->
-                <div id="flouci-fields" style="display: none;">
-                    <div style="background: #f8f9fa; border: 1px solid #e9ecef; border-radius: 8px; padding: 15px; margin-bottom: 15px;">
-                        <h4 style="margin: 0 0 15px 0; color: #495057;">🟢 تفاصيل Flouci</h4>
+                <div id="flouci-fields">
+                    <div>
+                        <h4>🟢 تفاصيل Flouci</h4>
                         
-                        <div style="margin-bottom: 15px;">
-                            <label for="flouci_phone" style="display: block; margin-bottom: 5px; font-weight: bold;">رقم الهاتف المرتبط بـ Flouci:</label>
+                        <div>
+                            <label for="flouci_phone">رقم الهاتف المرتبط بـ Flouci:</label>
                             <input type="tel" id="flouci_phone" name="flouci_phone" placeholder="+216 XX XXX XXX"
-                                   style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 5px; font-size: 16px;" required>
+                                   required>
                         </div>
                         
-                        <div style="margin-bottom: 15px;">
-                            <label for="flouci_email" style="display: block; margin-bottom: 5px; font-weight: bold;">البريد الإلكتروني المرتبط بـ Flouci:</label>
+                        <div>
+                            <label for="flouci_email">البريد الإلكتروني المرتبط بـ Flouci:</label>
                             <input type="email" id="flouci_email" name="flouci_email" placeholder="example@email.com"
-                                   style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 5px; font-size: 16px;" required>
+                                   required>
                         </div>
                         
-                        <div style="margin-bottom: 15px;">
-                            <label for="flouci_account_type" style="display: block; margin-bottom: 5px; font-weight: bold;">نوع الحساب:</label>
-                            <select id="flouci_account_type" name="flouci_account_type" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 5px; font-size: 16px;" required>
+                        <div>
+                            <label for="flouci_account_type">نوع الحساب:</label>
+                            <select id="flouci_account_type" name="flouci_account_type" required>
                                 <option value="">اختر نوع الحساب</option>
                                 <option value="personal">حساب شخصي</option>
                                 <option value="business">حساب تجاري</option>
                             </select>
                         </div>
                         
-                        <div style="padding: 10px; background: #d4edda; border-radius: 5px; font-size: 0.9em; color: #155724;">
+                        <div>
                             <strong>🟢 Flouci:</strong> تطبيق الدفع الرقمي الأسرع نمواً في تونس. سيتم إرسال رابط الدفع إلى رقم الهاتف والبريد الإلكتروني المحددين.
                         </div>
                     </div>
                 </div>
                 
                 <!-- Bank Transfer Fields -->
-                <div id="bank-transfer-fields" style="display: none;">
-                    <div style="background: #f8f9fa; border: 1px solid #e9ecef; border-radius: 8px; padding: 15px; margin-bottom: 15px;">
-                        <h4 style="margin: 0 0 15px 0; color: #495057;">🏦 تفاصيل التحويل البنكي</h4>
+                <div id="bank-transfer-fields">
+                    <div>
+                        <h4>🏦 تفاصيل التحويل البنكي</h4>
                         
-                        <div style="margin-bottom: 15px;">
-                            <label for="bank_name" style="display: block; margin-bottom: 5px; font-weight: bold;">اسم البنك:</label>
-                            <select id="bank_name" name="bank_name" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 5px; font-size: 16px;" required>
+                        <div>
+                            <label for="bank_name">اسم البنك:</label>
+                            <select id="bank_name" name="bank_name" required>
                                 <option value="">اختر البنك</option>
                                 <option value="biat">BIAT - البنك التونسي العربي الدولي</option>
                                 <option value="stb">STB - البنك التونسي السعودي</option>
@@ -676,34 +621,34 @@ $shipping_methods = $stmt->fetchAll();
                             </select>
                         </div>
                         
-                        <div id="other-bank-field" style="display: none; margin-bottom: 15px;">
-                            <label for="other_bank_name" style="display: block; margin-bottom: 5px; font-weight: bold;">اسم البنك:</label>
+                        <div id="other-bank-field">
+                            <label for="other_bank_name">اسم البنك:</label>
                             <input type="text" id="other_bank_name" name="other_bank_name" placeholder="أدخل اسم البنك"
-                                   style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 5px; font-size: 16px;">
+                                  >
                         </div>
                         
-                        <div style="margin-bottom: 15px;">
-                            <label for="account_holder" style="display: block; margin-bottom: 5px; font-weight: bold;">اسم صاحب الحساب:</label>
+                        <div>
+                            <label for="account_holder">اسم صاحب الحساب:</label>
                             <input type="text" id="account_holder" name="account_holder" placeholder="اسم صاحب الحساب البنكي"
-                                   style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 5px; font-size: 16px;" required>
+                                   required>
                         </div>
                         
-                        <div style="margin-bottom: 15px;">
-                            <label for="reference_number" style="display: block; margin-bottom: 5px; font-weight: bold;">رقم المرجع (اختياري):</label>
+                        <div>
+                            <label for="reference_number">رقم المرجع (اختياري):</label>
                             <input type="text" id="reference_number" name="reference_number" placeholder="رقم المرجع للتحويل"
-                                   style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 5px; font-size: 16px;">
+                                  >
                         </div>
                         
-                        <div style="padding: 10px; background: #d1ecf1; border-radius: 5px; font-size: 0.9em; color: #0c5460;">
+                        <div>
                             <strong>💡 تلميح:</strong> سيتم إرسال تفاصيل الحساب البنكي عبر البريد الإلكتروني بعد تأكيد الطلب.
                         </div>
                     </div>
                 </div>
             </div>
             
-            <div style="margin-bottom: 15px;">
-                <label for="shipping" style="display: block; margin-bottom: 5px; font-weight: bold;">طريقة التوصيل:</label>
-                <select id="shipping" name="shipping" required style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 5px; font-size: 16px;" onchange="updateShippingCost(this.value)">
+            <div>
+                <label for="shipping">طريقة التوصيل:</label>
+                <select id="shipping" name="shipping" required onchange="updateShippingCost(this.value)">
                     <option value="">اختر طريقة التوصيل</option>
                     
                     <!-- First Delivery Options - Default and Always Available -->
@@ -763,10 +708,10 @@ $shipping_methods = $stmt->fetchAll();
                         <?php endif; ?>
                     </optgroup>
                 </select>
-                <div id="shipping-info" style="margin-top: 8px; font-size: 0.9em; color: #666; display: none;"></div>
+                <div id="shipping-info"></div>
             </div>
             
-            <button type="submit" style="width: 100%; padding: 16px; background: #00BFAE; color: white; border: none; border-radius: 5px; font-size: 18px; font-weight: bold; cursor: pointer; margin-top: 20px;">تأكيد الطلب</button>
+            <button type="submit">تأكيد الطلب</button>
         </form>
         <?php endif; ?>
     </div>
@@ -965,9 +910,9 @@ $shipping_methods = $stmt->fetchAll();
         
         addressSuggestions.innerHTML = suggestions.map(item => `
             <div class="suggestion-item" onclick="selectAddressSuggestion('${item.name}', '${item.delegation || ''}', '${item.governorate || ''}', '${item.postal_code || ''}', '${item.type}')" 
-                style="padding: 10px; cursor: pointer; border-bottom: 1px solid #eee; hover:background-color: #f5f5f5;">
-                <div style="font-weight: bold;">${item.display}</div>
-                ${item.postal_code ? `<div style="font-size: 0.9em; color: #666;">الرمز البريدي: ${item.postal_code}</div>` : '<div style="font-size: 0.9em; color: #666;">📍 اختر هذا العنوان</div>'}
+               >
+                <div>${item.display}</div>
+                ${item.postal_code ? `<div>الرمز البريدي: ${item.postal_code}</div>` : '<div>📍 اختر هذا العنوان</div>'}
             </div>
         `).join('');
         

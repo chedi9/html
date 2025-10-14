@@ -59,8 +59,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <title><?= __('register') ?></title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- CSS Files - Load in correct order -->
-    <link rel="stylesheet" href="../css/main.css">
-    <link rel="stylesheet" href="../css/pages/_auth.css">
     <link rel="icon" type="image/x-icon" href="../favicon.ico">
     <link href="https://fonts.googleapis.com/css2?family=Amiri&display=swap" rel="stylesheet">
     <script src="../main.js?v=1.5" defer></script>
@@ -73,7 +71,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <h1 class="auth-title"><?= __('register') ?></h1>
                     <p class="auth-subtitle"><?= __('create_account_subtitle') ?></p>
                 </div>
-                <form action="google_login.php" method="get" class="auth-form" style="margin-bottom:15px;">
+                <form action="google_login.php" method="get" class="auth-form">
                     <button type="submit" class="google-btn">
                         <span class="google-icon"><img src="../google-icon.svg" alt="Google"></span>
                         <?= __('login_with_google') ?>

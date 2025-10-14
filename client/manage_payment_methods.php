@@ -114,190 +114,7 @@ $user = $stmt->fetch();
     <meta charset="UTF-8">
     <title>إدارة طرق الدفع - WeBuy</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../beta333.css">
-    <style>
-        .payment-container { 
-            max-width: 1000px; 
-            margin: 40px auto; 
-            background: #fff; 
-            padding: 30px; 
-            border-radius: 10px; 
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1); 
-        }
-        .payment-header { 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            margin-bottom: 30px; 
-        }
-        .add-payment-btn { 
-            background: var(--primary-color); 
-            color: #fff; 
-            border: none; 
-            border-radius: 6px; 
-            padding: 12px 24px; 
-            font-size: 1em; 
-            cursor: pointer; 
-            text-decoration: none; 
-        }
-        .payment-grid { 
-            display: grid; 
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); 
-            gap: 20px; 
-            margin-bottom: 30px; 
-        }
-        .payment-card { 
-            border: 1px solid #ddd; 
-            border-radius: 8px; 
-            padding: 20px; 
-            background: #f9f9f9; 
-            position: relative; 
-        }
-        .payment-card.default { 
-            border-color: var(--primary-color); 
-            background: #f0f8ff; 
-        }
-        .default-badge { 
-            position: absolute; 
-            top: 10px; 
-            right: 10px; 
-            background: var(--primary-color); 
-            color: #fff; 
-            padding: 4px 8px; 
-            border-radius: 12px; 
-            font-size: 0.8em; 
-        }
-        .payment-type { 
-            color: #666; 
-            font-size: 0.9em; 
-            margin-bottom: 10px; 
-        }
-        .payment-name { 
-            font-weight: bold; 
-            margin-bottom: 8px; 
-        }
-        .payment-details { 
-            line-height: 1.5; 
-            margin-bottom: 15px; 
-        }
-        .payment-actions { 
-            display: flex; 
-            gap: 10px; 
-        }
-        .action-btn { 
-            padding: 6px 12px; 
-            border: none; 
-            border-radius: 4px; 
-            cursor: pointer; 
-            font-size: 0.9em; 
-            text-decoration: none; 
-            text-align: center; 
-        }
-        .edit-btn { 
-            background: var(--secondary-color); 
-            color: #fff; 
-        }
-        .delete-btn { 
-            background: #dc3545; 
-            color: #fff; 
-        }
-        .default-btn { 
-            background: #28a745; 
-            color: #fff; 
-        }
-        
-        .modal { 
-            display: none; 
-            position: fixed; 
-            z-index: 1000; 
-            left: 0; 
-            top: 0; 
-            width: 100%; 
-            height: 100%; 
-            background-color: rgba(0,0,0,0.5); 
-        }
-        .modal-content { 
-            background-color: #fff; 
-            margin: 5% auto; 
-            padding: 30px; 
-            border-radius: 10px; 
-            width: 90%; 
-            max-width: 500px; 
-            position: relative; 
-        }
-        .close { 
-            position: absolute; 
-            right: 20px; 
-            top: 15px; 
-            font-size: 28px; 
-            font-weight: bold; 
-            cursor: pointer; 
-        }
-        .form-group { 
-            margin-bottom: 16px; 
-        }
-        .form-group label { 
-            display: block; 
-            margin-bottom: 6px; 
-            font-weight: bold; 
-        }
-        .form-group input, .form-group select { 
-            width: 100%; 
-            padding: 10px; 
-            border: 1px solid #ddd; 
-            border-radius: 5px; 
-            font-size: 16px; 
-        }
-        .form-row { 
-            display: grid; 
-            grid-template-columns: 1fr 1fr; 
-            gap: 15px; 
-        }
-        .form-actions { 
-            display: flex; 
-            gap: 10px; 
-            justify-content: flex-end; 
-            margin-top: 20px; 
-        }
-        .btn { 
-            padding: 10px 20px; 
-            border: none; 
-            border-radius: 5px; 
-            cursor: pointer; 
-            font-size: 16px; 
-        }
-        .btn-primary { 
-            background: var(--primary-color); 
-            color: #fff; 
-        }
-        .btn-secondary { 
-            background: #6c757d; 
-            color: #fff; 
-        }
-        .flash-message { 
-            background: #d4edda; 
-            color: #155724; 
-            padding: 12px; 
-            border-radius: 5px; 
-            margin-bottom: 20px; 
-        }
-        .empty-state { 
-            text-align: center; 
-            padding: 40px; 
-            color: #666; 
-        }
-        .empty-state h3 { 
-            margin-bottom: 10px; 
-        }
-        .card-icon { 
-            font-size: 1.2em; 
-            margin-right: 8px; 
-        }
-        .card-number { 
-            font-family: monospace; 
-            letter-spacing: 1px; 
-        }
-    </style>
+    
 </head>
 <body>
     <?php include '../header.php'; ?>
@@ -369,7 +186,7 @@ $user = $stmt->fetch();
             </div>
         <?php endif; ?>
         
-        <div style="text-align: center; margin-top: 30px;">
+        <div>
             <a href="account.php" class="btn btn-secondary">العودة إلى الحساب</a>
         </div>
     </div>
@@ -397,7 +214,7 @@ $user = $stmt->fetch();
                     <input type="text" name="name" id="name" placeholder="مثال: بطاقة فيزا الرئيسية" required>
                 </div>
                 
-                <div id="card-fields" style="display: none;">
+                <div id="card-fields">
                     <div class="form-group">
                         <label for="card_number">رقم البطاقة:</label>
                         <input type="text" name="card_number" id="card_number" placeholder="1234 5678 9012 3456" maxlength="19">

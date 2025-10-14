@@ -13,7 +13,6 @@ $lang = $_GET['lang'] ?? $_SESSION['lang'] ?? 'en';
     <title><?php echo __('terms_conditions'); ?> - WeBuy</title>
     
     <!-- CSS Files -->
-    <link rel="stylesheet" href="css/main.css">
     
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="favicon.ico">

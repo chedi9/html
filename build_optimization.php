@@ -229,32 +229,7 @@ if (php_sapi_name() === 'cli') {
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>WeBuy - Build Optimization</title>
-        <link rel="stylesheet" href="css/optimized/main.min.css">
-        <style>
-            .build-interface {
-                padding: var(--space-8);
-                background: linear-gradient(135deg, var(--color-primary-50), var(--color-accent-50));
-                min-height: 100vh;
-            }
-            .build-card {
-                background: var(--color-white);
-                border-radius: var(--border-radius-xl);
-                padding: var(--space-6);
-                margin-bottom: var(--space-6);
-                box-shadow: var(--shadow-lg);
-            }
-            .build-output {
-                background: var(--color-gray-900);
-                color: var(--color-gray-100);
-                padding: var(--space-4);
-                border-radius: var(--border-radius-lg);
-                font-family: var(--font-family-mono);
-                font-size: var(--font-size-sm);
-                white-space: pre-wrap;
-                max-height: 400px;
-                overflow-y: auto;
-            }
-        </style>
+        
     </head>
     <body class="page-transition">
         <div class="build-interface">
@@ -263,12 +238,12 @@ if (php_sapi_name() === 'cli') {
                     <h1>🚀 WeBuy Build Optimization</h1>
                     <p>Optimize CSS and JavaScript for production deployment</p>
                     
-                    <div class="flex flex--gap-md" style="margin-top: var(--space-4);">
+                    <div class="flex flex--gap-md">
                         <button class="btn btn--primary" onclick="runOptimization()">Run Optimization</button>
                         <button class="btn btn--secondary" onclick="testPerformance()">Test Performance</button>
                     </div>
                     
-                    <div id="build-output" class="build-output" style="margin-top: var(--space-4); display: none;">
+                    <div id="build-output" class="build-output">
                         <div class="spinner spinner--primary"></div> Running optimization...
                     </div>
                 </div>

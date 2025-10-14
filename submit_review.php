@@ -45,14 +45,14 @@ function render_reviews_html($pdo, $product_id) {
     if ($reviews) {
         foreach ($reviews as $rev) {
             $is_verified = $rev['user_id'] && in_array($rev['user_id'], $buyers);
-            echo '<div style="background:#fff;border:1.5px solid #E3E7ED;border-radius:10px;padding:16px 18px 12px 18px;margin-bottom:18px;box-shadow:0 2px 8px rgba(26,35,126,0.04);">';
-            echo '<div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;">';
-            echo '<span style="font-weight:bold;color:#00BFAE;font-size:1.08em;">' . htmlspecialchars($rev['name']) . '</span>';
-            if ($is_verified) echo '<span class="verified-badge" style="background:#FFD600;color:#23263a;font-size:0.95em;padding:2px 10px;border-radius:8px;font-weight:bold;margin-right:6px;">✔ مشتري موثوق</span>';
-            echo '<span style="color:#FFD600;font-size:1.15em;letter-spacing:1px;">' . str_repeat('★', (int)$rev['rating']) . str_repeat('☆', 5-(int)$rev['rating']) . '</span>';
+            echo '<div>';
+            echo '<div>';
+            echo '<span>' . htmlspecialchars($rev['name']) . '</span>';
+            if ($is_verified) echo '<span class="verified-badge">✔ مشتري موثوق</span>';
+            echo '<span>' . str_repeat('★', (int)$rev['rating']) . str_repeat('☆', 5-(int)$rev['rating']) . '</span>';
             echo '</div>';
-            if (!empty($rev['comment'])) echo '<div style="margin-bottom:6px;font-size:1.08em;color:#222;">' . nl2br(htmlspecialchars($rev['comment'])) . '</div>';
-            echo '<div style="color:#888;font-size:0.97em;text-align:left;">' . $rev['created_at'] . '</div>';
+            if (!empty($rev['comment'])) echo '<div>' . nl2br(htmlspecialchars($rev['comment'])) . '</div>';
+            echo '<div>' . $rev['created_at'] . '</div>';
             echo '</div>';
         }
     } else {

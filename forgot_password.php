@@ -39,15 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <head>
                     <meta charset='UTF-8'>
                     <title>إعادة تعيين كلمة المرور</title>
-                    <style>
-                        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
-                        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-                        .header { background: linear-gradient(135deg, #1A237E 0%, #00BFAE 100%); color: white; padding: 30px; text-align: center; border-radius: 12px 12px 0 0; }
-                        .content { padding: 30px; background: #f9f9f9; }
-                        .btn { display: inline-block; padding: 15px 30px; background: #00BFAE; color: white; text-decoration: none; border-radius: 8px; margin: 20px 0; font-weight: bold; }
-                        .footer { background: #eee; padding: 20px; text-align: center; border-radius: 0 0 12px 12px; }
-                        .warning { background: #fff3cd; border: 1px solid #ffeaa7; padding: 15px; border-radius: 8px; margin: 20px 0; }
-                    </style>
+                    
                 </head>
                 <body>
                     <div class='container'>
@@ -104,20 +96,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <title><?php echo $page_title; ?> - WeBuy</title>
     
     <!-- CSS Files - Load in correct order -->
-    <link rel="stylesheet" href="css/base/_variables.css">
-    <link rel="stylesheet" href="css/base/_reset.css">
-    <link rel="stylesheet" href="css/base/_typography.css">
-    <link rel="stylesheet" href="css/base/_utilities.css">
-    <link rel="stylesheet" href="css/components/_buttons.css">
-    <link rel="stylesheet" href="css/components/_forms.css">
-    <link rel="stylesheet" href="css/components/_cards.css">
-    <link rel="stylesheet" href="css/components/_navigation.css">
-    <link rel="stylesheet" href="css/layout/_grid.css">
-    <link rel="stylesheet" href="css/layout/_sections.css">
-    <link rel="stylesheet" href="css/layout/_footer.css">
-    <link rel="stylesheet" href="css/themes/_light.css">
-    <link rel="stylesheet" href="css/themes/_dark.css">
-    <link rel="stylesheet" href="css/build.css">
     
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="favicon.ico">
@@ -133,7 +111,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div class="auth-card">
             <div class="auth-logo">🛒 WeBuy</div>
             <h2 class="auth-subtitle">نسيت كلمة المرور؟</h2>
-            <p style="color: #666; margin-bottom: 30px;">أدخل بريدك الإلكتروني وسنرسل لك رابطاً لإعادة تعيين كلمة المرور</p>
+            <p>أدخل بريدك الإلكتروني وسنرسل لك رابطاً لإعادة تعيين كلمة المرور</p>
             
             <?php if ($error): ?>
                 <div class="message error"><?php echo htmlspecialchars($error); ?></div>

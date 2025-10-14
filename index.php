@@ -55,16 +55,6 @@ $priority_products = getPriorityProducts(6);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WeBuy - Online Shopping Platform</title>
     
-    <!-- Bootstrap 5.3+ CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    
-    <!-- WeBuy Custom Bootstrap Configuration -->
-    <link rel="stylesheet" href="css/bootstrap-custom.css">
-    
-    <!-- Legacy CSS for gradual migration -->
-    <link rel="stylesheet" href="css/main.css">
-    <link rel="stylesheet" href="css/components/featured-products.css">
-    
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="favicon.ico">
     
@@ -169,7 +159,7 @@ $priority_products = getPriorityProducts(6);
                         <div class="col-md-6 col-lg-4">
                             <div class="card h-100 shadow-sm">
                                 <a href="store.php?category=<?php echo $category['id']; ?>" class="text-decoration-none">
-                                    <div class="card-img-top" style="height: 200px; overflow: hidden;">
+                                    <div class="card-img-top">
                                         <div class="skeleton w-100 h-100"></div>
                                         <?php if (!empty($category['image'])): ?>
                                             <?php 
@@ -253,7 +243,7 @@ $priority_products = getPriorityProducts(6);
                                 
                                 <!-- Product Image -->
                                 <a href="product.php?id=<?php echo $product['id']; ?>" class="text-decoration-none">
-                                    <div class="card-img-top" style="height: 200px; overflow: hidden;">
+                                    <div class="card-img-top">
                                         <div class="skeleton w-100 h-100"></div>
                                         <?php 
                                         $optimized_image = get_optimized_image('uploads/' . $product['image'], 'card');

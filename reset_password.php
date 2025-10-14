@@ -31,20 +31,6 @@ if (empty($token)) {
         <title><?php echo $page_title; ?> - WeBuy</title>
         
         <!-- CSS Files - Load in correct order -->
-        <link rel="stylesheet" href="css/base/_variables.css">
-        <link rel="stylesheet" href="css/base/_reset.css">
-        <link rel="stylesheet" href="css/base/_typography.css">
-        <link rel="stylesheet" href="css/base/_utilities.css">
-        <link rel="stylesheet" href="css/components/_buttons.css">
-        <link rel="stylesheet" href="css/components/_forms.css">
-        <link rel="stylesheet" href="css/components/_cards.css">
-        <link rel="stylesheet" href="css/components/_navigation.css">
-        <link rel="stylesheet" href="css/layout/_grid.css">
-        <link rel="stylesheet" href="css/layout/_sections.css">
-        <link rel="stylesheet" href="css/layout/_footer.css">
-        <link rel="stylesheet" href="css/themes/_light.css">
-        <link rel="stylesheet" href="css/themes/_dark.css">
-        <link rel="stylesheet" href="css/build.css">
         
         <!-- Favicon -->
         <link rel="icon" type="image/x-icon" href="favicon.ico">
@@ -56,8 +42,8 @@ if (empty($token)) {
         <script src="main.js?v=1.2" defer></script>
     </head>
     <body>
-        <div style="display:flex;justify-content:flex-end;align-items:center;margin-bottom:10px;max-width:600px;margin-left:auto;margin-right:auto;gap:18px;">
-            <button id="darkModeToggle" class="dark-mode-toggle" title="Toggle dark mode" style="background:#00BFAE;color:#fff;border:none;border-radius:50%;width:40px;height:40px;display:flex;align-items:center;justify-content:center;font-size:1.3em;margin-left:16px;cursor:pointer;box-shadow:0 2px 8px rgba(0,191,174,0.10);transition:background 0.2s, color 0.2s;">
+        <div>
+            <button id="darkModeToggle" class="dark-mode-toggle" title="Toggle dark mode">
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M21 12.79A9 9 0 1 1 11.21 3a7 7 0 0 0 9.79 9.79z"/>
                 </svg>
@@ -139,20 +125,6 @@ if (!$reset_data) {
     <title><?php echo $page_title; ?> - WeBuy</title>
     
     <!-- CSS Files - Load in correct order -->
-    <link rel="stylesheet" href="css/base/_variables.css">
-    <link rel="stylesheet" href="css/base/_reset.css">
-    <link rel="stylesheet" href="css/base/_typography.css">
-    <link rel="stylesheet" href="css/base/_utilities.css">
-    <link rel="stylesheet" href="css/components/_buttons.css">
-    <link rel="stylesheet" href="css/components/_forms.css">
-    <link rel="stylesheet" href="css/components/_cards.css">
-    <link rel="stylesheet" href="css/components/_navigation.css">
-    <link rel="stylesheet" href="css/layout/_grid.css">
-    <link rel="stylesheet" href="css/layout/_sections.css">
-    <link rel="stylesheet" href="css/layout/_footer.css">
-    <link rel="stylesheet" href="css/themes/_light.css">
-    <link rel="stylesheet" href="css/themes/_dark.css">
-    <link rel="stylesheet" href="css/build.css">
     
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="favicon.ico">
@@ -164,8 +136,8 @@ if (!$reset_data) {
     <script src="main.js?v=1.2" defer></script>
 </head>
 <body>
-    <div style="display:flex;justify-content:flex-end;align-items:center;margin-bottom:10px;max-width:600px;margin-left:auto;margin-right:auto;gap:18px;">
-        <button id="darkModeToggle" class="dark-mode-toggle" title="Toggle dark mode" style="background:#00BFAE;color:#fff;border:none;border-radius:50%;width:40px;height:40px;display:flex;align-items:center;justify-content:center;font-size:1.3em;margin-left:16px;cursor:pointer;box-shadow:0 2px 8px rgba(0,191,174,0.10);transition:background 0.2s, color 0.2s;">
+    <div>
+        <button id="darkModeToggle" class="dark-mode-toggle" title="Toggle dark mode">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M21 12.79A9 9 0 1 1 11.21 3a7 7 0 0 0 9.79 9.79z"/>
             </svg>
@@ -194,7 +166,7 @@ if (!$reset_data) {
                     <p>البريد الإلكتروني: <strong><?php echo htmlspecialchars($reset_data['email']); ?></strong></p>
                 </div>
                 
-                <p style="color: #666; margin-bottom: 30px;">أدخل كلمة المرور الجديدة لحسابك</p>
+                <p>أدخل كلمة المرور الجديدة لحسابك</p>
                 
                 <form method="POST" action="" id="resetForm">
                     <div class="form-group">

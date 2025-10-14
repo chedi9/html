@@ -157,250 +157,7 @@ function handleRevokeDevice($user_id) {
     <meta charset="UTF-8">
     <title>مركز الأمان - WeBuy</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="beta333.css">
-    <style>
-        .security-center {
-            max-width: 1000px;
-            margin: 40px auto;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            padding: 40px;
-            border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-        }
-        
-        .security-section {
-            background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%);
-            border: 1px solid #e9ecef;
-            border-radius: 15px;
-            padding: 30px;
-            margin-bottom: 30px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-        }
-        
-        .security-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 25px;
-            padding-bottom: 15px;
-            border-bottom: 2px solid #e9ecef;
-        }
-        
-        .security-title {
-            font-size: 1.5em;
-            font-weight: 700;
-            color: #2c3e50;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-        
-        .security-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2em;
-            font-weight: bold;
-            color: white;
-        }
-        
-        .password-icon { background: #e74c3c; }
-        .twofa-icon { background: #3498db; }
-        .device-icon { background: #2ecc71; }
-        .activity-icon { background: #f39c12; }
-        .alert-icon { background: #e67e22; }
-        
-        .security-status {
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-weight: 600;
-            font-size: 0.9em;
-        }
-        
-        .status-enabled {
-            background: #d4edda;
-            color: #155724;
-        }
-        
-        .status-disabled {
-            background: #f8d7da;
-            color: #721c24;
-        }
-        
-        .form-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-        }
-        
-        .form-group {
-            margin-bottom: 20px;
-        }
-        
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: #2c3e50;
-        }
-        
-        .form-group input {
-            width: 100%;
-            padding: 12px 15px;
-            border: 2px solid #e9ecef;
-            border-radius: 8px;
-            font-size: 1em;
-            transition: all 0.3s ease;
-        }
-        
-        .form-group input:focus {
-            border-color: #00BFAE;
-            box-shadow: 0 0 0 3px rgba(0, 191, 174, 0.1);
-            outline: none;
-        }
-        
-        .btn {
-            background: linear-gradient(135deg, #00BFAE, #008ba3);
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            display: inline-block;
-        }
-        
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(0, 191, 174, 0.3);
-        }
-        
-        .btn-danger {
-            background: linear-gradient(135deg, #e74c3c, #c0392b);
-        }
-        
-        .btn-danger:hover {
-            box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
-        }
-        
-        .alert {
-            padding: 15px 20px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            font-weight: 600;
-        }
-        
-        .alert-success {
-            background: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-        
-        .alert-error {
-            background: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-        
-        .alert-warning {
-            background: #fff3cd;
-            color: #856404;
-            border: 1px solid #ffeaa7;
-        }
-        
-        .security-events {
-            max-height: 300px;
-            overflow-y: auto;
-        }
-        
-        .event-item {
-            padding: 12px;
-            border-bottom: 1px solid #e9ecef;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .event-item:last-child {
-            border-bottom: none;
-        }
-        
-        .event-type {
-            font-weight: 600;
-            color: #2c3e50;
-        }
-        
-        .event-time {
-            color: #7f8c8d;
-            font-size: 0.9em;
-        }
-        
-        .device-item {
-            background: #fff;
-            border: 1px solid #e9ecef;
-            border-radius: 8px;
-            padding: 15px;
-            margin-bottom: 10px;
-        }
-        
-        .device-info {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .device-details {
-            flex: 1;
-        }
-        
-        .device-name {
-            font-weight: 600;
-            color: #2c3e50;
-            margin-bottom: 5px;
-        }
-        
-        .device-meta {
-            color: #7f8c8d;
-            font-size: 0.9em;
-        }
-        
-        .suspicious-warning {
-            background: #fff3cd;
-            border: 1px solid #ffeaa7;
-            border-radius: 8px;
-            padding: 15px;
-            margin-bottom: 20px;
-        }
-        
-        .suspicious-warning h4 {
-            color: #856404;
-            margin-bottom: 10px;
-        }
-        
-        .suspicious-reasons {
-            list-style: none;
-            padding: 0;
-        }
-        
-        .suspicious-reasons li {
-            color: #856404;
-            margin-bottom: 5px;
-            padding-left: 20px;
-            position: relative;
-        }
-        
-        .suspicious-reasons li:before {
-            content: "⚠️";
-            position: absolute;
-            left: 0;
-        }
-    </style>
+    
 </head>
 <body>
     <?php include 'header.php'; ?>
@@ -481,13 +238,13 @@ function handleRevokeDevice($user_id) {
             
             <?php if (!$user['two_factor_enabled']): ?>
                 <p>المصادقة الثنائية تضيف طبقة إضافية من الحماية لحسابك</p>
-                <form method="POST" action="" style="display: inline;">
+                <form method="POST" action="">
                     <input type="hidden" name="action" value="enable_2fa">
                     <button type="submit" class="btn">تفعيل المصادقة الثنائية</button>
                 </form>
             <?php else: ?>
                 <p>المصادقة الثنائية مفعلة لحسابك</p>
-                <form method="POST" action="" style="display: inline;">
+                <form method="POST" action="">
                     <input type="hidden" name="action" value="disable_2fa">
                     <button type="submit" class="btn btn-danger">إلغاء تفعيل المصادقة الثنائية</button>
                 </form>
@@ -516,7 +273,7 @@ function handleRevokeDevice($user_id) {
                                     آخر استخدام: <?php echo date('Y-m-d H:i', strtotime($device['last_used'])); ?>
                                 </div>
                             </div>
-                            <form method="POST" action="" style="display: inline;">
+                            <form method="POST" action="">
                                 <input type="hidden" name="action" value="revoke_device">
                                 <input type="hidden" name="device_id" value="<?php echo $device['id']; ?>">
                                 <button type="submit" class="btn btn-danger">إلغاء الوثوق</button>

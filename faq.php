@@ -21,7 +21,6 @@ if (session_status() === PHP_SESSION_NONE) session_start();
     <title><?php echo __('faq'); ?> - WeBuy</title>
     
     <!-- CSS Files -->
-    <link rel="stylesheet" href="css/main.css">
     
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="favicon.ico">
