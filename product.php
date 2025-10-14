@@ -83,27 +83,20 @@ $page_title = $product['name'] . ' - WeBuy';
 ?>
 
 <!DOCTYPE html>
-<html lang="<?php echo $lang; ?>" dir="<?php echo $lang === 'ar' ? 'rtl' : 'ltr'; ?>" data-theme="light">
+<html lang="<?php echo $lang; ?>" dir="<?php echo $lang === 'ar' ? 'rtl' : 'ltr'; ?>" data-bs-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo htmlspecialchars($page_title); ?></title>
     
-    <!-- CSS Files - Load in correct order -->
-    <link rel="stylesheet" href="css/base/_variables.css">
-    <link rel="stylesheet" href="css/base/_reset.css">
-    <link rel="stylesheet" href="css/base/_typography.css">
-    <link rel="stylesheet" href="css/base/_utilities.css">
-    <link rel="stylesheet" href="css/components/_buttons.css">
-    <link rel="stylesheet" href="css/components/_forms.css">
-    <link rel="stylesheet" href="css/components/_cards.css">
-    <link rel="stylesheet" href="css/components/_navigation.css">
-    <link rel="stylesheet" href="css/layout/_grid.css">
-    <link rel="stylesheet" href="css/layout/_sections.css">
-    <link rel="stylesheet" href="css/layout/_footer.css">
-    <link rel="stylesheet" href="css/themes/_light.css">
-    <link rel="stylesheet" href="css/themes/_dark.css">
-    <link rel="stylesheet" href="css/build.css">
+    <!-- Bootstrap 5.3+ CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- WeBuy Custom Bootstrap Configuration -->
+    <link rel="stylesheet" href="css/bootstrap-custom.css">
+    
+    <!-- Legacy CSS for gradual migration -->
+    <link rel="stylesheet" href="css/main.css">
     
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="favicon.ico">
@@ -112,66 +105,40 @@ $page_title = $product['name'] . ' - WeBuy';
     <link href="https://fonts.googleapis.com/css2?family=Amiri&display=swap" rel="stylesheet">
     
     <!-- JavaScript -->
+    <script src="js/theme-controller.js" defer></script>
     <script src="main.js?v=1.4" defer></script>
     
     <!-- Product page specific styles -->
     <style>
-        /* Product Gallery Styles */
-        .product-gallery {
-            position: relative;
-            border-radius: var(--border-radius-lg);
-            overflow: hidden;
-            box-shadow: var(--shadow-lg);
-            max-width: 500px; /* Limit maximum width */
-            margin: 0 auto; /* Center the gallery */
-        }
-        
         .product-gallery__main {
-            aspect-ratio: 4/3; /* Change from 1:1 to 4:3 for better proportions */
             position: relative;
             overflow: hidden;
-            max-height: 400px; /* Limit maximum height */
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            border-radius: 0.5rem;
+            max-height: 500px;
         }
         
         .product-gallery__main img {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            transition: transform var(--transition-medium);
+            transition: transform 0.3s ease;
         }
         
         .product-gallery__main:hover img {
             transform: scale(1.05);
         }
         
-        .product-gallery__thumbnails {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: var(--space-2);
-            margin-top: var(--space-4);
-            justify-items: center; /* Center thumbnails */
-        }
-        
         .product-gallery__thumbnail {
-            aspect-ratio: 1;
-            border-radius: var(--border-radius-md);
-            overflow: hidden;
             cursor: pointer;
             border: 2px solid transparent;
-            transition: all var(--transition-fast);
-            max-width: 80px; /* Limit thumbnail size */
-            max-height: 80px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            border-radius: 0.375rem;
+            overflow: hidden;
+            transition: all 0.2s ease;
         }
         
         .product-gallery__thumbnail:hover,
         .product-gallery__thumbnail--active {
-            border-color: var(--color-primary-500);
+            border-color: var(--bs-primary);
             transform: scale(1.05);
         }
         
@@ -181,244 +148,154 @@ $page_title = $product['name'] . ' - WeBuy';
             object-fit: cover;
         }
         
-        .product-info {
-            background: var(--color-white);
-            border-radius: var(--border-radius-xl);
-            padding: var(--space-6);
-            box-shadow: var(--shadow-lg);
-        }
-        
-        .product-title {
-            font-size: var(--font-size-3xl);
-            font-weight: var(--font-weight-bold);
-            color: var(--color-gray-900);
-            margin-bottom: var(--space-2);
-        }
-        
-        .product-price {
-            font-size: var(--font-size-2xl);
-            font-weight: var(--font-weight-bold);
-            color: var(--color-primary-600);
-            margin-bottom: var(--space-4);
-        }
-        
-        .product-description {
-            color: var(--color-gray-700);
-            line-height: var(--line-height-relaxed);
-            margin-bottom: var(--space-6);
-        }
-        
-        .product-meta {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: var(--space-4);
-            margin-bottom: var(--space-6);
-        }
-        
-        .product-meta__item {
+        .quantity-selector {
             display: flex;
             align-items: center;
-            gap: var(--space-2);
-            color: var(--color-gray-600);
+            gap: 0.5rem;
+            margin-bottom: 1rem;
         }
         
-        .product-meta__icon {
-            width: 20px;
-            height: 20px;
-            color: var(--color-primary-500);
-        }
-        
-        .product-card {
-            background: var(--color-white);
-            border-radius: var(--border-radius-lg);
-            overflow: hidden;
-            box-shadow: var(--shadow-md);
-            transition: all var(--transition-fast);
-        }
-        
-        .product-card:hover {
-            transform: translateY(-4px);
-            box-shadow: var(--shadow-lg);
-        }
-        
-        .product-card__image {
-            aspect-ratio: 1;
-            overflow: hidden;
-            max-height: 200px; /* Limit height for related products */
+        .quantity-btn {
+            width: 40px;
+            height: 40px;
+            border: 1px solid var(--bs-border-color);
+            background: white;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            font-size: 1.25rem;
             display: flex;
             align-items: center;
             justify-content: center;
         }
         
-        .product-card__image img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform var(--transition-medium);
+        .quantity-input {
+            width: 80px;
+            text-align: center;
+            border: 1px solid var(--bs-border-color);
+            border-radius: 0.375rem;
+            padding: 0.5rem;
         }
         
-        .product-card:hover .product-card__image img {
-            transform: scale(1.05);
+        .rating-stars .star {
+            color: #fbbf24;
+            font-size: 1.25rem;
         }
         
-        .product-card__body {
-            padding: var(--space-4);
-        }
-        
-        .product-card__title {
-            font-size: var(--font-size-lg);
-            font-weight: var(--font-weight-semibold);
-            color: var(--color-gray-900);
-            margin-bottom: var(--space-2);
-            line-height: var(--line-height-tight);
-        }
-        
-        .product-card__price {
-            font-size: var(--font-size-lg);
-            font-weight: var(--font-weight-bold);
-            color: var(--color-primary-600);
-        }
-        
-        /* Responsive adjustments */
-        @media (max-width: 768px) {
-            .product-gallery {
-                max-width: 100%;
-            }
-            
-            .product-gallery__main {
-                aspect-ratio: 3/2; /* Slightly taller on mobile */
-                max-height: 300px;
-            }
-            
-            .product-gallery__thumbnails {
-                grid-template-columns: repeat(3, 1fr);
-            }
-            
-            .product-gallery__thumbnail {
-                max-width: 60px;
-                max-height: 60px;
-            }
-            
-            .product-card__image {
-                max-height: 150px; /* Smaller on mobile */
-            }
-        }
-        
-        @media (max-width: 480px) {
-            .product-gallery__main {
-                aspect-ratio: 1; /* Square on very small screens */
-                max-height: 250px;
-            }
-            
-            .product-gallery__thumbnails {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            
-            .product-card__image {
-                max-height: 120px; /* Even smaller on very small screens */
-            }
+        .rating-stars .star:not(.filled) {
+            color: #d1d5db;
         }
     </style>
 </head>
 <body class="page-transition">
-    <!-- Skip to main content for accessibility -->
-    <a href="#main-content" class="skip-link"><?php echo __('skip_to_main_content'); ?></a>
-    
     <?php include 'header.php'; ?>
     
     <main id="main-content" role="main">
-        <!-- Product Hero Section -->
-        <section class="product-hero">
+        <!-- Product Detail Section -->
+        <section class="py-5">
             <div class="container">
-                <div class="grid grid--2">
+                <div class="row g-4">
                     <!-- Product Gallery -->
-                    <div class="product-gallery">
-                        <div class="product-gallery__main">
-                            <img id="main-image" src="<?php echo htmlspecialchars($main_image_full); ?>" 
-                                 alt="<?php echo htmlspecialchars($product['name']); ?>">
+                    <div class="col-lg-6">
+                        <div class="card shadow-sm">
+                            <div class="product-gallery__main">
+                                <img id="main-image" src="<?php echo htmlspecialchars($main_image_full); ?>" 
+                                     alt="<?php echo htmlspecialchars($product['name']); ?>"
+                                     class="card-img-top">
+                            </div>
                         </div>
-                        <div class="product-gallery__thumbnails">
+                        <div class="row g-2 mt-3">
                             <?php foreach ($images as $img): ?>
                                 <?php 
                                 $img_full = 'uploads/' . $img['image_path'];
                                 $is_active = !empty($img['is_main']);
                                 ?>
-                                <div class="product-gallery__thumbnail <?php echo $is_active ? 'product-gallery__thumbnail--active' : ''; ?>" onclick="changeImage('<?php echo htmlspecialchars($img_full); ?>')">
-                                    <img src="<?php echo htmlspecialchars($img_full); ?>" 
-                                         alt="<?php echo htmlspecialchars($product['name']); ?>">
+                                <div class="col-3">
+                                    <div class="product-gallery__thumbnail <?php echo $is_active ? 'product-gallery__thumbnail--active' : ''; ?>" onclick="changeImage('<?php echo htmlspecialchars($img_full); ?>')">
+                                        <img src="<?php echo htmlspecialchars($img_full); ?>" 
+                                             alt="<?php echo htmlspecialchars($product['name']); ?>"
+                                             style="height: 80px; object-fit: cover;">
+                                    </div>
                                 </div>
                             <?php endforeach; ?>
                         </div>
                     </div>
                     
                     <!-- Product Info -->
-                    <div class="product-info">
-                        <h1 class="product-title"><?php echo htmlspecialchars($product['name']); ?></h1>
-                        <div class="product-price"><?php echo number_format($product['price'], 2); ?> <?php echo __('currency'); ?></div>
-                        
-                        <div class="product-description">
-                            <?php echo nl2br(htmlspecialchars($product['description'])); ?>
-                        </div>
-                        
-                        <div class="product-meta">
-                            <div class="product-meta__item">
-                                <svg class="product-meta__icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
-                                </svg>
-                                <span><?php echo __('category'); ?>: <?php echo htmlspecialchars($product['category_name']); ?></span>
+                    <div class="col-lg-6">
+                        <div class="card shadow-sm p-4">
+                            <h1 class="h2 fw-bold mb-3"><?php echo htmlspecialchars($product['name']); ?></h1>
+                            <div class="h3 text-primary fw-bold mb-4"><?php echo number_format($product['price'], 2); ?> <?php echo __('currency'); ?></div>
+                            
+                            <div class="mb-4">
+                                <p class="text-muted"><?php echo nl2br(htmlspecialchars($product['description'])); ?></p>
                             </div>
-                            <div class="product-meta__item">
-                                <svg class="product-meta__icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                                    <circle cx="12" cy="7" r="4"></circle>
-                                </svg>
-                                <span><?php echo __('seller'); ?>: <?php echo htmlspecialchars($product['seller_name']); ?></span>
+                            
+                            <div class="row mb-4">
+                                <div class="col-md-6 mb-2">
+                                    <div class="d-flex align-items-center gap-2 text-muted">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
+                                        </svg>
+                                        <span><strong><?php echo __('category'); ?>:</strong> <?php echo htmlspecialchars($product['category_name']); ?></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-2">
+                                    <div class="d-flex align-items-center gap-2 text-muted">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                            <circle cx="12" cy="7" r="4"></circle>
+                                        </svg>
+                                        <span><strong><?php echo __('seller'); ?>:</strong> <?php echo htmlspecialchars($product['seller_name']); ?></span>
+                                    </div>
+                                </div>
+                                <?php if (!empty($product['stock'])): ?>
+                                    <div class="col-md-6 mb-2">
+                                        <div class="d-flex align-items-center gap-2 text-muted">
+                                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+                                            </svg>
+                                            <span><strong><?php echo __('stock'); ?>:</strong> <?php echo $product['stock']; ?></span>
+                                        </div>
+                                    </div>
+                                <?php endif; ?>
                             </div>
-                            <?php if (!empty($product['stock'])): ?>
-                                <div class="product-meta__item">
-                                    <svg class="product-meta__icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
-                                    </svg>
-                                    <span><?php echo __('stock'); ?>: <?php echo $product['stock']; ?></span>
+                            
+                            <?php if ($product['stock'] > 0): ?>
+                                <form action="add_to_cart.php" method="get">
+                                    <input type="hidden" name="id" value="<?php echo $product['id']; ?>">
+                                    
+                                    <div class="quantity-selector mb-3">
+                                        <button type="button" class="quantity-btn" onclick="changeQuantity(-1)">-</button>
+                                        <input type="number" id="quantity-input" name="quantity" value="1" min="1" max="<?php echo $product['stock']; ?>" class="quantity-input form-control">
+                                        <button type="button" class="quantity-btn" onclick="changeQuantity(1)">+</button>
+                                    </div>
+                                    
+                                    <div class="d-grid gap-2">
+                                        <button type="submit" class="btn btn-primary btn-lg">
+                                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-2">
+                                                <path d="M9 22a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"></path>
+                                                <path d="M20 22a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"></path>
+                                                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                                            </svg>
+                                            <?php echo __('add_to_cart'); ?>
+                                        </button>
+                                        
+                                        <button type="button" class="btn btn-outline-secondary btn-lg" onclick="addToWishlist(<?php echo $product['id']; ?>)">
+                                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-2">
+                                                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                                            </svg>
+                                            <?php echo __('add_to_wishlist'); ?>
+                                        </button>
+                                    </div>
+                                </form>
+                            <?php else: ?>
+                                <div class="d-grid">
+                                    <button class="btn btn-secondary btn-lg" disabled>
+                                        <?php echo __('out_of_stock'); ?>
+                                    </button>
                                 </div>
                             <?php endif; ?>
                         </div>
-                        
-                        <?php if ($product['stock'] > 0): ?>
-                            <form action="add_to_cart.php" method="get" class="product-form">
-                                <input type="hidden" name="id" value="<?php echo $product['id']; ?>">
-                                
-                                <div class="quantity-selector">
-                                    <button type="button" class="quantity-btn" onclick="changeQuantity(-1)">-</button>
-                                    <input type="number" id="quantity-input" name="quantity" value="1" min="1" max="<?php echo $product['stock']; ?>" class="quantity-input">
-                                    <button type="button" class="quantity-btn" onclick="changeQuantity(1)">+</button>
-                                </div>
-                                
-                                <div class="product-actions">
-                                    <button type="submit" class="btn btn--primary btn--lg">
-                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                            <path d="M9 12l2 2 4-4"></path>
-                                            <circle cx="9" cy="12" r="7"></circle>
-                                            <path d="M21 12c0 6.627-5.373 12-12 12S-3 18.627-3 12 2.373 0 9 0s12 5.373 12 12z"></path>
-                                        </svg>
-                                        <?php echo __('add_to_cart'); ?>
-                                    </button>
-                                    
-                                    <button type="button" class="btn btn--secondary btn--lg" onclick="addToWishlist(<?php echo $product['id']; ?>)">
-                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-                                        </svg>
-                                        <?php echo __('add_to_wishlist'); ?>
-                                    </button>
-                                </div>
-                            </form>
-                        <?php else: ?>
-                            <div class="product-actions">
-                                <button class="btn btn--disabled btn--lg" disabled>
-                                    <?php echo __('out_of_stock'); ?>
-                                </button>
-                            </div>
-                        <?php endif; ?>
                     </div>
                 </div>
             </div>
@@ -426,29 +303,27 @@ $page_title = $product['name'] . ' - WeBuy';
         
         <!-- Seller Information Section -->
         <?php if ($product['seller_name']): ?>
-            <section class="seller-section">
+            <section class="py-4">
                 <div class="container">
-                    <h2 class="section-title"><?php echo __('seller_information'); ?></h2>
-                    <div class="seller-card">
-                        <div class="seller-info">
-                            <div class="seller-avatar">
-                                <div class="seller-avatar__placeholder">
-                                    <?php echo strtoupper(substr($product['seller_name'], 0, 1)); ?>
-                                </div>
+                    <h2 class="h4 mb-4"><?php echo __('seller_information'); ?></h2>
+                    <div class="card shadow-sm p-4">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 60px; height: 60px; font-size: 1.5rem; font-weight: bold;">
+                                <?php echo strtoupper(substr($product['seller_name'], 0, 1)); ?>
                             </div>
-                            <div class="seller-details">
-                                <h3 class="seller-name"><?php echo htmlspecialchars($product['seller_name']); ?></h3>
-                                <div class="seller-meta">
-                                    <span class="seller-category"><?php echo htmlspecialchars($product['category_name']); ?></span>
+                            <div class="flex-grow-1">
+                                <h3 class="h5 mb-1"><?php echo htmlspecialchars($product['seller_name']); ?></h3>
+                                <div class="text-muted small">
+                                    <span><?php echo htmlspecialchars($product['category_name']); ?></span>
                                     <?php if ($product['seller_id']): ?>
-                                        <span class="seller-id"><?php echo __('seller_id'); ?>: <?php echo $product['seller_id']; ?></span>
+                                        <span class="ms-2"><?php echo __('seller_id'); ?>: <?php echo $product['seller_id']; ?></span>
                                     <?php endif; ?>
                                 </div>
-                                <div class="seller-actions">
-                                    <a href="store.php?seller=<?php echo $product['seller_id']; ?>" class="btn btn--outline btn--sm">
+                                <div class="mt-3">
+                                    <a href="store.php?seller=<?php echo $product['seller_id']; ?>" class="btn btn-outline-primary btn-sm me-2">
                                         <?php echo __('view_all_products'); ?>
                                     </a>
-                                    <button class="btn btn--outline btn--sm" onclick="contactSeller(<?php echo $product['seller_id']; ?>)">
+                                    <button class="btn btn-outline-secondary btn-sm" onclick="contactSeller(<?php echo $product['seller_id']; ?>)">
                                         <?php echo __('contact_seller'); ?>
                                     </button>
                                 </div>
@@ -460,12 +335,12 @@ $page_title = $product['name'] . ' - WeBuy';
         <?php endif; ?>
         
         <!-- Reviews & Ratings Section -->
-        <section class="reviews-section">
+        <section class="py-5">
             <div class="container">
-                <h2 class="section-title"><?php echo __('reviews_and_ratings'); ?></h2>
+                <h2 class="h4 mb-4"><?php echo __('reviews_and_ratings'); ?></h2>
                 
                 <!-- Review Summary -->
-                <div class="review-summary">
+                <div class="card shadow-sm p-4 mb-4">
                     <?php
                     // Get review statistics
                     $stmt = $pdo->prepare('
@@ -487,32 +362,30 @@ $page_title = $product['name'] . ' - WeBuy';
                     $avg_rating = round($review_stats['avg_rating'] ?? 0, 1);
                     ?>
                     
-                    <div class="review-summary__overview">
-                        <div class="review-summary__rating">
-                            <div class="rating-display">
-                                <span class="rating-number"><?php echo $avg_rating; ?></span>
-                                <div class="rating-stars">
-                                    <?php for ($i = 1; $i <= 5; $i++): ?>
-                                        <span class="star <?php echo $i <= $avg_rating ? 'filled' : ''; ?>">★</span>
-                                    <?php endfor; ?>
-                                </div>
-                                <span class="total-reviews"><?php echo $total_reviews; ?> <?php echo __('reviews'); ?></span>
+                    <div class="row">
+                        <div class="col-md-4 text-center">
+                            <div class="display-4 fw-bold text-primary"><?php echo $avg_rating; ?></div>
+                            <div class="rating-stars mb-2">
+                                <?php for ($i = 1; $i <= 5; $i++): ?>
+                                    <span class="star <?php echo $i <= $avg_rating ? 'filled' : ''; ?>">★</span>
+                                <?php endfor; ?>
                             </div>
+                            <div class="text-muted"><?php echo $total_reviews; ?> <?php echo __('reviews'); ?></div>
                         </div>
                         
                         <?php if ($total_reviews > 0): ?>
-                            <div class="review-summary__breakdown">
+                            <div class="col-md-8">
                                 <?php for ($star = 5; $star >= 1; $star--): ?>
                                     <?php 
                                     $star_count = $review_stats[$star . '_star'] ?? 0;
                                     $percentage = $total_reviews > 0 ? ($star_count / $total_reviews) * 100 : 0;
                                     ?>
-                                    <div class="rating-bar">
-                                        <span class="star-label"><?php echo $star; ?> <?php echo __('stars'); ?></span>
-                                        <div class="rating-progress">
-                                            <div class="rating-fill" style="width: <?php echo $percentage; ?>%"></div>
+                                    <div class="d-flex align-items-center mb-2">
+                                        <span class="me-2" style="min-width: 60px;"><?php echo $star; ?> ★</span>
+                                        <div class="progress flex-grow-1" style="height: 8px;">
+                                            <div class="progress-bar bg-warning" role="progressbar" style="width: <?php echo $percentage; ?>%" aria-valuenow="<?php echo $percentage; ?>" aria-valuemin="0" aria-valuemax="100"></div>
                                         </div>
-                                        <span class="star-count"><?php echo $star_count; ?></span>
+                                        <span class="ms-2 text-muted" style="min-width: 40px;"><?php echo $star_count; ?></span>
                                     </div>
                                 <?php endfor; ?>
                             </div>
@@ -522,49 +395,49 @@ $page_title = $product['name'] . ' - WeBuy';
                 
                 <!-- Review Form -->
                 <?php if (isset($_SESSION['user_id'])): ?>
-                    <div class="review-form-container">
-                        <h3><?php echo __('write_review'); ?></h3>
-                        <form action="enhanced_submit_review.php" method="POST" enctype="multipart/form-data" class="review-form">
+                    <div class="card shadow-sm p-4 mb-4">
+                        <h3 class="h5 mb-3"><?php echo __('write_review'); ?></h3>
+                        <form action="enhanced_submit_review.php" method="POST" enctype="multipart/form-data">
                             <input type="hidden" name="product_id" value="<?php echo $product_id; ?>">
                             
-                            <div class="form-group">
-                                <label for="review_title"><?php echo __('review_title'); ?></label>
-                                <input type="text" name="review_title" id="review_title" required maxlength="100">
+                            <div class="mb-3">
+                                <label for="review_title" class="form-label"><?php echo __('review_title'); ?></label>
+                                <input type="text" name="review_title" id="review_title" class="form-control" required maxlength="100">
                             </div>
                             
-                            <div class="form-group">
-                                <label><?php echo __('rating'); ?></label>
+                            <div class="mb-3">
+                                <label class="form-label"><?php echo __('rating'); ?></label>
                                 <div class="rating-input">
                                     <?php for ($i = 1; $i <= 5; $i++): ?>
-                                        <input type="radio" name="rating" value="<?php echo $i; ?>" id="star<?php echo $i; ?>" required>
-                                        <label for="star<?php echo $i; ?>" class="star-label">★</label>
+                                        <input type="radio" name="rating" value="<?php echo $i; ?>" id="star<?php echo $i; ?>" class="btn-check" required>
+                                        <label for="star<?php echo $i; ?>" class="btn btn-outline-warning">★</label>
                                     <?php endfor; ?>
                                 </div>
                             </div>
                             
-                            <div class="form-group">
-                                <label for="comment"><?php echo __('review_comment'); ?></label>
-                                <textarea name="comment" id="comment" rows="4" required maxlength="1000"></textarea>
+                            <div class="mb-3">
+                                <label for="comment" class="form-label"><?php echo __('review_comment'); ?></label>
+                                <textarea name="comment" id="comment" rows="4" class="form-control" required maxlength="1000"></textarea>
                             </div>
                             
-                            <div class="form-group">
-                                <label for="review_images"><?php echo __('review_images'); ?></label>
-                                <input type="file" name="review_images[]" id="review_images" multiple accept="image/*">
-                                <small><?php echo __('max_5_images_5mb_each'); ?></small>
+                            <div class="mb-3">
+                                <label for="review_images" class="form-label"><?php echo __('review_images'); ?></label>
+                                <input type="file" name="review_images[]" id="review_images" class="form-control" multiple accept="image/*">
+                                <small class="form-text text-muted"><?php echo __('max_5_images_5mb_each'); ?></small>
                             </div>
                             
-                            <button type="submit" class="btn btn--primary"><?php echo __('submit_review'); ?></button>
+                            <button type="submit" class="btn btn-primary"><?php echo __('submit_review'); ?></button>
                         </form>
                     </div>
                 <?php else: ?>
-                    <div class="review-login-prompt">
-                        <p><?php echo __('login_to_review'); ?></p>
-                        <a href="login.php" class="btn btn--primary"><?php echo __('login'); ?></a>
+                    <div class="card shadow-sm p-4 mb-4 text-center">
+                        <p class="mb-3"><?php echo __('login_to_review'); ?></p>
+                        <a href="login.php" class="btn btn-primary"><?php echo __('login'); ?></a>
                     </div>
                 <?php endif; ?>
                 
                 <!-- Reviews List -->
-                <div class="reviews-list">
+                <div class="mt-4">
                     <?php
                     // Get approved reviews with images
                     $stmt = $pdo->prepare('
@@ -583,61 +456,61 @@ $page_title = $product['name'] . ' - WeBuy';
                     
                     <?php if (!empty($reviews)): ?>
                         <?php foreach ($reviews as $review): ?>
-                            <div class="review-item">
-                                <div class="review-header">
-                                    <div class="review-author">
-                                        <span class="author-name"><?php echo htmlspecialchars($review['author_name'] ?? $review['name'] ?? __('anonymous_reviewer')); ?></span>
+                            <div class="card shadow-sm p-4 mb-3">
+                                <div class="d-flex justify-content-between align-items-start mb-3">
+                                    <div>
+                                        <div class="fw-bold"><?php echo htmlspecialchars($review['author_name'] ?? $review['name'] ?? __('anonymous_reviewer')); ?></div>
                                         <?php if (isset($review['verified_purchase']) && $review['verified_purchase']): ?>
-                                            <span class="verified-badge">✓ <?php echo __('verified_purchase'); ?></span>
+                                            <span class="badge bg-success">✓ <?php echo __('verified_purchase'); ?></span>
                                         <?php endif; ?>
                                     </div>
-                                    <div class="review-rating">
-                                        <?php for ($i = 1; $i <= 5; $i++): ?>
-                                            <span class="star <?php echo $i <= $review['rating'] ? 'filled' : ''; ?>">★</span>
-                                        <?php endfor; ?>
-                                    </div>
-                                    <div class="review-date">
-                                        <?php echo date('M d, Y', strtotime($review['created_at'])); ?>
+                                    <div class="text-end">
+                                        <div class="rating-stars">
+                                            <?php for ($i = 1; $i <= 5; $i++): ?>
+                                                <span class="star <?php echo $i <= $review['rating'] ? 'filled' : ''; ?>">★</span>
+                                            <?php endfor; ?>
+                                        </div>
+                                        <small class="text-muted"><?php echo date('M d, Y', strtotime($review['created_at'])); ?></small>
                                     </div>
                                 </div>
                                 
                                 <?php if ($review['review_title']): ?>
-                                    <h4 class="review-title"><?php echo htmlspecialchars($review['review_title']); ?></h4>
+                                    <h4 class="h6 fw-bold"><?php echo htmlspecialchars($review['review_title']); ?></h4>
                                 <?php endif; ?>
                                 
-                                <div class="review-content">
+                                <div class="mb-3">
                                     <?php echo nl2br(htmlspecialchars($review['comment'])); ?>
                                 </div>
                                 
                                 <?php if ($review['images']): ?>
-                                    <div class="review-images">
+                                    <div class="d-flex gap-2 mb-3">
                                         <?php 
                                         $images = explode(',', $review['images']);
                                         $image_names = explode(',', $review['image_names']);
                                         ?>
                                         <?php foreach ($images as $index => $image): ?>
-                                            <div class="review-image">
-                                                <img src="<?php echo htmlspecialchars($image); ?>" 
-                                                     alt="<?php echo htmlspecialchars($image_names[$index] ?? 'Review image'); ?>"
-                                                     onclick="openImageModal('<?php echo htmlspecialchars($image); ?>')">
-                                            </div>
+                                            <img src="<?php echo htmlspecialchars($image); ?>" 
+                                                 alt="<?php echo htmlspecialchars($image_names[$index] ?? 'Review image'); ?>"
+                                                 class="img-thumbnail"
+                                                 style="width: 80px; height: 80px; object-fit: cover; cursor: pointer;"
+                                                 onclick="openImageModal('<?php echo htmlspecialchars($image); ?>')">
                                         <?php endforeach; ?>
                                     </div>
                                 <?php endif; ?>
                                 
-                                <div class="review-actions">
-                                    <button class="btn btn--sm btn--outline" onclick="voteReview(<?php echo $review['id']; ?>, 'helpful')">
+                                <div class="d-flex gap-2">
+                                    <button class="btn btn-sm btn-outline-secondary" onclick="voteReview(<?php echo $review['id']; ?>, 'helpful')">
                                         👍 <?php echo __('helpful'); ?> (<span id="helpful-<?php echo $review['id']; ?>"><?php echo $review['helpful_votes'] ?? 0; ?></span>)
                                     </button>
-                                    <button class="btn btn--sm btn--outline" onclick="voteReview(<?php echo $review['id']; ?>, 'unhelpful')">
+                                    <button class="btn btn-sm btn-outline-secondary" onclick="voteReview(<?php echo $review['id']; ?>, 'unhelpful')">
                                         👎 <?php echo __('not_helpful'); ?> (<span id="unhelpful-<?php echo $review['id']; ?>"><?php echo $review['unhelpful_votes'] ?? 0; ?></span>)
                                     </button>
                                 </div>
                             </div>
                         <?php endforeach; ?>
                     <?php else: ?>
-                        <div class="no-reviews">
-                            <p><?php echo __('no_reviews_yet'); ?></p>
+                        <div class="card shadow-sm p-4 text-center">
+                            <p class="text-muted mb-0"><?php echo __('no_reviews_yet'); ?></p>
                         </div>
                     <?php endif; ?>
                 </div>
@@ -646,34 +519,36 @@ $page_title = $product['name'] . ' - WeBuy';
         
         <!-- Related Products -->
         <?php if (!empty($related_products)): ?>
-            <section class="related-products">
+            <section class="py-5 bg-light">
                 <div class="container">
-                    <h2 class="section-title"><?php echo __('related_products'); ?></h2>
+                    <h2 class="h4 mb-4"><?php echo __('related_products'); ?></h2>
                     
-                    <div class="grid grid--4">
+                    <div class="row g-4">
                         <?php foreach ($related_products as $related): ?>
-                            <div class="product-card">
-                                <a href="product.php?id=<?php echo $related['id']; ?>" class="product-card__image">
-                                    <?php 
-                                    $optimized_image = get_optimized_image('uploads/' . $related['image'], 'card');
-                                    ?>
-                                    <img src="<?php echo $optimized_image['src']; ?>" 
-                                         srcset="<?php echo $optimized_image['srcset']; ?>" 
-                                         sizes="<?php echo $optimized_image['sizes']; ?>"
-                                         alt="<?php echo htmlspecialchars($related['name']); ?>"
-                                         loading="lazy"
-                                         width="280" 
-                                         height="280"
-                                         onload="this.classList.add('loaded');">
-                                </a>
-                                <div class="product-card__body">
-                                    <h3 class="product-card__title">
-                                        <a href="product.php?id=<?php echo $related['id']; ?>">
-                                            <?php echo htmlspecialchars($related['name']); ?>
-                                        </a>
-                                    </h3>
-                                    <div class="product-card__price">
-                                        <?php echo number_format($related['price'], 2); ?> <?php echo __('currency'); ?>
+                            <div class="col-md-6 col-lg-3">
+                                <div class="card h-100 shadow-sm">
+                                    <a href="product.php?id=<?php echo $related['id']; ?>" class="text-decoration-none">
+                                        <?php 
+                                        $optimized_image = get_optimized_image('uploads/' . $related['image'], 'card');
+                                        ?>
+                                        <img src="<?php echo $optimized_image['src']; ?>" 
+                                             srcset="<?php echo $optimized_image['srcset']; ?>" 
+                                             sizes="<?php echo $optimized_image['sizes']; ?>"
+                                             alt="<?php echo htmlspecialchars($related['name']); ?>"
+                                             class="card-img-top"
+                                             loading="lazy"
+                                             style="height: 200px; object-fit: cover;"
+                                             onload="this.classList.add('loaded');">
+                                    </a>
+                                    <div class="card-body">
+                                        <h3 class="h6 card-title">
+                                            <a href="product.php?id=<?php echo $related['id']; ?>" class="text-decoration-none text-dark">
+                                                <?php echo htmlspecialchars($related['name']); ?>
+                                            </a>
+                                        </h3>
+                                        <div class="h5 text-primary mb-0">
+                                            <?php echo number_format($related['price'], 2); ?> <?php echo __('currency'); ?>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
