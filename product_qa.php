@@ -197,54 +197,7 @@ $questions = getProductQA($pdo, $product_id);
     <meta charset="UTF-8">
     <title>الأسئلة والأجوبة - <?php echo htmlspecialchars($product['name']); ?></title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="beta333.css">
-    <style>
-        .qa-container { max-width: 800px; margin: 40px auto; background: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-        .qa-header { text-align: center; margin-bottom: 30px; }
-        .qa-header h1 { color: #333; margin-bottom: 10px; }
-        .qa-header .product-info { color: #666; font-size: 1.1em; }
-        
-        .ask-question-section { background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 30px; }
-        .ask-question-section h3 { margin-bottom: 15px; color: #333; }
-        .question-form textarea { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; resize: vertical; min-height: 100px; font-family: inherit; }
-        .question-form .form-row { display: flex; gap: 15px; align-items: center; margin-top: 15px; }
-        .question-form .checkbox-group { display: flex; align-items: center; gap: 8px; }
-        .question-form button { background: var(--primary-color); color: #fff; border: none; border-radius: 6px; padding: 12px 24px; cursor: pointer; font-size: 1em; }
-        
-        .questions-list { display: flex; flex-direction: column; gap: 20px; }
-        .question-item { border: 1px solid #e0e0e0; border-radius: 8px; padding: 20px; background: #fafafa; }
-        .question-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; }
-        .question-text { font-size: 1.1em; color: #333; line-height: 1.5; margin-bottom: 10px; }
-        .question-meta { color: #666; font-size: 0.9em; }
-        .question-author { font-weight: bold; color: #00BFAE; }
-        .question-date { color: #999; }
-        .answer-count { background: var(--primary-color); color: #fff; padding: 4px 8px; border-radius: 12px; font-size: 0.8em; }
-        
-        .answers-section { margin-top: 15px; }
-        .answer-item { background: #fff; border: 1px solid #e8e8e8; border-radius: 6px; padding: 15px; margin-bottom: 10px; }
-        .answer-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-        .answer-author { font-weight: bold; color: #333; }
-        .seller-badge { background: #FFD600; color: #23263a; padding: 2px 8px; border-radius: 12px; font-size: 0.8em; font-weight: bold; }
-        .answer-text { color: #555; line-height: 1.5; margin-bottom: 10px; }
-        .answer-meta { display: flex; justify-content: space-between; align-items: center; }
-        .answer-date { color: #999; font-size: 0.9em; }
-        .answer-votes { display: flex; gap: 10px; }
-        .vote-btn { background: none; border: 1px solid #ddd; border-radius: 4px; padding: 4px 8px; cursor: pointer; font-size: 0.9em; }
-        .vote-btn:hover { background: #f0f0f0; }
-        .vote-btn.active { background: var(--primary-color); color: #fff; border-color: var(--primary-color); }
-        
-        .add-answer-section { margin-top: 15px; padding-top: 15px; border-top: 1px solid #e0e0e0; }
-        .add-answer-btn { background: var(--secondary-color); color: #fff; border: none; border-radius: 4px; padding: 8px 16px; cursor: pointer; font-size: 0.9em; }
-        .answer-form { display: none; margin-top: 15px; }
-        .answer-form textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; resize: vertical; min-height: 80px; font-family: inherit; }
-        .answer-form .form-row { display: flex; gap: 10px; align-items: center; margin-top: 10px; }
-        .answer-form button { background: var(--primary-color); color: #fff; border: none; border-radius: 4px; padding: 8px 16px; cursor: pointer; font-size: 0.9em; }
-        
-        .no-questions { text-align: center; color: #666; padding: 40px; }
-        
-        .back-btn { display: inline-block; margin-bottom: 20px; color: var(--primary-color); text-decoration: none; }
-        .back-btn:hover { text-decoration: underline; }
-    </style>
+    
 </head>
 <body>
     <?php include 'header.php'; ?>

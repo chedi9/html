@@ -170,40 +170,7 @@ function create_order_confirmation_email_html($order_data) {
         <meta charset='UTF-8'>
         <meta name='viewport' content='width=device-width, initial-scale=1.0'>
         <title>تأكيد طلبك - WeBuy</title>
-        <style>
-            body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; background-color: #f4f4f4; }
-            .container { max-width: 600px; margin: 0 auto; background: white; }
-            .header { background: linear-gradient(135deg, #1A237E 0%, #00BFAE 100%); color: white; padding: 30px; text-align: center; }
-            .header h1 { margin: 0; font-size: 2em; }
-            .header p { margin: 10px 0 0 0; opacity: 0.9; }
-            .content { padding: 30px; }
-            .success-icon { text-align: center; margin: 20px 0; }
-            .success-icon span { font-size: 4em; }
-            .order-details { background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0; }
-            .order-details h3 { margin-top: 0; color: #1A237E; }
-            .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-            .detail-item { background: white; padding: 15px; border-radius: 5px; border-left: 4px solid #00BFAE; }
-            .detail-label { font-weight: bold; color: #666; font-size: 0.9em; }
-            .detail-value { color: #333; margin-top: 5px; }
-            .items-table { width: 100%; border-collapse: collapse; margin: 20px 0; }
-            .items-table th { background: #e3f2fd; padding: 15px; text-align: center; border-bottom: 2px solid #1A237E; }
-            .items-table td { padding: 15px; text-align: center; }
-            .total-section { background: #e8f5e8; padding: 20px; border-radius: 8px; margin: 20px 0; }
-            .total-row { display: flex; justify-content: space-between; margin: 10px 0; }
-            .total-final { font-size: 1.2em; font-weight: bold; color: #1A237E; border-top: 2px solid #00BFAE; padding-top: 10px; }
-            .next-steps { background: #fff3cd; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #ffc107; }
-            .next-steps h3 { margin-top: 0; color: #856404; }
-            .step { display: flex; align-items: center; margin: 10px 0; }
-            .step-number { background: #ffc107; color: white; width: 25px; height: 25px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-left: 10px; font-weight: bold; }
-            .footer { background: #f8f9fa; padding: 20px; text-align: center; color: #666; }
-            .btn { display: inline-block; padding: 12px 24px; background: #00BFAE; color: white; text-decoration: none; border-radius: 5px; margin: 10px 5px; }
-            .btn:hover { background: #1A237E; }
-            @media (max-width: 600px) {
-                .detail-grid { grid-template-columns: 1fr; }
-                .header { padding: 20px; }
-                .content { padding: 20px; }
-            }
-        </style>
+        
     </head>
     <body>
         <div class='container'>
@@ -363,29 +330,7 @@ function create_order_status_update_email_html($order_data, $new_status) {
         <meta charset='UTF-8'>
         <meta name='viewport' content='width=device-width, initial-scale=1.0'>
         <title>تحديث حالة الطلب - WeBuy</title>
-        <style>
-            body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; background-color: #f4f4f4; }
-            .container { max-width: 600px; margin: 0 auto; background: white; }
-            .header { background: linear-gradient(135deg, #1A237E 0%, #00BFAE 100%); color: white; padding: 30px; text-align: center; }
-            .header h1 { margin: 0; font-size: 2em; }
-            .status-update { background: {$status_info['color']}; color: white; padding: 20px; text-align: center; }
-            .status-update h2 { margin: 0; font-size: 1.5em; }
-            .content { padding: 30px; }
-            .order-summary { background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0; }
-            .order-summary h3 { margin-top: 0; color: #1A237E; }
-            .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-            .detail-item { background: white; padding: 15px; border-radius: 5px; border-left: 4px solid #00BFAE; }
-            .detail-label { font-weight: bold; color: #666; font-size: 0.9em; }
-            .detail-value { color: #333; margin-top: 5px; }
-            .footer { background: #f8f9fa; padding: 20px; text-align: center; color: #666; }
-            .btn { display: inline-block; padding: 12px 24px; background: #00BFAE; color: white; text-decoration: none; border-radius: 5px; margin: 10px 5px; }
-            .btn:hover { background: #1A237E; }
-            @media (max-width: 600px) {
-                .detail-grid { grid-template-columns: 1fr; }
-                .header { padding: 20px; }
-                .content { padding: 20px; }
-            }
-        </style>
+        
     </head>
     <body>
         <div class='container'>

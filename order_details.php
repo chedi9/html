@@ -8,7 +8,7 @@ if (session_status() === PHP_SESSION_NONE) session_start();
 require 'db.php';
 require 'lang.php';
 if (!isset($_SESSION['user_id'])) {
-  echo '<div style="max-width:600px;margin:40px auto;text-align:center;font-size:1.2em;">'.__('login_to_view_orders').'</div>';
+  echo '<div>'.__('login_to_view_orders').'</div>';
   exit;
 }
 if (!isset($_SESSION['is_mobile'])) {
@@ -21,7 +21,7 @@ $stmt = $pdo->prepare('SELECT * FROM orders WHERE id = ? AND user_id = ?');
 $stmt->execute([$order_id, $user_id]);
 $order = $stmt->fetch(PDO::FETCH_ASSOC);
 if (!$order) {
-  echo '<div style="max-width:600px;margin:40px auto;text-align:center;font-size:1.2em;">'.__('order_not_found').'</div>';
+  echo '<div>'.__('order_not_found').'</div>';
   exit;
 }
 $stmt = $pdo->prepare('SELECT p.*, oi.quantity, oi.price, oi.variant_key FROM order_items oi JOIN products p ON oi.product_id = p.id WHERE oi.order_id = ?');
@@ -36,20 +36,11 @@ $lang = $_GET['lang'] ?? $_SESSION['lang'] ?? 'ar';
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title><?= __('order_details') ?> #<?= htmlspecialchars($order['id']) ?></title>
-  <link rel="stylesheet" href="beta333.css">
-  <?php if (!empty($_SESSION['is_mobile'])): ?>
-  <link rel="stylesheet" href="mobile.css">
-  <?php endif; ?>
-  <style>
-    .progress-bar { display: flex; gap: 12px; margin: 24px 0; justify-content: center; }
-    .progress-step { padding: 8px 18px; border-radius: 18px; background: #eee; color: #888; font-weight: 500; }
-    .progress-step.active { background: #00BFAE; color: #fff; }
-    .progress-step.done { background: #43A047; color: #fff; }
-  </style>
+  
 </head>
 <body>
-  <div style="display:flex;justify-content:flex-end;align-items:center;margin-bottom:10px;max-width:700px;margin-left:auto;margin-right:auto;gap:18px;">
-    <button id="darkModeToggle" class="dark-mode-toggle" title="Toggle dark mode" style="background:#00BFAE;color:#fff;border:none;border-radius:50%;width:40px;height:40px;display:flex;align-items:center;justify-content:center;font-size:1.3em;margin-left:16px;cursor:pointer;box-shadow:0 2px 8px rgba(0,191,174,0.10);transition:background 0.2s, color 0.2s;">
+  <div>
+    <button id="darkModeToggle" class="dark-mode-toggle" title="Toggle dark mode">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <path d="M21 12.79A9 9 0 1 1 11.21 3a7 7 0 0 0 9.79 9.79z"/>
       </svg>
@@ -70,7 +61,7 @@ $lang = $_GET['lang'] ?? $_SESSION['lang'] ?? 'ar';
       <?php endforeach; ?>
     </div>
     <h3><?= __('order_items') ?></h3>
-    <table style="width:100%;margin-top:12px;">
+    <table>
       <thead>
         <tr>
           <th><?= __('product') ?></th>
@@ -84,7 +75,7 @@ $lang = $_GET['lang'] ?? $_SESSION['lang'] ?? 'ar';
           <tr>
             <td><?= htmlspecialchars($prod_name) ?>
             <?php if (!empty($item['variant_key'])): ?>
-              <div style="font-size:0.98em;color:#1A237E;margin-top:4px;">(<?= htmlspecialchars($item['variant_key']) ?>)</div>
+              <div>(<?= htmlspecialchars($item['variant_key']) ?>)</div>
             <?php endif; ?>
             </td>
             <td><?= $item['quantity'] ?></td>
@@ -93,8 +84,8 @@ $lang = $_GET['lang'] ?? $_SESSION['lang'] ?? 'ar';
         <?php endforeach; ?>
       </tbody>
     </table>
-    <div style="margin-top:18px;font-weight:bold;"> <?= __('total') ?>: <?= htmlspecialchars($order['total']) ?> د.ت</div>
-    <div style="margin-top:18px;color:#888;"> <?= __('order_id') ?>: #<?= htmlspecialchars($order['id']) ?> </div>
+    <div> <?= __('total') ?>: <?= htmlspecialchars($order['total']) ?> د.ت</div>
+    <div> <?= __('order_id') ?>: #<?= htmlspecialchars($order['id']) ?> </div>
   </div>
 </div>
 <script src="main.js?v=1.2"></script>

@@ -71,8 +71,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <title><?= __('verify_email') ?></title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../css/main.css">
-    <link rel="stylesheet" href="../css/pages/_auth.css">
     <link rel="icon" type="image/x-icon" href="../favicon.ico">
     <link href="https://fonts.googleapis.com/css2?family=Amiri&display=swap" rel="stylesheet">
     <script src="../main.js?v=1.5" defer></script>
@@ -92,7 +90,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <div class="alert alert--danger"><?php echo $error; ?></div>
                 <?php elseif ($success): ?>
                     <div class="alert alert--success"><?= __('email_verified') ?></div>
-                    <div class="auth-links" style="text-align:center;margin-top:16px;">
+                    <div class="auth-links">
                         <a href="../login.php" class="btn btn--primary btn--full"><?= __('login') ?></a>
                     </div>
                 <?php else: ?>
@@ -106,7 +104,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <button type="submit" class="btn btn--primary btn--full"><?= __('verify') ?></button>
                 </form>
                 <div class="auth-links resend-link">
-                    <a href="?resend=1" id="resendLink" class="auth-link" style="pointer-events:none;opacity:0.5;">
+                    <a href="?resend=1" id="resendLink" class="auth-link">
                         <?= __('resend_code') ?> (<span id="timer">60</span>)
                     </a>
                 </div>

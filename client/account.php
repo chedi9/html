@@ -30,21 +30,6 @@ $orders = $orders->fetchAll();
     <meta charset="UTF-8">
     <title><?= __('my_account') ?></title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../css/base/_variables.css">
-    <link rel="stylesheet" href="../css/base/_reset.css">
-    <link rel="stylesheet" href="../css/base/_typography.css">
-    <link rel="stylesheet" href="../css/base/_utilities.css">
-    <link rel="stylesheet" href="../css/components/_buttons.css">
-    <link rel="stylesheet" href="../css/components/_forms.css">
-    <link rel="stylesheet" href="../css/components/_cards.css">
-    <link rel="stylesheet" href="../css/components/_navigation.css">
-    <link rel="stylesheet" href="../css/layout/_grid.css">
-    <link rel="stylesheet" href="../css/layout/_sections.css">
-    <link rel="stylesheet" href="../css/layout/_footer.css">
-    <link rel="stylesheet" href="../css/themes/_light.css">
-    <link rel="stylesheet" href="../css/themes/_dark.css">
-    <link rel="stylesheet" href="../css/build.css">
-    <link rel="stylesheet" href="../css/pages/_account.css">
     <script>
     function showTab(tab) {
         // Remove active class from all navigation items
@@ -214,11 +199,11 @@ $orders = $orders->fetchAll();
                                         <div class="order-products">
                                             <?php foreach ($order_items as $item): ?>
                                                 <div class="order-product-item">
-                                                    <div style="position: relative; overflow: hidden;">
-                                                        <div class="skeleton skeleton--image" style="width: 36px; height: 36px; border-radius: 4px;"></div>
+                                                    <div>
+                                                        <div class="skeleton skeleton--image"></div>
                                                         <img src="../uploads/<?php echo htmlspecialchars($item['product_image']); ?>" 
                                                              alt="<?php echo htmlspecialchars($item['product_name']); ?>"
-                                                             class="order-product-image" loading="lazy" style="position: relative; z-index: 2;">
+                                                             class="order-product-image" loading="lazy">
                                                     </div>
                                                     <div class="order-product-info">
                                                         <div class="order-product-name"><?php echo htmlspecialchars($item['product_name']); ?></div>
@@ -420,7 +405,7 @@ $orders = $orders->fetchAll();
             <div class="content-section">
             <h3><?= __('change_email_password') ?></h3>
             <?php if (isset($_SESSION['flash_message'])): ?>
-                <div class="form-group" style="color: green; font-weight: bold;"> <?php echo $_SESSION['flash_message']; unset($_SESSION['flash_message']); ?> </div>
+                <div class="form-group"> <?php echo $_SESSION['flash_message']; unset($_SESSION['flash_message']); ?> </div>
             <?php endif; ?>
             <form method="post" action="update_credentials.php" class="modern-form">
                 <div class="form-group">
@@ -497,12 +482,12 @@ $orders = $orders->fetchAll();
                     <?php endforeach; ?>
                 </div>
                 
-                <div style="text-align: center;">
+                <div>
                         <a href="manage_addresses.php" class="save-btn">إدارة جميع العناوين</a>
                 </div>
             <?php else: ?>
                 <p>لا توجد عناوين محفوظة</p>
-                <div style="text-align: center; margin-top: 20px;">
+                <div>
                         <a href="manage_addresses.php" class="save-btn">إضافة عنوان جديد</a>
                 </div>
             <?php endif; ?>
@@ -556,12 +541,12 @@ $orders = $orders->fetchAll();
                     <?php endforeach; ?>
                 </div>
                 
-                <div style="text-align: center;">
+                <div>
                         <a href="manage_payment_methods.php" class="save-btn">إدارة جميع طرق الدفع</a>
                 </div>
             <?php else: ?>
                 <p>لا توجد طرق دفع محفوظة</p>
-                <div style="text-align: center; margin-top: 20px;">
+                <div>
                         <a href="manage_payment_methods.php" class="save-btn">إضافة طريقة دفع جديدة</a>
                 </div>
             <?php endif; ?>

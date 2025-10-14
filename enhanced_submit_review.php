@@ -111,25 +111,25 @@ function render_enhanced_reviews_html($pdo, $product_id) {
             $images = $rev['images'] ? explode(',', $rev['images']) : [];
             $image_names = $rev['image_names'] ? explode(',', $rev['image_names']) : [];
             
-            echo '<div class="review-item" style="background:#fff;border:1.5px solid #E3E7ED;border-radius:10px;padding:20px;margin-bottom:20px;box-shadow:0 2px 8px rgba(26,35,126,0.04);">';
+            echo '<div class="review-item">';
             
             // Review header
-            echo '<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">';
-            echo '<span style="font-weight:bold;color:#00BFAE;font-size:1.08em;">' . htmlspecialchars($rev['name']) . '</span>';
+            echo '<div>';
+            echo '<span>' . htmlspecialchars($rev['name']) . '</span>';
             if ($is_verified) {
-                echo '<span class="verified-badge" style="background:#FFD600;color:#23263a;font-size:0.95em;padding:2px 10px;border-radius:8px;font-weight:bold;margin-right:6px;">✔ مشتري موثوق</span>';
+                echo '<span class="verified-badge">✔ مشتري موثوق</span>';
             }
-            echo '<span style="color:#FFD600;font-size:1.15em;letter-spacing:1px;">' . str_repeat('★', (int)$rev['rating']) . str_repeat('☆', 5-(int)$rev['rating']) . '</span>';
+            echo '<span>' . str_repeat('★', (int)$rev['rating']) . str_repeat('☆', 5-(int)$rev['rating']) . '</span>';
             echo '</div>';
             
             // Review title
             if (!empty($rev['review_title'])) {
-                echo '<h4 style="margin:8px 0;color:#333;font-size:1.1em;">' . htmlspecialchars($rev['review_title']) . '</h4>';
+                echo '<h4>' . htmlspecialchars($rev['review_title']) . '</h4>';
             }
             
             // Detailed ratings
             if ($rev['overall_rating'] || $rev['quality_rating'] || $rev['value_rating'] || $rev['delivery_rating']) {
-                echo '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin:10px 0;padding:10px;background:#f8f9fa;border-radius:6px;">';
+                echo '<div>';
                 if ($rev['overall_rating']) echo '<div><small>التقييم العام:</small><br><strong>' . number_format($rev['overall_rating'], 1) . '/5</strong></div>';
                 if ($rev['quality_rating']) echo '<div><small>الجودة:</small><br><strong>' . number_format($rev['quality_rating'], 1) . '/5</strong></div>';
                 if ($rev['value_rating']) echo '<div><small>القيمة:</small><br><strong>' . number_format($rev['value_rating'], 1) . '/5</strong></div>';
@@ -139,17 +139,17 @@ function render_enhanced_reviews_html($pdo, $product_id) {
             
             // Review comment
             if (!empty($rev['comment'])) {
-                echo '<div style="margin-bottom:12px;font-size:1.08em;color:#222;line-height:1.5;">' . nl2br(htmlspecialchars($rev['comment'])) . '</div>';
+                echo '<div>' . nl2br(htmlspecialchars($rev['comment'])) . '</div>';
             }
             
             // Review images
             if (!empty($images)) {
-                echo '<div style="margin:12px 0;">';
-                echo '<div style="display:flex;gap:8px;flex-wrap:wrap;">';
+                echo '<div>';
+                echo '<div>';
                 foreach ($images as $index => $image_path) {
                     $image_name = $image_names[$index] ?? 'صورة المراجعة';
-                    echo '<div style="position:relative;">';
-                    echo '<img src="' . htmlspecialchars($image_path) . '" alt="' . htmlspecialchars($image_name) . '" style="width:80px;height:80px;object-fit:cover;border-radius:6px;cursor:pointer;" onclick="openImageModal(\'' . htmlspecialchars($image_path) . '\', \'' . htmlspecialchars($image_name) . '\')">';
+                    echo '<div>';
+                    echo '<img src="' . htmlspecialchars($image_path) . '" alt="' . htmlspecialchars($image_name) . '" onclick="openImageModal(\'' . htmlspecialchars($image_path) . '\', \'' . htmlspecialchars($image_name) . '\')">';
                     echo '</div>';
                 }
                 echo '</div>';
@@ -158,25 +158,25 @@ function render_enhanced_reviews_html($pdo, $product_id) {
             
             // Seller response
             if (!empty($rev['seller_response'])) {
-                echo '<div style="margin:12px 0;padding:12px;background:#f0f8ff;border-left:4px solid #007bff;border-radius:4px;">';
-                echo '<div style="font-weight:bold;color:#007bff;margin-bottom:6px;">رد البائع:</div>';
-                echo '<div style="color:#333;font-size:0.95em;">' . nl2br(htmlspecialchars($rev['seller_response'])) . '</div>';
+                echo '<div>';
+                echo '<div>رد البائع:</div>';
+                echo '<div>' . nl2br(htmlspecialchars($rev['seller_response'])) . '</div>';
                 if ($rev['seller_response_date']) {
-                    echo '<div style="font-size:0.8em;color:#666;margin-top:6px;">' . date('j M Y', strtotime($rev['seller_response_date'])) . '</div>';
+                    echo '<div>' . date('j M Y', strtotime($rev['seller_response_date'])) . '</div>';
                 }
                 echo '</div>';
             }
             
             // Review footer
-            echo '<div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px;padding-top:12px;border-top:1px solid #eee;">';
-            echo '<div style="color:#888;font-size:0.97em;">' . $rev['created_at'] . '</div>';
+            echo '<div>';
+            echo '<div>' . $rev['created_at'] . '</div>';
             
             // Helpfulness votes
-            echo '<div style="display:flex;gap:10px;align-items:center;">';
-            echo '<button onclick="voteReview(' . $rev['id'] . ', \'helpful\')" class="vote-btn helpful" data-review-id="' . $rev['id'] . '" data-vote-type="helpful" style="background:none;border:1px solid #ddd;border-radius:4px;padding:4px 8px;cursor:pointer;font-size:0.9em;">';
+            echo '<div>';
+            echo '<button onclick="voteReview(' . $rev['id'] . ', \'helpful\')" class="vote-btn helpful" data-review-id="' . $rev['id'] . '" data-vote-type="helpful">';
             echo '👍 مفيد (' . $rev['helpful_votes'] . ')';
             echo '</button>';
-            echo '<button onclick="voteReview(' . $rev['id'] . ', \'unhelpful\')" class="vote-btn unhelpful" data-review-id="' . $rev['id'] . '" data-vote-type="unhelpful" style="background:none;border:1px solid #ddd;border-radius:4px;padding:4px 8px;cursor:pointer;font-size:0.9em;">';
+            echo '<button onclick="voteReview(' . $rev['id'] . ', \'unhelpful\')" class="vote-btn unhelpful" data-review-id="' . $rev['id'] . '" data-vote-type="unhelpful">';
             echo '👎 غير مفيد (' . $rev['unhelpful_votes'] . ')';
             echo '</button>';
             echo '</div>';

@@ -150,198 +150,7 @@ $categories = $pdo->query('SELECT id, name FROM categories ORDER BY name')->fetc
 <head>
     <meta charset="UTF-8">
     <title>Bulk Product Upload</title>
-    <link rel="stylesheet" href="../beta333.css">
-    <style>
-        .bulk-upload-container {
-            max-width: 1000px;
-            margin: 40px auto;
-            background: #fff;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            overflow: hidden;
-        }
-        
-        .bulk-upload-header {
-            background: linear-gradient(120deg, var(--primary-color) 60%, var(--accent-color) 100%);
-            color: #fff;
-            padding: 32px 24px;
-            text-align: center;
-        }
-        
-        .bulk-upload-header h1 {
-            margin: 0;
-            font-size: 2.2em;
-            color: #FFD600;
-        }
-        
-        .bulk-upload-content {
-            padding: 32px 24px;
-        }
-        
-        .upload-section {
-            background: #f8f9fa;
-            border-radius: 8px;
-            padding: 24px;
-            margin-bottom: 32px;
-        }
-        
-        .upload-section h2 {
-            color: #1A237E;
-            margin-bottom: 16px;
-        }
-        
-        .file-upload-area {
-            border: 2px dashed #00BFAE;
-            border-radius: 8px;
-            padding: 40px;
-            text-align: center;
-            background: #fff;
-            margin-bottom: 20px;
-            transition: border-color 0.3s;
-        }
-        
-        .file-upload-area:hover {
-            border-color: #1A237E;
-        }
-        
-        .file-upload-area input[type="file"] {
-            display: none;
-        }
-        
-        .file-upload-label {
-            cursor: pointer;
-            color: #00BFAE;
-            font-weight: bold;
-            font-size: 1.1em;
-        }
-        
-        .upload-btn {
-            background: #00BFAE;
-            color: #fff;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 6px;
-            font-weight: bold;
-            cursor: pointer;
-            font-size: 1.1em;
-        }
-        
-        .upload-btn:hover {
-            background: #009688;
-        }
-        
-        .csv-template {
-            background: #e3f2fd;
-            border: 1px solid #bbdefb;
-            border-radius: 8px;
-            padding: 20px;
-            margin-bottom: 24px;
-        }
-        
-        .csv-template h3 {
-            color: #1976d2;
-            margin-bottom: 12px;
-        }
-        
-        .csv-template table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 12px;
-        }
-        
-        .csv-template th,
-        .csv-template td {
-            border: 1px solid #bbdefb;
-            padding: 8px 12px;
-            text-align: left;
-        }
-        
-        .csv-template th {
-            background: #bbdefb;
-            color: #1976d2;
-            font-weight: bold;
-        }
-        
-        .results-section {
-            margin-top: 32px;
-        }
-        
-        .result-item {
-            padding: 12px;
-            margin-bottom: 8px;
-            border-radius: 6px;
-            border-left: 4px solid;
-        }
-        
-        .result-item.success {
-            background: #e8f5e8;
-            border-left-color: #2e7d32;
-            color: #2e7d32;
-        }
-        
-        .result-item.error {
-            background: #ffebee;
-            border-left-color: #c62828;
-            color: #c62828;
-        }
-        
-        .categories-reference {
-            background: #fff3cd;
-            border: 1px solid #ffeaa7;
-            border-radius: 8px;
-            padding: 20px;
-            margin-bottom: 24px;
-        }
-        
-        .categories-reference h3 {
-            color: #856404;
-            margin-bottom: 12px;
-        }
-        
-        .categories-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 8px;
-        }
-        
-        .category-item {
-            background: #fff;
-            padding: 8px 12px;
-            border-radius: 4px;
-            border: 1px solid #ffeaa7;
-            font-size: 0.9em;
-        }
-        
-        .back-btn {
-            background: #1A237E;
-            color: #fff;
-            padding: 12px 24px;
-            border-radius: 6px;
-            text-decoration: none;
-            font-weight: bold;
-            display: inline-block;
-            margin-bottom: 24px;
-        }
-        
-        .back-btn:hover {
-            background: #0d47a1;
-        }
-        
-        @media (max-width: 768px) {
-            .bulk-upload-container {
-                margin: 20px;
-                border-radius: 8px;
-            }
-            
-            .file-upload-area {
-                padding: 20px;
-            }
-            
-            .categories-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
+    
 </head>
 <body>
     <div class="bulk-upload-container">
@@ -354,13 +163,13 @@ $categories = $pdo->query('SELECT id, name FROM categories ORDER BY name')->fetc
             <a href="seller_dashboard.php" class="back-btn">← Back to Dashboard</a>
             
             <?php if ($success_msg): ?>
-                <div style="background: #e8f5e8; color: #2e7d32; padding: 16px; border-radius: 8px; margin-bottom: 24px;">
+                <div>
                     <?php echo htmlspecialchars($success_msg); ?>
                 </div>
             <?php endif; ?>
             
             <?php if ($error_msg): ?>
-                <div style="background: #ffebee; color: #c62828; padding: 16px; border-radius: 8px; margin-bottom: 24px;">
+                <div>
                     <?php echo htmlspecialchars($error_msg); ?>
                 </div>
             <?php endif; ?>
@@ -419,9 +228,9 @@ $categories = $pdo->query('SELECT id, name FROM categories ORDER BY name')->fetc
                         </tbody>
                     </table>
                     
-                    <p style="margin-top: 16px;">
+                    <p>
                         <strong>Download Template:</strong> 
-                        <a href="download_template.php" style="color: #1976d2; text-decoration: underline;">Download CSV Template</a>
+                        <a href="download_template.php">Download CSV Template</a>
                     </p>
                 </div>
             </div>
@@ -446,7 +255,7 @@ $categories = $pdo->query('SELECT id, name FROM categories ORDER BY name')->fetc
                             📁 Click to select CSV file or drag and drop
                         </label>
                         <input type="file" id="csv_file" name="csv_file" accept=".csv" required>
-                        <p style="margin-top: 12px; color: #666;">Maximum file size: 5MB</p>
+                        <p>Maximum file size: 5MB</p>
                     </div>
                     
                     <button type="submit" class="upload-btn">🚀 Upload Products</button>

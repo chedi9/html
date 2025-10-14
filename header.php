@@ -28,7 +28,7 @@ require_once 'db.php';
         <div class="container">
             <!-- Brand/Logo -->
             <a class="navbar-brand d-flex align-items-center" href="index.php">
-                <img src="webuy-logo-transparent.jpg" alt="WeBuy Logo" style="height: 40px; width: auto;">
+                <img src="webuy-logo-transparent.jpg" alt="WeBuy Logo">
                 <span class="<?php echo $lang === 'ar' ? 'me-2' : 'ms-2'; ?> fw-bold">WeBuy</span>
             </a>
             
@@ -69,7 +69,7 @@ require_once 'db.php';
                             </svg>
                             <?php $cart_count = isset($_SESSION['cart']) && is_array($_SESSION['cart']) ? array_sum($_SESSION['cart']) : 0; ?>
                             <?php if ($cart_count > 0): ?>
-                                <span class="position-absolute top-0 <?php echo $lang === 'ar' ? 'start-0' : 'end-0'; ?> translate-middle badge rounded-pill bg-danger" style="font-size: 0.7rem;">
+                                <span class="position-absolute top-0 <?php echo $lang === 'ar' ? 'start-0' : 'end-0'; ?> translate-middle badge rounded-pill bg-danger">
                                     <?php echo $cart_count > 99 ? '99+' : $cart_count; ?>
                                 </span>
                             <?php endif; ?>
@@ -119,7 +119,7 @@ require_once 'db.php';
                             <input type="text" name="q" placeholder="<?php echo ($lang ?? 'en') === 'ar' ? 'البحث عن المنتجات...' : 'Search products...'; ?>" 
                                    class="form-control form-control-sm <?php echo $lang === 'ar' ? 'ms-2' : 'me-2'; ?>" 
                                    autocomplete="off"
-                                   style="min-width: 200px;">
+                                  >
                             <button type="submit" class="btn btn-primary btn-sm">
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <circle cx="11" cy="11" r="8"></circle>

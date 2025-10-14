@@ -17,22 +17,7 @@ $orders = $orders->fetchAll();
     <meta charset="UTF-8">
     <title><?= __('my_orders') ?></title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../beta333.css">
-    <style>
-        .orders-container { max-width: 900px; margin: 40px auto; background: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-        .orders-container h2 { text-align: center; margin-bottom: 30px; }
-        .order-block { margin-bottom: 40px; border-bottom: 1px solid #eee; padding-bottom: 20px; }
-        .order-block:last-child { border-bottom: none; }
-        .order-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-        .order-status { font-weight: bold; }
-        .order-status.pending { color: #c90; }
-        .order-status.shipped { color: #09c; }
-        .order-status.delivered { color: #228B22; }
-        .order-status.cancelled { color: #c00; }
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        th, td { padding: 10px; border-bottom: 1px solid #eee; text-align: center; }
-        th { background: #f4f4f4; }
-    </style>
+    
 </head>
 <body>
     <div class="orders-container">
@@ -81,9 +66,9 @@ $orders = $orders->fetchAll();
             </table>
         </div>
         <?php endforeach; else: ?>
-            <p style="text-align:center;"><?= __('no_orders_yet') ?></p>
+            <p><?= __('no_orders_yet') ?></p>
         <?php endif; ?>
-        <a href="../index.php" class="checkout-btn" style="background:var(--secondary-color);margin-top:30px;"><?= __('back_to_home') ?></a>
+        <a href="../index.php" class="checkout-btn"><?= __('back_to_home') ?></a>
     </div>
 </body>
 </html> 

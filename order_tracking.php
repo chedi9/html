@@ -24,7 +24,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <title>تتبع الطلب</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="beta333.css">
     <?php
     if (session_status() === PHP_SESSION_NONE) session_start();
     if (!isset($_SESSION['is_mobile'])) {
@@ -32,24 +31,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $_SESSION['is_mobile'] = $is_mobile ? true : false;
     }
     ?>
-    <?php if (!empty($_SESSION['is_mobile'])): ?>
-    <link rel="stylesheet" href="mobile.css">
-    <?php endif; ?>
-    <style>
-        .track-container { max-width: 500px; margin: 40px auto; background: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-        .track-container h2 { text-align: center; margin-bottom: 30px; }
-        .form-group { margin-bottom: 18px; }
-        label { display: block; margin-bottom: 6px; }
-        input { width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #ccc; }
-        .track-btn { width: 100%; padding: 12px; font-size: 1.1em; border-radius: 8px; background: var(--primary-color); color: #fff; border: none; margin-top: 10px; }
-        .order-block { margin-top: 30px; background: #f4f6fb; border-radius: 10px; padding: 18px; }
-        .order-status { font-weight: bold; color: #228B22; }
-        .error-msg { color: #c00; text-align: center; margin-bottom: 12px; }
-    </style>
+    
 </head>
 <body>
-  <div style="display:flex;justify-content:flex-end;align-items:center;margin-bottom:10px;max-width:500px;margin-left:auto;margin-right:auto;gap:18px;">
-    <button id="darkModeToggle" class="dark-mode-toggle" title="Toggle dark mode" style="background:#00BFAE;color:#fff;border:none;border-radius:50%;width:40px;height:40px;display:flex;align-items:center;justify-content:center;font-size:1.3em;margin-left:16px;cursor:pointer;box-shadow:0 2px 8px rgba(0,191,174,0.10);transition:background 0.2s, color 0.2s;">
+  <div>
+    <button id="darkModeToggle" class="dark-mode-toggle" title="Toggle dark mode">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <path d="M21 12.79A9 9 0 1 1 11.21 3a7 7 0 0 0 9.79 9.79z"/>
       </svg>

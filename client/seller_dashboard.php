@@ -190,74 +190,13 @@ $recent_orders = $recent_orders->fetchAll();
 <head>
     <meta charset="UTF-8">
     <title>Seller Dashboard</title>
-    <link rel="stylesheet" href="../beta333.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-        .stats-row { display: flex; gap: 24px; margin: 32px 0 24px 0; justify-content: center; }
-        .stat-card {
-            background: var(--card-color);
-            border-radius: 16px;
-            box-shadow: 0 2px 8px rgba(26,35,126,0.07);
-            padding: 28px 32px;
-            min-width: 180px;
-            text-align: center;
-            color: var(--primary-color);
-            font-size: 1.15em;
-            font-weight: bold;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-        .stat-card .stat-icon { font-size: 2.2em; margin-bottom: 10px; }
-        .dashboard-products {
-            display: flex; flex-wrap: wrap; gap: 18px; margin-top: 32px;
-        }
-        .dashboard-product-card {
-            background: #fff;
-            border: 1.5px solid #E3E7ED;
-            border-radius: 14px;
-            box-shadow: 0 2px 8px rgba(26,35,126,0.06);
-            padding: 18px 10px 12px 10px;
-            min-width: 180px;
-            max-width: 220px;
-            width: 100%;
-            text-align: center;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            transition: box-shadow 0.18s, transform 0.18s;
-        }
-        .dashboard-product-card img {
-            width: 100%;
-            height: 110px;
-            object-fit: cover;
-            border-radius: 8px;
-            margin-bottom: 10px;
-        }
-        .dashboard-product-card .pending {
-            color: #c00;
-            font-size: 0.95em;
-            margin-top: 4px;
-        }
-        .dashboard-product-card .edit-link {
-            display: block;
-            margin-top: 8px;
-            color: var(--accent-color);
-            font-weight: bold;
-            text-decoration: underline;
-        }
-        .dashboard-section-title { color: var(--primary-color); font-size: 1.3em; margin: 32px 0 18px 0; border-bottom: 2px solid var(--primary-color); padding-bottom: 6px; }
-        @media (max-width: 900px) {
-            .stats-row { flex-direction: column; gap: 12px; align-items: center; }
-            .dashboard-products { flex-direction: column; align-items: center; }
-        }
-    </style>
+    
 </head>
 <body>
     <?php if (empty($seller['is_disabled'])): ?>
-    <div style="background:#FFF8E1;border:1.5px solid #FFD600;color:#1A237E;padding:16px 18px;border-radius:10px;margin-bottom:24px;max-width:700px;margin-left:auto;margin-right:auto;box-shadow:0 2px 8px #FFD60022;">
-      <b>Note:</b> WeBuy is an inclusive marketplace. <b>Disabled sellers and their stories/products are always prioritized and featured</b> across the site. If you are a disabled seller and want your story and products to be highlighted, please <a href="mailto:support@webuy.com" style="color:#1A237E;text-decoration:underline;">contact support</a> for manual onboarding and special promotion.
+    <div>
+      <b>Note:</b> WeBuy is an inclusive marketplace. <b>Disabled sellers and their stories/products are always prioritized and featured</b> across the site. If you are a disabled seller and want your story and products to be highlighted, please <a href="mailto:support@webuy.com">contact support</a> for manual onboarding and special promotion.
     </div>
     <?php endif; ?>
     <div class="account-container dashboard-flex">
@@ -270,15 +209,15 @@ $recent_orders = $recent_orders->fetchAll();
                 <div class="store-hero-desc"><?php echo nl2br(htmlspecialchars($seller['store_description'])); ?></div>
             </div>
             <div class="stats-row">
-                <div class="stat-card"><span class="stat-icon">📦</span>Products<br><span style="font-size:1.5em; color:var(--accent-color);"><?php echo $total_products; ?></span></div>
-                <div class="stat-card"><span class="stat-icon">🛒</span>Orders<br><span style="font-size:1.5em; color:var(--accent-color);"><?php echo $total_orders; ?></span></div>
-                <div class="stat-card"><span class="stat-icon">💰</span>Revenue<br><span style="font-size:1.5em; color:var(--accent-color);"><?php echo $total_revenue; ?> <?= __('currency') ?></span></div>
+                <div class="stat-card"><span class="stat-icon">📦</span>Products<br><span><?php echo $total_products; ?></span></div>
+                <div class="stat-card"><span class="stat-icon">🛒</span>Orders<br><span><?php echo $total_orders; ?></span></div>
+                <div class="stat-card"><span class="stat-icon">💰</span>Revenue<br><span><?php echo $total_revenue; ?> <?= __('currency') ?></span></div>
             </div>
-            <div style="max-width:600px;margin:0 auto 32px auto;">
+            <div>
                 <canvas id="salesChart" height="120"></canvas>
             </div>
             <div class="dashboard-section-title">My Products</div>
-            <a href="add_product.php" class="add-product-btn" style="margin-bottom:18px;display:inline-block;">+ Add Product</a>
+            <a href="add_product.php" class="add-product-btn">+ Add Product</a>
             <?php if ($products): ?>
                 <div class="dashboard-products">
                 <?php foreach ($products as $prod): ?>
@@ -286,8 +225,8 @@ $recent_orders = $recent_orders->fetchAll();
                         <a href="../product.php?id=<?php echo $prod['id']; ?>">
                             <img src="../uploads/<?php echo htmlspecialchars($prod['image']); ?>" alt="<?php echo htmlspecialchars($prod['name']); ?>">
                         </a>
-                        <div style="margin:8px 0 4px;font-weight:bold; color:var(--primary-color);"><?php echo htmlspecialchars($prod['name']); ?></div>
-                        <div style="color:#00BFAE;font-weight:bold;"> <?php echo $prod['price']; ?> <?= __('currency') ?> </div>
+                        <div><?php echo htmlspecialchars($prod['name']); ?></div>
+                        <div> <?php echo $prod['price']; ?> <?= __('currency') ?> </div>
                         <?php if (isset($prod['approved']) && !$prod['approved']): ?>
                             <div class="pending">Pending Admin Approval</div>
                         <?php endif; ?>
@@ -308,13 +247,13 @@ $recent_orders = $recent_orders->fetchAll();
                     <a href="../product.php?id=<?php echo $prod['id']; ?>">
                         <img src="../uploads/<?php echo htmlspecialchars($prod['image']); ?>" alt="<?php echo htmlspecialchars($prod['name']); ?>">
                     </a>
-                    <div style="margin:8px 0 4px;font-weight:bold; color:var(--primary-color);">
+                    <div>
                         <?php echo htmlspecialchars($prod['name']); ?>
-                        <?php if ($prod === $top_products[0]): ?><span style="background:#FFD600;color:#1A237E;padding:2px 8px;border-radius:8px;font-size:0.9em;margin-left:6px;">Best Seller</span><?php endif; ?>
-                        <?php if (isset($prod['stock']) && $prod['stock'] <= 3): ?><span style="background:#c00;color:#fff;padding:2px 8px;border-radius:8px;font-size:0.9em;margin-left:6px;">Low Stock</span><?php endif; ?>
+                        <?php if ($prod === $top_products[0]): ?><span>Best Seller</span><?php endif; ?>
+                        <?php if (isset($prod['stock']) && $prod['stock'] <= 3): ?><span>Low Stock</span><?php endif; ?>
                     </div>
-                    <div style="color:#00BFAE;font-weight:bold;">Sold: <?php echo $prod['total_qty']; ?></div>
-                    <div style="color:#888;font-size:0.98em;">Revenue: <?php echo $prod['total_revenue']; ?> <?= __('currency') ?></div>
+                    <div>Sold: <?php echo $prod['total_qty']; ?></div>
+                    <div>Revenue: <?php echo $prod['total_revenue']; ?> <?= __('currency') ?></div>
                 </div>
             <?php endforeach; ?>
             </div>
@@ -322,23 +261,23 @@ $recent_orders = $recent_orders->fetchAll();
             <div class="dashboard-section-title">📊 Advanced Analytics</div>
             
             <!-- Charts Row -->
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 32px;">
+            <div>
                 <!-- Order Status Pie Chart -->
-                <div style="background: #fff; border-radius: 12px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
-                    <h3 style="margin: 0 0 15px 0; color: #1A237E; font-size: 1.1em;">Order Status Distribution</h3>
+                <div>
+                    <h3>Order Status Distribution</h3>
                     <canvas id="statusChart" height="200"></canvas>
                 </div>
                 
                 <!-- Category Distribution -->
-                <div style="background: #fff; border-radius: 12px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
-                    <h3 style="margin: 0 0 15px 0; color: #1A237E; font-size: 1.1em;">Category Performance</h3>
+                <div>
+                    <h3>Category Performance</h3>
                     <canvas id="categoryChart" height="200"></canvas>
                 </div>
             </div>
             
             <!-- Growth Trends -->
-            <div style="background: #fff; border-radius: 12px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin-bottom: 32px;">
-                <h3 style="margin: 0 0 15px 0; color: #1A237E; font-size: 1.1em;">📈 Monthly Growth Trends</h3>
+            <div>
+                <h3>📈 Monthly Growth Trends</h3>
                 <canvas id="growthChart" height="120"></canvas>
             </div>
             
@@ -346,35 +285,35 @@ $recent_orders = $recent_orders->fetchAll();
             <div class="dashboard-section-title">👥 Customer Insights</div>
             
             <!-- Top Customers -->
-            <div style="background: #fff; border-radius: 12px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin-bottom: 24px;">
-                <h3 style="margin: 0 0 15px 0; color: #1A237E; font-size: 1.1em;">🏆 Top Customers</h3>
+            <div>
+                <h3>🏆 Top Customers</h3>
                 <?php if ($top_customers): ?>
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px;">
+                    <div>
                         <?php foreach (array_slice($top_customers, 0, 6) as $customer): ?>
-                            <div style="background: #f8f9fa; border-radius: 8px; padding: 15px; border-left: 4px solid #00BFAE;">
-                                <div style="font-weight: bold; color: #1A237E; margin-bottom: 5px;"><?php echo htmlspecialchars($customer['name']); ?></div>
-                                <div style="color: #666; font-size: 0.9em; margin-bottom: 8px;"><?php echo htmlspecialchars($customer['email']); ?></div>
-                                <div style="display: flex; justify-content: space-between; align-items: center;">
-                                    <span style="color: #00BFAE; font-weight: bold;"><?php echo $customer['order_count']; ?> orders</span>
-                                    <span style="color: #1A237E; font-weight: bold;"><?php echo $customer['total_spent']; ?> د.ت</span>
+                            <div>
+                                <div><?php echo htmlspecialchars($customer['name']); ?></div>
+                                <div><?php echo htmlspecialchars($customer['email']); ?></div>
+                                <div>
+                                    <span><?php echo $customer['order_count']; ?> orders</span>
+                                    <span><?php echo $customer['total_spent']; ?> د.ت</span>
                                 </div>
                             </div>
                         <?php endforeach; ?>
                     </div>
                 <?php else: ?>
-                    <p style="color: #666; text-align: center; font-style: italic;">No customer data available yet.</p>
+                    <p>No customer data available yet.</p>
                 <?php endif; ?>
             </div>
             
             <!-- Customer Locations -->
             <?php if ($customer_locations): ?>
-            <div style="background: #fff; border-radius: 12px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin-bottom: 24px;">
-                <h3 style="margin: 0 0 15px 0; color: #1A237E; font-size: 1.1em;">📍 Customer Locations</h3>
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px;">
+            <div>
+                <h3>📍 Customer Locations</h3>
+                <div>
                     <?php foreach ($customer_locations as $location): ?>
-                        <div style="background: #e3f2fd; border-radius: 8px; padding: 12px; text-align: center;">
-                            <div style="font-weight: bold; color: #1A237E; margin-bottom: 5px;"><?php echo htmlspecialchars($location['address']); ?></div>
-                            <div style="color: #00BFAE; font-weight: bold;"><?php echo $location['order_count']; ?> orders</div>
+                        <div>
+                            <div><?php echo htmlspecialchars($location['address']); ?></div>
+                            <div><?php echo $location['order_count']; ?> orders</div>
                         </div>
                     <?php endforeach; ?>
                 </div>
@@ -383,16 +322,16 @@ $recent_orders = $recent_orders->fetchAll();
             
             <!-- Low Stock Alerts -->
             <?php if ($low_stock_products): ?>
-            <div style="background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 12px; padding: 20px; margin-bottom: 24px;">
-                <h3 style="margin: 0 0 15px 0; color: #856404; font-size: 1.1em;">⚠️ Low Stock Alerts</h3>
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+            <div>
+                <h3>⚠️ Low Stock Alerts</h3>
+                <div>
                     <?php foreach ($low_stock_products as $product): ?>
-                        <div style="background: #fff; border-radius: 8px; padding: 15px; border-left: 4px solid #ffc107;">
-                            <div style="display: flex; align-items: center; gap: 10px;">
-                                <img src="../uploads/<?php echo htmlspecialchars($product['image']); ?>" alt="<?php echo htmlspecialchars($product['name']); ?>" style="width: 40px; height: 40px; object-fit: cover; border-radius: 4px;">
+                        <div>
+                            <div>
+                                <img src="../uploads/<?php echo htmlspecialchars($product['image']); ?>" alt="<?php echo htmlspecialchars($product['name']); ?>">
                                 <div>
-                                    <div style="font-weight: bold; color: #1A237E; font-size: 0.9em;"><?php echo htmlspecialchars($product['name']); ?></div>
-                                    <div style="color: #dc3545; font-weight: bold;">Stock: <?php echo $product['stock']; ?></div>
+                                    <div><?php echo htmlspecialchars($product['name']); ?></div>
+                                    <div>Stock: <?php echo $product['stock']; ?></div>
                                 </div>
                             </div>
                         </div>
@@ -403,16 +342,16 @@ $recent_orders = $recent_orders->fetchAll();
             
             <!-- Original Order Status Cards -->
             <div class="dashboard-section-title">Order Status Breakdown</div>
-            <div style="display:flex;gap:18px;margin-bottom:24px;">
+            <div>
                 <?php foreach (["pending","processing","shipped","delivered","cancelled"] as $status): ?>
-                    <div style="background:#fafafa;border-radius:10px;padding:14px 18px;min-width:90px;text-align:center;box-shadow:0 1px 4px #0001;">
-                        <div style="font-weight:bold;color:var(--primary-color);text-transform:capitalize;"> <?php echo ucfirst($status); ?> </div>
-                        <div style="font-size:1.2em;color:#00BFAE;font-weight:bold;"> <?php echo $status_counts[$status] ?? 0; ?> </div>
+                    <div>
+                        <div> <?php echo ucfirst($status); ?> </div>
+                        <div> <?php echo $status_counts[$status] ?? 0; ?> </div>
                     </div>
                 <?php endforeach; ?>
             </div>
             <div class="dashboard-section-title">Recent Orders</div>
-            <table style="width:100%;margin-bottom:32px;background:#fff;border-radius:10px;box-shadow:0 2px 8px #0001;">
+            <table>
                 <thead><tr><th>ID</th><th>Date</th><th>Status</th><th>Total</th></tr></thead>
                 <tbody>
                 <?php foreach ($recent_orders as $order): ?>
@@ -425,10 +364,10 @@ $recent_orders = $recent_orders->fetchAll();
                 <?php endforeach; ?>
                 </tbody>
             </table>
-            <div style="display: flex; gap: 12px; margin-bottom: 32px; flex-wrap: wrap;">
-                <a href="export_orders.php" class="add-product-btn" style="background:#FFD600;color:#1A237E;">Export Orders to CSV</a>
-                <a href="bulk_upload.php" class="add-product-btn" style="background:#FF6B6B;color:#fff;">📦 Bulk Upload</a>
-                <a href="notifications.php" class="add-product-btn" style="background:#00BFAE;color:#fff;">
+            <div>
+                <a href="export_orders.php" class="add-product-btn">Export Orders to CSV</a>
+                <a href="bulk_upload.php" class="add-product-btn">📦 Bulk Upload</a>
+                <a href="notifications.php" class="add-product-btn">
                     🔔 Notifications
                     <?php
                     // Get unread notification count
@@ -436,21 +375,21 @@ $recent_orders = $recent_orders->fetchAll();
                     $unread_notifications->execute([$seller['id']]);
                     $unread_count = $unread_notifications->fetchColumn();
                     if ($unread_count > 0): ?>
-                        <span style="background: #FFD600; color: #1A237E; padding: 2px 8px; border-radius: 12px; font-size: 0.8em; margin-left: 8px;"><?php echo $unread_count; ?></span>
+                        <span><?php echo $unread_count; ?></span>
                     <?php endif; ?>
                 </a>
-                <a href="seller_help.php" class="add-product-btn" style="background:#1A237E;color:#fff;">❓ Help & FAQ</a>
+                <a href="seller_help.php" class="add-product-btn">❓ Help & FAQ</a>
             </div>
         </div>
         <div class="dashboard-side">
             <div class="dashboard-section-title">Edit Store Info</div>
-            <?php if (!empty($success_msg)) echo '<div style="color:green;">' . $success_msg . '</div>'; ?>
+            <?php if (!empty($success_msg)) echo '<div>' . $success_msg . '</div>'; ?>
             <form method="post" enctype="multipart/form-data" class="edit-store-form">
                 <label>Store Name:<br><input type="text" name="store_name" value="<?php echo htmlspecialchars($seller['store_name']); ?>" required></label><br><br>
                 <label>Store Description:<br><textarea name="store_description" rows="4"><?php echo htmlspecialchars($seller['store_description']); ?></textarea></label><br><br>
                 <label>Store Logo:<br><input type="file" name="store_logo" accept="image/*"></label><br>
                 <?php if (!empty($seller['store_logo'])): ?>
-                    <img src="../uploads/<?php echo htmlspecialchars($seller['store_logo']); ?>" alt="Logo" style="max-width:120px;display:block;margin:10px 0;">
+                    <img src="../uploads/<?php echo htmlspecialchars($seller['store_logo']); ?>" alt="Logo">
                 <?php endif; ?>
                 <button type="submit" class="save-btn">Update Store Info</button>
             </form>
@@ -663,141 +602,6 @@ new Chart(document.getElementById('growthChart').getContext('2d'), {
     }
 });
 </script>
-    <style>
-    .store-hero {
-        background: linear-gradient(120deg, var(--primary-color) 60%, var(--accent-color) 100%);
-        color: #fff;
-        border-radius: 18px;
-        box-shadow: 0 4px 24px rgba(26,35,126,0.10);
-        padding: 36px 18px 28px 18px;
-        text-align: center;
-        margin-bottom: 32px;
-        position: relative;
-    }
-    .store-hero-logo {
-        width: 120px;
-        height: 120px;
-        object-fit: cover;
-        border-radius: 50%;
-        box-shadow: 0 2px 12px rgba(0,191,174,0.10);
-        margin-bottom: 18px;
-        background: #fff;
-    }
-    .store-hero-title {
-        font-size: 2em;
-        font-weight: bold;
-        margin-bottom: 10px;
-        color: #FFD600;
-        text-shadow: 0 2px 16px rgba(0,191,174,0.18), 0 2px 8px rgba(0,0,0,0.10);
-    }
-    .store-hero-desc {
-        font-size: 1.15em;
-        color: #fff;
-        margin-bottom: 10px;
-    }
-    .dashboard-flex {
-        display: flex;
-        gap: 32px;
-        align-items: flex-start;
-        justify-content: center;
-        max-width: 1200px;
-        margin: 0 auto;
-    }
-    .dashboard-main {
-        flex: 2;
-        min-width: 0;
-    }
-    .dashboard-side {
-        flex: 1;
-        min-width: 320px;
-        max-width: 400px;
-        background: #fff;
-        border-radius: 14px;
-        box-shadow: 0 2px 8px rgba(26,35,126,0.06);
-        padding: 24px 18px;
-        margin-top: 32px;
-    }
-    .edit-store-form label {
-        font-weight: bold;
-        display: block;
-        margin-bottom: 8px;
-    }
-    .edit-store-form input[type="text"], .edit-store-form textarea {
-        width: 100%;
-        margin-top: 6px;
-        border-radius: 8px;
-        border: 1.5px solid #E3E7ED;
-        padding: 10px;
-        font-size: 1em;
-        background: #fafbfc;
-    }
-    .edit-store-form input[type="file"] {
-        margin-top: 6px;
-    }
-    .edit-store-form button.save-btn {
-        width: 100%;
-        margin-top: 12px;
-        background: var(--primary-color);
-        color: #fff;
-        border-radius: 8px;
-        font-size: 1.1em;
-        font-weight: bold;
-        padding: 12px 0;
-        box-shadow: 0 2px 8px rgba(26,35,126,0.08);
-        border: none;
-        transition: background 0.2s;
-    }
-    .edit-store-form button.save-btn:hover {
-        background: var(--accent-color);
-    }
-    .dashboard-empty-state {
-        background: #f4f6fb;
-        border-radius: 12px;
-        padding: 32px 18px;
-        text-align: center;
-        margin: 32px 0;
-        box-shadow: 0 2px 8px rgba(26,35,126,0.04);
-    }
-    .add-product-btn {
-        display: inline-block;
-        margin-top: 12px;
-        background: var(--accent-color);
-        color: #fff;
-        border-radius: 8px;
-        font-size: 1.1em;
-        font-weight: bold;
-        padding: 10px 24px;
-        text-decoration: none;
-        box-shadow: 0 2px 8px rgba(0,191,174,0.08);
-        transition: background 0.2s;
-    }
-    .add-product-btn:hover {
-        background: var(--primary-color);
-    }
-            @media (max-width: 1000px) {
-            .dashboard-flex { flex-direction: column; gap: 0; }
-            .dashboard-side { margin-top: 0; max-width: 100%; }
-        }
-        
-        @media (max-width: 768px) {
-            .stats-row { flex-direction: column; gap: 12px; align-items: center; }
-            .dashboard-products { flex-direction: column; align-items: center; }
-            
-            /* Analytics responsive */
-            .dashboard-section-title { font-size: 1.1em; }
-            
-            /* Charts grid responsive */
-            .dashboard-section-title + div[style*="grid-template-columns"] {
-                grid-template-columns: 1fr !important;
-                gap: 16px !important;
-            }
-            
-            /* Customer cards responsive */
-            .dashboard-section-title + div[style*="grid-template-columns"] + div[style*="grid-template-columns"] {
-                grid-template-columns: 1fr !important;
-                gap: 12px !important;
-            }
-        }
-    </style>
+    
 </body>
 </html> 

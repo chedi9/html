@@ -75,21 +75,6 @@ $lang = $_GET['lang'] ?? $_SESSION['lang'] ?? 'ar';
     <title>سلة التسوق</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
-    <!-- CSS Files - Load in correct order -->
-    <link rel="stylesheet" href="css/base/_variables.css">
-    <link rel="stylesheet" href="css/base/_reset.css">
-    <link rel="stylesheet" href="css/base/_typography.css">
-    <link rel="stylesheet" href="css/base/_utilities.css">
-    <link rel="stylesheet" href="css/components/_buttons.css">
-    <link rel="stylesheet" href="css/components/_forms.css">
-    <link rel="stylesheet" href="css/components/_cards.css">
-    <link rel="stylesheet" href="css/components/_navigation.css">
-    <link rel="stylesheet" href="css/layout/_grid.css">
-    <link rel="stylesheet" href="css/layout/_sections.css">
-    <link rel="stylesheet" href="css/layout/_footer.css">
-    <link rel="stylesheet" href="css/themes/_light.css">
-    <link rel="stylesheet" href="css/themes/_dark.css">
-    <link rel="stylesheet" href="css/build.css">
     
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="favicon.ico">
@@ -100,23 +85,6 @@ $lang = $_GET['lang'] ?? $_SESSION['lang'] ?? 'ar';
     <!-- JavaScript -->
     <script src="main.js?v=1.4" defer></script>
     
-    <?php if (!empty($_SESSION['is_mobile'])): ?>
-    <link rel="stylesheet" href="mobile.css">
-    <?php endif; ?>
-    <style>
-        .cart-container { max-width: 900px; margin: 40px auto; background: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-        .cart-container h2 { text-align: center; margin-bottom: 30px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { padding: 12px; border-bottom: 1px solid #eee; text-align: center; }
-        th { background: #f4f4f4; }
-        .remove-btn { background: #c00; color: #fff; padding: 6px 16px; border-radius: 5px; text-decoration: none; font-size: 0.95em; margin: 0 4px; }
-        .remove-btn:hover { background: #a00; }
-        .checkout-btn { background: var(--primary-color); color: #fff; padding: 12px 30px; border-radius: 5px; text-decoration: none; font-size: 1.1em; display: inline-block !important; margin-top: 20px; border: none; cursor: pointer; width: auto; max-width: 100%; white-space: nowrap; }
-        .checkout-btn:hover { background: var(--secondary-color); }
-        .cart-container .checkout-btn { display: inline-block !important; visibility: visible !important; opacity: 1 !important; }
-        .cart-container button.checkout-btn { display: inline-block !important; }
-        .cart-container a.checkout-btn { display: inline-block !important; }
-    </style>
 </head>
 <body>
 <div id="pageContent">
@@ -141,7 +109,7 @@ $lang = $_GET['lang'] ?? $_SESSION['lang'] ?? 'ar';
   <?php $cart_key = array_keys($_SESSION['cart'])[$idx]; ?>
   <tr>
     <td><?php if ($item['image']): ?>
-            <div class="product-img-wrap" style="position: relative; overflow: hidden;">
+            <div class="product-img-wrap">
                 <div class="skeleton skeleton--image"></div>
                 <?php 
                 $optimized_image = get_optimized_image('uploads/' . $item['image'], 'card');
@@ -153,38 +121,33 @@ $lang = $_GET['lang'] ?? $_SESSION['lang'] ?? 'ar';
                      loading="lazy" 
                      width="80" 
                      height="80" 
-                     style="position: relative; z-index: 2; object-fit: cover; border-radius: 4px;"
                      onload="this.classList.add('loaded'); this.previousElementSibling.style.display='none';">
             </div>
     <?php endif; ?></td>
     <td><a href="product.php?id=<?php echo $item['id']; ?>"><?php echo htmlspecialchars($item['name']); ?></a>
     <?php if (!empty($item['variant'])): ?>
-      <div style="font-size:0.98em;color:#1A237E;margin-top:4px;">(<?php echo htmlspecialchars($item['variant']); ?>)</div>
+      <div>(<?php echo htmlspecialchars($item['variant']); ?>)</div>
     <?php endif; ?>
     </td>
           <td><?php echo htmlspecialchars($item['price']); ?> <?php echo __('currency'); ?></td>
-    <td><input type="number" name="qty[<?php echo htmlspecialchars($cart_key); ?>]" value="<?php echo $item['qty']; ?>" min="1" style="width:60px;"></td>
+    <td><input type="number" name="qty[<?php echo htmlspecialchars($cart_key); ?>]" value="<?php echo $item['qty']; ?>" min="1"></td>
           <td><?php echo $item['subtotal']; ?> <?php echo __('currency'); ?></td>
                         <td><a href="cart.php?remove=<?php echo urlencode($cart_key); ?>" class="remove-btn"><?php echo __('remove'); ?></a></td>
   </tr>
 <?php endforeach; ?>
             </tbody>
         </table>
-                  <button type="submit" name="update" class="checkout-btn" style="background:var(--secondary-color);margin-top:20px;display:inline-block !important;visibility:visible !important;opacity:1 !important;">تحديث الكميات</button>
+                  <button type="submit" name="update" class="checkout-btn">تحديث الكميات</button>
         </form>
-        <h3 style="text-align:left; margin-top:30px;">الإجمالي: <?php echo $total; ?> د.ت</h3>
-                  <a href="checkout.php" class="checkout-btn" style="width:auto;display:inline-block;">إتمام الشراء</a>
+        <h3>الإجمالي: <?php echo $total; ?> د.ت</h3>
+                  <a href="checkout.php" class="checkout-btn">إتمام الشراء</a>
             <?php if (!isset($_SESSION['user_id'])): ?>
-                <a href="checkout.php?guest=1" class="checkout-btn" style="background: #28a745; margin-top: 10px; width:auto;display:inline-block;">🛒 <?php echo __('continue_as_guest'); ?></a>
+                <a href="checkout.php?guest=1" class="checkout-btn">🛒 <?php echo __('continue_as_guest'); ?></a>
             <?php endif; ?>
           <?php else: ?>
-          <p style="text-align:center;">سلة التسوق فارغة</p>
+          <p>سلة التسوق فارغة</p>
         <?php endif; ?>
-<<<<<<< Current (Your changes)
-        <a href="index.php" class="checkout-btn" style="background:var(--secondary-color);margin-top:30px;display:inline-block !important;visibility:visible !important;opacity:1 !important;width:auto;">العودة للتسوق</a>
-=======
-                  <a href="index.php" class="checkout-btn" style="background:var(--secondary-color);margin-top:30px;display:inline-block !important;visibility:visible !important;opacity:1 !important;width:auto;">العودة للتسوق</a>
->>>>>>> Incoming (Background Agent changes)
+                  <a href="index.php" class="checkout-btn">العودة للتسوق</a>
     </div>
 </div>
 

@@ -25,7 +25,7 @@ if (!function_exists('__')) {
         <div class="container">
             <!-- Brand/Logo -->
             <a class="navbar-brand d-flex align-items-center" href="index.php">
-                <img src="webuy-logo-transparent.jpg" alt="WeBuy Logo" style="height: 40px; width: auto;">
+                <img src="webuy-logo-transparent.jpg" alt="WeBuy Logo">
                 <span class="ms-2 fw-bold">WeBuy</span>
             </a>
             

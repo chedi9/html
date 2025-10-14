@@ -7,7 +7,7 @@
                 <!-- Company Info -->
                 <div class="footer__section">
                     <div class="footer__brand">
-                        <img src="webuy-logo-transparent.jpg" alt="WeBuy Logo" style="height: 40px; width: auto;">
+                        <img src="webuy-logo-transparent.jpg" alt="WeBuy Logo">
                         <h3 class="footer__title">WeBuy</h3>
                     </div>
                     <p class="footer__description">

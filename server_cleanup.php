@@ -18,27 +18,7 @@ echo "<!DOCTYPE html>
     <meta charset='UTF-8'>
     <meta name='viewport' content='width=device-width, initial-scale=1.0'>
     <title>WeBuy Server Cleanup</title>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 20px; background: #f5f6fa; }
-        .container { max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        .header { text-align: center; margin-bottom: 30px; }
-        .header h1 { color: #2c3e50; margin-bottom: 10px; }
-        .section { margin: 20px 0; padding: 15px; border-radius: 5px; }
-        .success { background: #d4edda; border: 1px solid #c3e6cb; color: #155724; }
-        .error { background: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; }
-        .warning { background: #fff3cd; border: 1px solid #ffeaa7; color: #856404; }
-        .info { background: #d1ecf1; border: 1px solid #bee5eb; color: #0c5460; }
-        .file-list { background: #f8f9fa; padding: 10px; border-radius: 5px; margin: 10px 0; }
-        .file-item { margin: 5px 0; padding: 5px; background: white; border-radius: 3px; }
-        .moved { color: #28a745; }
-        .kept { color: #007bff; }
-        .error-file { color: #dc3545; }
-        .summary { background: #e9ecef; padding: 15px; border-radius: 5px; margin: 20px 0; }
-        .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin: 20px 0; }
-        .stat-card { background: white; padding: 15px; border-radius: 5px; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        .stat-number { font-size: 2em; font-weight: bold; }
-        .stat-label { color: #6c757d; margin-top: 5px; }
-    </style>
+    
 </head>
 <body>
     <div class='container'>

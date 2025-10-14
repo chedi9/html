@@ -29,140 +29,7 @@ if (!$user || !$user['is_seller']) {
     <meta charset="UTF-8">
     <title>مساعدة البائعين - WeBuy</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../beta333.css">
-    <style>
-        .help-container {
-            max-width: 1000px;
-            margin: 0 auto;
-            padding: 20px;
-            background: #fff;
-        }
-        .help-header {
-            text-align: center;
-            background: linear-gradient(135deg, #1A237E, #00BFAE);
-            color: white;
-            padding: 30px 20px;
-            border-radius: 12px;
-            margin-bottom: 30px;
-        }
-        .help-header h1 {
-            font-size: 2.2em;
-            margin-bottom: 10px;
-        }
-        .help-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-        .help-card {
-            background: #f8f9fa;
-            border: 1px solid #e9ecef;
-            border-radius: 8px;
-            padding: 25px;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-        .help-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        }
-        .help-card h3 {
-            color: #1A237E;
-            margin-bottom: 15px;
-            font-size: 1.3em;
-        }
-        .help-card p {
-            color: #666;
-            margin-bottom: 15px;
-            line-height: 1.6;
-        }
-        .help-btn {
-            background: #00BFAE;
-            color: white;
-            padding: 10px 20px;
-            text-decoration: none;
-            border-radius: 6px;
-            display: inline-block;
-            font-weight: bold;
-            transition: background 0.2s;
-        }
-        .help-btn:hover {
-            background: #009688;
-        }
-        .contact-section {
-            background: #e3f2fd;
-            padding: 25px;
-            border-radius: 8px;
-            margin-bottom: 30px;
-        }
-        .contact-section h2 {
-            color: #1565c0;
-            margin-bottom: 20px;
-        }
-        .contact-info {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-        }
-        .contact-item {
-            background: white;
-            padding: 20px;
-            border-radius: 6px;
-            text-align: center;
-        }
-        .contact-item h4 {
-            color: #1A237E;
-            margin-bottom: 10px;
-        }
-        .contact-item p {
-            color: #666;
-            margin: 5px 0;
-        }
-        .back-btn {
-            background: #6c757d;
-            color: white;
-            padding: 12px 24px;
-            text-decoration: none;
-            border-radius: 6px;
-            display: inline-block;
-            margin-top: 20px;
-        }
-        .back-btn:hover {
-            background: #5a6268;
-        }
-        .faq-section {
-            background: #f8f9fa;
-            padding: 25px;
-            border-radius: 8px;
-            margin-bottom: 30px;
-        }
-        .faq-item {
-            margin-bottom: 20px;
-            padding: 15px;
-            background: white;
-            border-radius: 6px;
-            border-left: 4px solid #00BFAE;
-        }
-        .faq-item h4 {
-            color: #1A237E;
-            margin-bottom: 10px;
-        }
-        .faq-item p {
-            color: #666;
-            line-height: 1.6;
-        }
-        @media (max-width: 768px) {
-            .help-container {
-                padding: 10px;
-            }
-            .help-header h1 {
-                font-size: 1.8em;
-            }
-            .help-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
+    
 </head>
 <body>
     <div class="help-container">
@@ -269,7 +136,7 @@ if (!$user || !$user['is_seller']) {
             </div>
         </div>
 
-        <div style="text-align: center;">
+        <div>
             <a href="seller_dashboard.php" class="back-btn">العودة إلى لوحة التحكم</a>
         </div>
     </div>

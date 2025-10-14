@@ -76,10 +76,10 @@ class QuickStatusWidget {
             margin: 10px 0;
             box-shadow: 0 2px 10px rgba(0,0,0,0.05);
         ">
-            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
-                <span style="font-size: 1.5em;"><?php echo $status_icon; ?></span>
+            <div>
+                <span><?php echo $status_icon; ?></span>
                 <div>
-                    <div style="font-weight: 600; color: <?php echo $status_color; ?>;">
+                    <div>
                         حالة النظام: 
                         <?php 
                         switch($status['overall_status']) {
@@ -90,7 +90,7 @@ class QuickStatusWidget {
                         }
                         ?>
                     </div>
-                    <div style="font-size: 0.9em; color: #6c757d;">
+                    <div>
                         <?php echo $status['status_counts']['online']; ?> متاح | 
                         <?php echo $status['status_counts']['warning']; ?> تحذير | 
                         <?php echo $status['status_counts']['offline'] + $status['status_counts']['error']; ?> مشاكل
@@ -99,17 +99,17 @@ class QuickStatusWidget {
             </div>
             
             <?php if ($show_details && !empty($status['critical_services'])): ?>
-                <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid #e9ecef;">
-                    <div style="font-weight: 600; color: #dc3545; margin-bottom: 5px;">خدمات تحتاج انتباه:</div>
+                <div>
+                    <div>خدمات تحتاج انتباه:</div>
                     <?php foreach ($status['critical_services'] as $service): ?>
-                        <div style="font-size: 0.9em; color: #6c757d; margin: 2px 0;">
+                        <div>
                             • <?php echo $this->getServiceName($service['service']); ?>: <?php echo htmlspecialchars($service['message']); ?>
                         </div>
                     <?php endforeach; ?>
                 </div>
             <?php endif; ?>
             
-            <div style="margin-top: 10px; text-align: center;">
+            <div>
                 <a href="system_status.php" style="
                     color: #3498db;
                     text-decoration: none;
