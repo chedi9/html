@@ -270,11 +270,20 @@ $stmt->execute();
 $shipping_methods = $stmt->fetchAll();
 ?>
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="<?php echo $lang; ?>" dir="<?php echo $lang === 'ar' ? 'rtl' : 'ltr'; ?>" data-bs-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>إتمام الشراء</title>
+    
+    <!-- Bootstrap 5.3+ CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- WeBuy Custom Bootstrap Configuration -->
+    <link rel="stylesheet" href="css/bootstrap-custom.css">
+    
+    <!-- Legacy CSS for gradual migration -->
+    <link rel="stylesheet" href="css/main.css">
     
     <!-- CSS Files - Load in correct order -->
     <link rel="stylesheet" href="css/base/_variables.css">
@@ -299,6 +308,7 @@ $shipping_methods = $stmt->fetchAll();
     <link href="https://fonts.googleapis.com/css2?family=Amiri&display=swap" rel="stylesheet">
     
     <!-- JavaScript -->
+    <script src="js/theme-controller.js" defer></script>
     <script src="main.js?v=1.2" defer></script>
     
     <?php if (!empty($_SESSION['is_mobile'])): ?>
@@ -344,8 +354,8 @@ $shipping_methods = $stmt->fetchAll();
         }
     </style>
 </head>
-<body>
-<div id="pageContent">
+<body class="page-transition">
+<?php include 'header.php'; ?>
     <div class="checkout-container">
         <a href="index.php" class="back-home-btn"><span class="arrow">&#8592;</span> العودة للرئيسية</a>
         <div class="progress-steps">
@@ -1186,9 +1196,6 @@ $shipping_methods = $stmt->fetchAll();
       });
     });
     </script>
-</div>
-
-<!-- Cookie Consent Banner -->
-<?php include 'cookie_consent_banner.php'; ?>
+<?php include 'footer.php'; ?>
 </body>
-</html> 
+</html>

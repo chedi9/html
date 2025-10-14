@@ -25,11 +25,19 @@ $orders->execute([$user_id]);
 $orders = $orders->fetchAll();
 ?>
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="<?php echo $lang ?? 'ar'; ?>" dir="<?php echo ($lang ?? 'ar') === 'ar' ? 'rtl' : 'ltr'; ?>" data-bs-theme="light">
 <head>
     <meta charset="UTF-8">
     <title><?= __('my_account') ?></title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Bootstrap 5.3+ CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- WeBuy Custom Bootstrap Configuration -->
+    <link rel="stylesheet" href="../css/bootstrap-custom.css">
+    
+    <!-- Legacy CSS for gradual migration -->
     <link rel="stylesheet" href="../css/base/_variables.css">
     <link rel="stylesheet" href="../css/base/_reset.css">
     <link rel="stylesheet" href="../css/base/_typography.css">
@@ -87,8 +95,9 @@ $orders = $orders->fetchAll();
         }
     };
     </script>
+    <script src="../js/theme-controller.js" defer></script>
 </head>
-<body>
+<body class="page-transition">
     <?php include '../header.php'; ?>
     <div class="account-container">
         <a href="../index.php" class="back-home-btn"><span class="arrow">&#8592;</span> <?= __('return_to_home') ?></a>

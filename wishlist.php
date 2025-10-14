@@ -22,13 +22,19 @@ $wishlist = $stmt->fetchAll(PDO::FETCH_ASSOC);
 $lang = $_GET['lang'] ?? $_SESSION['lang'] ?? 'ar';
 ?>
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="<?php echo $lang; ?>" dir="<?php echo $lang === 'ar' ? 'rtl' : 'ltr'; ?>" data-bs-theme="light">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title><?= __('my_wishlist') ?></title>
   
-  <!-- CSS Files - Load in correct order -->
+  <!-- Bootstrap 5.3+ CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  
+  <!-- WeBuy Custom Bootstrap Configuration -->
+  <link rel="stylesheet" href="css/bootstrap-custom.css">
+  
+  <!-- Legacy CSS for gradual migration -->
   <link rel="stylesheet" href="css/base/_variables.css">
   <link rel="stylesheet" href="css/base/_reset.css">
   <link rel="stylesheet" href="css/base/_typography.css">
@@ -51,22 +57,16 @@ $lang = $_GET['lang'] ?? $_SESSION['lang'] ?? 'ar';
   <link href="https://fonts.googleapis.com/css2?family=Amiri&display=swap" rel="stylesheet">
   
   <!-- JavaScript -->
+  <script src="js/theme-controller.js" defer></script>
   <script src="main.js?v=1.4" defer></script>
   
   <?php if (!empty($_SESSION['is_mobile'])): ?>
   <link rel="stylesheet" href="mobile.css">
   <?php endif; ?>
-</head>
-<body>
-  <div style="display:flex;justify-content:flex-end;align-items:center;margin-bottom:10px;max-width:900px;margin-left:auto;margin-right:auto;gap:18px;">
-    <button id="darkModeToggle" class="dark-mode-toggle" title="Toggle dark mode" style="background:#00BFAE;color:#fff;border:none;border-radius:50%;width:40px;height:40px;display:flex;align-items:center;justify-content:center;font-size:1.3em;margin-left:16px;cursor:pointer;box-shadow:0 2px 8px rgba(0,191,174,0.10);transition:background 0.2s, color 0.2s;">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M21 12.79A9 9 0 1 1 11.21 3a7 7 0 0 0 9.79 9.79z"/>
-      </svg>
-    </button>
-  </div>
-<div id="pageContent">
-  <div class="container">
+}</head>
+<body class="page-transition">
+  <?php include 'header.php'; ?>
+  <div class="container py-4">
     <h2><?= __('my_wishlist') ?></h2>
     <div class="product-grid">
       <?php foreach ($wishlist as $prod): ?>
@@ -100,9 +100,6 @@ $lang = $_GET['lang'] ?? $_SESSION['lang'] ?? 'ar';
       <?php endif; ?>
     </div>
   </div>
-</div>
-  
-  <!-- Cookie Consent Banner -->
-  <?php include 'cookie_consent_banner.php'; ?>
+  <?php include 'footer.php'; ?>
 </body>
 </html> 

@@ -69,11 +69,20 @@ if ($_SESSION['cart']) {
 $lang = $_GET['lang'] ?? $_SESSION['lang'] ?? 'ar';
 ?>
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="<?php echo $lang; ?>" dir="<?php echo $lang === 'ar' ? 'rtl' : 'ltr'; ?>" data-bs-theme="light">
 <head>
     <meta charset="UTF-8">
     <title>سلة التسوق</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Bootstrap 5.3+ CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- WeBuy Custom Bootstrap Configuration -->
+    <link rel="stylesheet" href="css/bootstrap-custom.css">
+    
+    <!-- Legacy CSS for gradual migration -->
+    <link rel="stylesheet" href="css/main.css">
     
     <!-- CSS Files - Load in correct order -->
     <link rel="stylesheet" href="css/base/_variables.css">
@@ -98,6 +107,7 @@ $lang = $_GET['lang'] ?? $_SESSION['lang'] ?? 'ar';
     <link href="https://fonts.googleapis.com/css2?family=Amiri&display=swap" rel="stylesheet">
     
     <!-- JavaScript -->
+    <script src="js/theme-controller.js" defer></script>
     <script src="main.js?v=1.4" defer></script>
     
     <?php if (!empty($_SESSION['is_mobile'])): ?>
@@ -118,13 +128,13 @@ $lang = $_GET['lang'] ?? $_SESSION['lang'] ?? 'ar';
         .cart-container a.checkout-btn { display: inline-block !important; }
     </style>
 </head>
-<body>
-<div id="pageContent">
-    <div class="cart-container">
+<body class="page-transition">
+    <?php include 'header.php'; ?>
+    <div class="cart-container container py-4">
         <h2>سلة التسوق</h2>
         <?php if ($cart_items): ?>
         <form method="post">
-        <table>
+        <table class="table table-striped align-middle">
             <thead>
                 <tr>
                     <th>الصورة</th>
@@ -163,32 +173,25 @@ $lang = $_GET['lang'] ?? $_SESSION['lang'] ?? 'ar';
     <?php endif; ?>
     </td>
           <td><?php echo htmlspecialchars($item['price']); ?> <?php echo __('currency'); ?></td>
-    <td><input type="number" name="qty[<?php echo htmlspecialchars($cart_key); ?>]" value="<?php echo $item['qty']; ?>" min="1" style="width:60px;"></td>
+    <td><input type="number" name="qty[<?php echo htmlspecialchars($cart_key); ?>]" value="<?php echo $item['qty']; ?>" min="1" class="form-control" style="width:80px;"></td>
           <td><?php echo $item['subtotal']; ?> <?php echo __('currency'); ?></td>
-                        <td><a href="cart.php?remove=<?php echo urlencode($cart_key); ?>" class="remove-btn"><?php echo __('remove'); ?></a></td>
+                        <td><a href="cart.php?remove=<?php echo urlencode($cart_key); ?>" class="btn btn-danger btn-sm"><?php echo __('remove'); ?></a></td>
   </tr>
 <?php endforeach; ?>
             </tbody>
         </table>
-                  <button type="submit" name="update" class="checkout-btn" style="background:var(--secondary-color);margin-top:20px;display:inline-block !important;visibility:visible !important;opacity:1 !important;">تحديث الكميات</button>
+                  <button type="submit" name="update" class="btn btn-outline-secondary mt-3">تحديث الكميات</button>
         </form>
-        <h3 style="text-align:left; margin-top:30px;">الإجمالي: <?php echo $total; ?> د.ت</h3>
-                  <a href="checkout.php" class="checkout-btn" style="width:auto;display:inline-block;">إتمام الشراء</a>
+        <h3 class="text-start mt-4">الإجمالي: <?php echo $total; ?> د.ت</h3>
+                  <a href="checkout.php" class="btn btn-primary">إتمام الشراء</a>
             <?php if (!isset($_SESSION['user_id'])): ?>
-                <a href="checkout.php?guest=1" class="checkout-btn" style="background: #28a745; margin-top: 10px; width:auto;display:inline-block;">🛒 <?php echo __('continue_as_guest'); ?></a>
+                <a href="checkout.php?guest=1" class="btn btn-success ms-2 mt-2">🛒 <?php echo __('continue_as_guest'); ?></a>
             <?php endif; ?>
           <?php else: ?>
           <p style="text-align:center;">سلة التسوق فارغة</p>
         <?php endif; ?>
-<<<<<<< Current (Your changes)
-        <a href="index.php" class="checkout-btn" style="background:var(--secondary-color);margin-top:30px;display:inline-block !important;visibility:visible !important;opacity:1 !important;width:auto;">العودة للتسوق</a>
-=======
-                  <a href="index.php" class="checkout-btn" style="background:var(--secondary-color);margin-top:30px;display:inline-block !important;visibility:visible !important;opacity:1 !important;width:auto;">العودة للتسوق</a>
->>>>>>> Incoming (Background Agent changes)
+        <a href="index.php" class="btn btn-secondary mt-4">العودة للتسوق</a>
     </div>
-</div>
-
-<!-- Cookie Consent Banner -->
-<?php include 'cookie_consent_banner.php'; ?>
+    <?php include 'footer.php'; ?>
 </body>
-</html> 
+</html>
