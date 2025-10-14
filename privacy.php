@@ -16,45 +16,28 @@ if (!isset($_SESSION['is_mobile'])) {
     <title>سياسة الخصوصية</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
-    <!-- CSS Files - Load in correct order -->
-    <link rel="stylesheet" href="css/base/_variables.css">
-    <link rel="stylesheet" href="css/base/_reset.css">
-    <link rel="stylesheet" href="css/base/_typography.css">
-    <link rel="stylesheet" href="css/base/_utilities.css">
-    <link rel="stylesheet" href="css/components/_buttons.css">
-    <link rel="stylesheet" href="css/components/_forms.css">
-    <link rel="stylesheet" href="css/components/_cards.css">
-    <link rel="stylesheet" href="css/components/_navigation.css">
-    <link rel="stylesheet" href="css/layout/_grid.css">
-    <link rel="stylesheet" href="css/layout/_sections.css">
-    <link rel="stylesheet" href="css/layout/_footer.css">
-    <link rel="stylesheet" href="css/themes/_light.css">
-    <link rel="stylesheet" href="css/themes/_dark.css">
-    <link rel="stylesheet" href="css/build.css">
+    <!-- Stylesheets removed to reset site styling -->
     
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="favicon.ico">
     
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Amiri&display=swap" rel="stylesheet">
+    <!-- Google Fonts removed -->
     
     <!-- JavaScript -->
     <script src="main.js?v=1.2" defer></script>
     
-    <?php if (!empty($_SESSION['is_mobile'])): ?>
-    <link rel="stylesheet" href="mobile.css">
-    <?php endif; ?>
+    <!-- Mobile styles removed -->
 </head>
 <body>
-  <div style="display:flex;justify-content:flex-end;align-items:center;margin-bottom:10px;max-width:700px;margin-left:auto;margin-right:auto;gap:18px;">
-    <button id="darkModeToggle" class="dark-mode-toggle" title="Toggle dark mode" style="background:#00BFAE;color:#fff;border:none;border-radius:50%;width:40px;height:40px;display:flex;align-items:center;justify-content:center;font-size:1.3em;margin-left:16px;cursor:pointer;box-shadow:0 2px 8px rgba(0,191,174,0.10);transition:background 0.2s, color 0.2s;">
+  <div>
+    <button id="darkModeToggle" class="dark-mode-toggle" title="Toggle dark mode">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <path d="M21 12.79A9 9 0 1 1 11.21 3a7 7 0 0 0 9.79 9.79z"/>
       </svg>
     </button>
   </div>
-    <section class="container" style="max-width:800px;margin:40px auto;padding:20px;">
-        <h1 style="color:var(--primary-color);margin-bottom:30px;">سياسة الخصوصية</h1>
+    <section class="container">
+        <h1>سياسة الخصوصية</h1>
         
         <div class="privacy-content">
             <div class="section">
@@ -183,9 +166,9 @@ if (!isset($_SESSION['is_mobile'])) {
                 <h2>📞 التواصل معنا</h2>
                 <p>لأي استفسارات حول سياسة الخصوصية أو لحماية بياناتك:</p>
                 <ul>
-                    <li>البريد الإلكتروني: <a href="mailto:webuytn0@gmail.com" style="color:var(--accent-color);">webuytn0@gmail.com</a></li>
-                    <li>مركز الأمان: <a href="security_center.php" style="color:var(--accent-color);">إدارة إعدادات الأمان</a></li>
-                    <li>إعدادات الحساب: <a href="client/account.php" style="color:var(--accent-color);">تحديث المعلومات الشخصية</a></li>
+                    <li>البريد الإلكتروني: <a href="mailto:webuytn0@gmail.com">webuytn0@gmail.com</a></li>
+                    <li>مركز الأمان: <a href="security_center.php">إدارة إعدادات الأمان</a></li>
+                    <li>إعدادات الحساب: <a href="client/account.php">تحديث المعلومات الشخصية</a></li>
                 </ul>
             </div>
 
@@ -197,51 +180,7 @@ if (!isset($_SESSION['is_mobile'])) {
         </div>
     </section>
 
-    <style>
-    .privacy-content {
-        line-height: 1.6;
-    }
-    
-    .section {
-        margin-bottom: 30px;
-        padding: 20px;
-        background: rgba(255,255,255,0.8);
-        border-radius: 10px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    }
-    
-    .section h2 {
-        color: var(--primary-color);
-        margin-bottom: 15px;
-        border-bottom: 2px solid var(--accent-color);
-        padding-bottom: 10px;
-    }
-    
-    .section h3 {
-        color: var(--text-color);
-        margin: 15px 0 10px 0;
-    }
-    
-    .section ul {
-        margin: 10px 0;
-        padding-left: 20px;
-    }
-    
-    .section li {
-        margin-bottom: 8px;
-    }
-    
-    .section p {
-        margin-bottom: 15px;
-    }
-    
-    @media (max-width: 768px) {
-        .section {
-            padding: 15px;
-            margin-bottom: 20px;
-        }
-    }
-    </style>
+  <!-- Inline styles removed -->
 
     <script src="main.js?v=1.2"></script>
 </body>
