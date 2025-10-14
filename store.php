@@ -84,20 +84,12 @@ $page_title = __('store') . ' - WeBuy';
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo htmlspecialchars($page_title); ?></title>
     
-    <!-- Bootstrap 5.3+ CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    
-    <!-- WeBuy Custom Bootstrap Configuration -->
-    <link rel="stylesheet" href="css/bootstrap-custom.css">
-    
-    <!-- Legacy CSS for gradual migration -->
-    <link rel="stylesheet" href="css/main.css">
+    <!-- Stylesheets removed to reset site styling -->
     
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="favicon.ico">
     
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Amiri&display=swap" rel="stylesheet">
+    <!-- Google Fonts removed -->
     
     <!-- JavaScript -->
     <script src="js/theme-controller.js" defer></script>
@@ -188,7 +180,7 @@ $page_title = __('store') . ' - WeBuy';
                     
                     <div class="d-flex align-items-center gap-3">
                         <span class="text-muted"><?php echo __('sort_by'); ?>:</span>
-                        <select onchange="window.location.href=this.value" class="form-select" style="width: auto;">
+                        <select onchange="window.location.href=this.value" class="form-select">
                             <option value="?<?php echo http_build_query(array_merge($_GET, ['sort' => 'newest'])); ?>" 
                                     <?php echo $sort === 'newest' ? 'selected' : ''; ?>>
                                 <?php echo __('newest'); ?>
@@ -226,7 +218,7 @@ $page_title = __('store') . ' - WeBuy';
                             <div class="col-md-6 col-lg-4 col-xl-3">
                                 <div class="card h-100 shadow-sm">
                                     <div class="position-relative">
-                                        <div class="card-img-top" style="height: 200px; overflow: hidden;">
+                                        <div class="card-img-top">
                                             <div class="skeleton w-100 h-100"></div>
                                             <?php 
                                             $optimized_image = get_optimized_image('uploads/' . $product['image'], 'card');
