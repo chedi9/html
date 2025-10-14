@@ -35,7 +35,11 @@ class ThemeController {
   // Set theme and update DOM
   setTheme(theme) {
     this.currentTheme = theme;
+    
+    // Update both legacy data-theme and Bootstrap data-bs-theme
     document.documentElement.setAttribute('data-theme', theme);
+    document.documentElement.setAttribute('data-bs-theme', theme);
+    
     localStorage.setItem('theme', theme);
     
     // Update theme toggle button if it exists
@@ -73,16 +77,18 @@ class ThemeController {
     if (!this.themeToggle) return;
     
     const isDark = this.currentTheme === 'dark';
-    const icon = this.themeToggle.querySelector('.theme-toggle__icon');
     
-    if (icon) {
-      // Update icon visibility
-      const lightIcon = this.themeToggle.querySelector('.theme-toggle__icon--light');
-      const darkIcon = this.themeToggle.querySelector('.theme-toggle__icon--dark');
-      
-      if (lightIcon && darkIcon) {
-        lightIcon.style.display = isDark ? 'block' : 'none';
-        darkIcon.style.display = isDark ? 'none' : 'block';
+    // Update Bootstrap icon visibility
+    const lightIcon = this.themeToggle.querySelector('.theme-toggle__icon--light');
+    const darkIcon = this.themeToggle.querySelector('.theme-toggle__icon--dark');
+    
+    if (lightIcon && darkIcon) {
+      if (isDark) {
+        lightIcon.classList.add('d-none');
+        darkIcon.classList.remove('d-none');
+      } else {
+        lightIcon.classList.remove('d-none');
+        darkIcon.classList.add('d-none');
       }
     }
     

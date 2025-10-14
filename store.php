@@ -78,27 +78,20 @@ $page_title = __('store') . ' - WeBuy';
 ?>
 
 <!DOCTYPE html>
-<html lang="<?php echo $lang; ?>" dir="<?php echo $lang === 'ar' ? 'rtl' : 'ltr'; ?>" data-theme="light">
+<html lang="<?php echo $lang; ?>" dir="<?php echo $lang === 'ar' ? 'rtl' : 'ltr'; ?>" data-bs-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo htmlspecialchars($page_title); ?></title>
     
-    <!-- CSS Files - Load in correct order -->
-    <link rel="stylesheet" href="css/base/_variables.css">
-    <link rel="stylesheet" href="css/base/_reset.css">
-    <link rel="stylesheet" href="css/base/_typography.css">
-    <link rel="stylesheet" href="css/base/_utilities.css">
-    <link rel="stylesheet" href="css/components/_buttons.css">
-    <link rel="stylesheet" href="css/components/_forms.css">
-    <link rel="stylesheet" href="css/components/_cards.css">
-    <link rel="stylesheet" href="css/components/_navigation.css">
-    <link rel="stylesheet" href="css/layout/_grid.css">
-    <link rel="stylesheet" href="css/layout/_sections.css">
-    <link rel="stylesheet" href="css/layout/_footer.css">
-    <link rel="stylesheet" href="css/themes/_light.css">
-    <link rel="stylesheet" href="css/themes/_dark.css">
-    <link rel="stylesheet" href="css/build.css">
+    <!-- Bootstrap 5.3+ CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- WeBuy Custom Bootstrap Configuration -->
+    <link rel="stylesheet" href="css/bootstrap-custom.css">
+    
+    <!-- Legacy CSS for gradual migration -->
+    <link rel="stylesheet" href="css/main.css">
     
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="favicon.ico">
@@ -107,330 +100,9 @@ $page_title = __('store') . ' - WeBuy';
     <link href="https://fonts.googleapis.com/css2?family=Amiri&display=swap" rel="stylesheet">
     
     <!-- JavaScript -->
+    <script src="js/theme-controller.js" defer></script>
     <script src="main.js?v=1.4" defer></script>
     
-    <!-- Store page specific styles -->
-    <style>
-        .store-hero {
-            background: linear-gradient(135deg, var(--color-primary-50), var(--color-accent-50));
-            padding: var(--space-8) 0;
-            text-align: center;
-        }
-        
-        .store-hero__title {
-            font-size: var(--font-size-4xl);
-            font-weight: var(--font-weight-bold);
-            color: var(--color-gray-900);
-            margin-bottom: var(--space-4);
-        }
-        
-        .store-hero__subtitle {
-            font-size: var(--font-size-lg);
-            color: var(--color-gray-600);
-            margin-bottom: var(--space-6);
-        }
-        
-        .store-filters {
-            background: var(--color-white);
-            border-radius: var(--border-radius-lg);
-            padding: var(--space-6);
-            box-shadow: var(--shadow-md);
-            margin-bottom: var(--space-8);
-        }
-        
-        .filters-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: var(--space-4);
-            align-items: end;
-        }
-        
-        .filter-group {
-            display: flex;
-            flex-direction: column;
-            gap: var(--space-2);
-        }
-        
-        .filter-label {
-            font-size: var(--font-size-sm);
-            font-weight: var(--font-weight-medium);
-            color: var(--color-gray-700);
-        }
-        
-        .filter-input {
-            padding: var(--space-3);
-            border: 2px solid var(--color-gray-300);
-            border-radius: var(--border-radius-md);
-            font-size: var(--font-size-base);
-            transition: all var(--transition-fast);
-        }
-        
-        .filter-input:focus {
-            border-color: var(--color-primary-500);
-            box-shadow: 0 0 0 3px var(--color-primary-100);
-        }
-        
-        .filter-btn {
-            padding: var(--space-3) var(--space-6);
-            background: var(--color-primary-600);
-            color: var(--color-white);
-            border: none;
-            border-radius: var(--border-radius-md);
-            font-weight: var(--font-weight-medium);
-            cursor: pointer;
-            transition: all var(--transition-fast);
-        }
-        
-        .filter-btn:hover {
-            background: var(--color-primary-700);
-            transform: translateY(-1px);
-        }
-        
-        .store-results {
-            margin-bottom: var(--space-8);
-        }
-        
-        .results-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: var(--space-6);
-            flex-wrap: wrap;
-            gap: var(--space-4);
-        }
-        
-        .results-count {
-            font-size: var(--font-size-lg);
-            color: var(--color-gray-600);
-        }
-        
-        .results-sort {
-            display: flex;
-            align-items: center;
-            gap: var(--space-3);
-        }
-        
-        .sort-label {
-            font-size: var(--font-size-sm);
-            font-weight: var(--font-weight-medium);
-            color: var(--color-gray-700);
-        }
-        
-        .products-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: var(--space-6);
-            margin-bottom: var(--space-8);
-        }
-        
-        .product-card {
-            background: var(--color-white);
-            border-radius: var(--border-radius-lg);
-            overflow: hidden;
-            box-shadow: var(--shadow-md);
-            transition: all var(--transition-fast);
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .product-card:hover {
-            transform: translateY(-4px);
-            box-shadow: var(--shadow-lg);
-        }
-        
-        .product-card__image {
-            aspect-ratio: 1;
-            overflow: hidden;
-            position: relative;
-        }
-        
-        .product-card__image img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform var(--transition-medium);
-        }
-        
-        .product-card:hover .product-card__image img {
-            transform: scale(1.05);
-        }
-        
-        .product-card__badge {
-            position: absolute;
-            top: var(--space-3);
-            right: var(--space-3);
-            background: var(--color-primary-600);
-            color: var(--color-white);
-            padding: var(--space-1) var(--space-2);
-            border-radius: var(--border-radius-sm);
-            font-size: var(--font-size-xs);
-            font-weight: var(--font-weight-medium);
-        }
-        
-        .product-card__body {
-            padding: var(--space-4);
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .product-card__title {
-            font-size: var(--font-size-lg);
-            font-weight: var(--font-weight-semibold);
-            color: var(--color-gray-900);
-            margin-bottom: var(--space-2);
-            line-height: var(--line-height-tight);
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
-        
-        .product-card__title a {
-            color: inherit;
-            text-decoration: none;
-        }
-        
-        .product-card__title a:hover {
-            color: var(--color-primary-600);
-        }
-        
-        .product-card__meta {
-            display: flex;
-            align-items: center;
-            gap: var(--space-2);
-            margin-bottom: var(--space-3);
-            font-size: var(--font-size-sm);
-            color: var(--color-gray-600);
-        }
-        
-        .product-card__price {
-            font-size: var(--font-size-xl);
-            font-weight: var(--font-weight-bold);
-            color: var(--color-primary-600);
-            margin-bottom: var(--space-4);
-        }
-        
-        .product-card__actions {
-            margin-top: auto;
-            display: flex;
-            gap: var(--space-2);
-        }
-        
-        .product-card__btn {
-            flex: 1;
-            padding: var(--space-2) var(--space-3);
-            border: none;
-            border-radius: var(--border-radius-md);
-            font-size: var(--font-size-sm);
-            font-weight: var(--font-weight-medium);
-            cursor: pointer;
-            transition: all var(--transition-fast);
-            text-decoration: none;
-            text-align: center;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: var(--space-1);
-        }
-        
-        .product-card__btn--primary {
-            background: var(--color-primary-600);
-            color: var(--color-white);
-        }
-        
-        .product-card__btn--primary:hover {
-            background: var(--color-primary-700);
-        }
-        
-        .product-card__btn--secondary {
-            background: var(--color-gray-100);
-            color: var(--color-gray-700);
-        }
-        
-        .product-card__btn--secondary:hover {
-            background: var(--color-gray-200);
-        }
-        
-        .pagination {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: var(--space-2);
-            margin-top: var(--space-8);
-        }
-        
-        .pagination__link {
-            padding: var(--space-3) var(--space-4);
-            border: 2px solid var(--color-gray-300);
-            border-radius: var(--border-radius-md);
-            color: var(--color-gray-700);
-            text-decoration: none;
-            font-weight: var(--font-weight-medium);
-            transition: all var(--transition-fast);
-        }
-        
-        .pagination__link:hover {
-            border-color: var(--color-primary-500);
-            color: var(--color-primary-600);
-        }
-        
-        .pagination__link--active {
-            background: var(--color-primary-600);
-            border-color: var(--color-primary-600);
-            color: var(--color-white);
-        }
-        
-        .pagination__link--disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-        
-        .empty-state {
-            text-align: center;
-            padding: var(--space-12) var(--space-4);
-            color: var(--color-gray-600);
-        }
-        
-        .empty-state__icon {
-            font-size: var(--font-size-4xl);
-            margin-bottom: var(--space-4);
-            opacity: 0.5;
-        }
-        
-        .empty-state__title {
-            font-size: var(--font-size-xl);
-            font-weight: var(--font-weight-semibold);
-            margin-bottom: var(--space-2);
-            color: var(--color-gray-700);
-        }
-        
-        .empty-state__text {
-            font-size: var(--font-size-lg);
-            margin-bottom: var(--space-6);
-        }
-        
-        @media (max-width: 768px) {
-            .filters-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .results-header {
-                flex-direction: column;
-                align-items: stretch;
-            }
-            
-            .products-grid {
-                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-                gap: var(--space-4);
-            }
-            
-            .product-card__actions {
-                flex-direction: column;
-            }
-        }
-    </style>
 </head>
 <body class="page-transition">
     <!-- Skip to main content for accessibility -->
@@ -440,26 +112,28 @@ $page_title = __('store') . ' - WeBuy';
     
     <main id="main-content" role="main">
         <!-- Store Hero Section -->
-        <section class="store-hero">
+        <section class="bg-primary text-white py-5">
             <div class="container">
-                <h1 class="store-hero__title"><?php echo __('store'); ?></h1>
-                <p class="store-hero__subtitle"><?php echo __('discover_amazing_products'); ?></p>
+                <div class="text-center">
+                    <h1 class="display-4 fw-bold mb-3"><?php echo __('store'); ?></h1>
+                    <p class="lead"><?php echo __('discover_amazing_products'); ?></p>
+                </div>
             </div>
         </section>
         
         <!-- Store Filters -->
-        <section class="store-filters">
+        <section class="py-4 bg-light border-bottom">
             <div class="container">
-                <form method="GET" class="filters-grid">
-                    <div class="filter-group">
-                        <label for="search" class="filter-label"><?php echo __('search'); ?></label>
+                <form method="GET" class="row g-3 align-items-end">
+                    <div class="col-md-3">
+                        <label for="search" class="form-label"><?php echo __('search'); ?></label>
                         <input type="text" id="search" name="search" value="<?php echo htmlspecialchars($search); ?>" 
-                               class="filter-input" placeholder="<?php echo __('search_products'); ?>">
+                               class="form-control" placeholder="<?php echo __('search_products'); ?>">
                     </div>
                     
-                    <div class="filter-group">
-                        <label for="category" class="filter-label"><?php echo __('category'); ?></label>
-                        <select id="category" name="category" class="filter-input">
+                    <div class="col-md-3">
+                        <label for="category" class="form-label"><?php echo __('category'); ?></label>
+                        <select id="category" name="category" class="form-select">
                             <option value=""><?php echo __('all_categories'); ?></option>
                             <?php foreach ($categories as $category): ?>
                                 <option value="<?php echo $category['id']; ?>" 
@@ -470,9 +144,9 @@ $page_title = __('store') . ' - WeBuy';
                         </select>
                     </div>
                     
-                    <div class="filter-group">
-                        <label for="sort" class="filter-label"><?php echo __('sort_by'); ?></label>
-                        <select id="sort" name="sort" class="filter-input">
+                    <div class="col-md-3">
+                        <label for="sort" class="form-label"><?php echo __('sort_by'); ?></label>
+                        <select id="sort" name="sort" class="form-select">
                             <option value="newest" <?php echo $sort === 'newest' ? 'selected' : ''; ?>>
                                 <?php echo __('newest'); ?>
                             </option>
@@ -491,9 +165,9 @@ $page_title = __('store') . ' - WeBuy';
                         </select>
                     </div>
                     
-                    <div class="filter-group">
-                        <button type="submit" class="filter-btn">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <div class="col-md-3">
+                        <button type="submit" class="btn btn-primary w-100">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-2">
                                 <circle cx="11" cy="11" r="8"></circle>
                                 <path d="m21 21-4.35-4.35"></path>
                             </svg>
@@ -505,16 +179,16 @@ $page_title = __('store') . ' - WeBuy';
         </section>
         
         <!-- Store Results -->
-        <section class="store-results">
+        <section class="py-4">
             <div class="container">
-                <div class="results-header">
-                    <div class="results-count">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div class="text-muted">
                         <?php echo sprintf(__('showing_products'), $total_products); ?>
                     </div>
                     
-                    <div class="results-sort">
-                        <span class="sort-label"><?php echo __('sort_by'); ?>:</span>
-                        <select onchange="window.location.href=this.value" class="form__select">
+                    <div class="d-flex align-items-center gap-3">
+                        <span class="text-muted"><?php echo __('sort_by'); ?>:</span>
+                        <select onchange="window.location.href=this.value" class="form-select" style="width: auto;">
                             <option value="?<?php echo http_build_query(array_merge($_GET, ['sort' => 'newest'])); ?>" 
                                     <?php echo $sort === 'newest' ? 'selected' : ''; ?>>
                                 <?php echo __('newest'); ?>
@@ -540,74 +214,78 @@ $page_title = __('store') . ' - WeBuy';
                 </div>
                 
                 <?php if (empty($products)): ?>
-                    <div class="empty-state">
-                        <div class="empty-state__icon">🛍️</div>
-                        <h2 class="empty-state__title"><?php echo __('no_products_found'); ?></h2>
-                        <p class="empty-state__text"><?php echo __('try_different_filters'); ?></p>
-                        <a href="store.php" class="btn btn--primary"><?php echo __('view_all_products'); ?></a>
+                    <div class="text-center py-5">
+                        <div class="display-1 mb-4">🛍️</div>
+                        <h2 class="h3 mb-3"><?php echo __('no_products_found'); ?></h2>
+                        <p class="text-muted mb-4"><?php echo __('try_different_filters'); ?></p>
+                        <a href="store.php" class="btn btn-primary"><?php echo __('view_all_products'); ?></a>
                     </div>
                 <?php else: ?>
-                    <div class="products-grid">
+                    <div class="row g-4">
                         <?php foreach ($products as $product): ?>
-                            <div class="product-card">
-                                <div class="product-card__image">
-                                    <div class="skeleton skeleton--image"></div>
-                                    <?php 
-                                    $optimized_image = get_optimized_image('uploads/' . $product['image'], 'card');
-                                    ?>
-                                    <img src="<?php echo $optimized_image['src']; ?>" 
-                                         srcset="<?php echo $optimized_image['srcset']; ?>" 
-                                         sizes="<?php echo $optimized_image['sizes']; ?>"
-                                         alt="<?php echo htmlspecialchars($product['name']); ?>"
-                                         loading="lazy" 
-                                         width="280" 
-                                         height="280"
-                                         onload="this.classList.add('loaded'); this.previousElementSibling.style.display='none';">
-                                    
-                                    <?php if ($product['stock'] <= 0): ?>
-                                        <div class="product-card__badge"><?php echo __('out_of_stock'); ?></div>
-                                    <?php endif; ?>
-                                </div>
-                                
-                                <div class="product-card__body">
-                                    <div class="skeleton skeleton--title"></div>
-                                    <h3 class="product-card__title">
-                                        <a href="product.php?id=<?php echo $product['id']; ?>">
-                                            <?php echo htmlspecialchars($product['name']); ?>
-                                        </a>
-                                    </h3>
-                                    
-                                    <div class="skeleton skeleton--text"></div>
-                                    <div class="product-card__meta">
-                                        <span><?php echo htmlspecialchars($product['category_name']); ?></span>
-                                        <?php if ($product['seller_name']): ?>
-                                            <span>•</span>
-                                            <span><?php echo htmlspecialchars($product['seller_name']); ?></span>
+                            <div class="col-md-6 col-lg-4 col-xl-3">
+                                <div class="card h-100 shadow-sm">
+                                    <div class="position-relative">
+                                        <div class="card-img-top" style="height: 200px; overflow: hidden;">
+                                            <div class="skeleton w-100 h-100"></div>
+                                            <?php 
+                                            $optimized_image = get_optimized_image('uploads/' . $product['image'], 'card');
+                                            ?>
+                                            <img src="<?php echo $optimized_image['src']; ?>" 
+                                                 srcset="<?php echo $optimized_image['srcset']; ?>" 
+                                                 sizes="<?php echo $optimized_image['sizes']; ?>"
+                                                 alt="<?php echo htmlspecialchars($product['name']); ?>"
+                                                 loading="lazy" 
+                                                 class="w-100 h-100 object-fit-cover"
+                                                 onload="this.classList.add('loaded'); this.previousElementSibling.style.display='none';">
+                                        </div>
+                                        
+                                        <?php if ($product['stock'] <= 0): ?>
+                                            <span class="badge bg-danger position-absolute top-0 end-0 m-2">
+                                                <?php echo __('out_of_stock'); ?>
+                                            </span>
                                         <?php endif; ?>
                                     </div>
                                     
-                                    <div class="skeleton skeleton--text"></div>
-                                    <div class="product-card__price">
-                                        <?php echo number_format($product['price'], 2); ?> <?php echo __('currency'); ?>
-                                    </div>
-                                    
-                                    <div class="product-card__actions">
-                                        <a href="product.php?id=<?php echo $product['id']; ?>" 
-                                           class="product-card__btn product-card__btn--primary">
-                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                                                <circle cx="12" cy="12" r="3"/>
-                                            </svg>
-                                            <?php echo __('view'); ?>
-                                        </a>
+                                    <div class="card-body d-flex flex-column">
+                                        <h5 class="card-title">
+                                            <a href="product.php?id=<?php echo $product['id']; ?>" class="text-decoration-none text-dark">
+                                                <?php echo htmlspecialchars($product['name']); ?>
+                                            </a>
+                                        </h5>
                                         
-                                        <button onclick="addToWishlist(<?php echo $product['id']; ?>)" 
-                                                class="product-card__btn product-card__btn--secondary">
-                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-                                            </svg>
-                                            <?php echo __('wishlist'); ?>
-                                        </button>
+                                        <div class="text-muted small mb-2">
+                                            <span><?php echo htmlspecialchars($product['category_name']); ?></span>
+                                            <?php if ($product['seller_name']): ?>
+                                                <span>•</span>
+                                                <span><?php echo htmlspecialchars($product['seller_name']); ?></span>
+                                            <?php endif; ?>
+                                        </div>
+                                        
+                                        <div class="h5 text-primary mb-3">
+                                            <?php echo number_format($product['price'], 2); ?> <?php echo __('currency'); ?>
+                                        </div>
+                                        
+                                        <div class="mt-auto">
+                                            <div class="d-grid gap-2">
+                                                <a href="product.php?id=<?php echo $product['id']; ?>" 
+                                                   class="btn btn-outline-primary btn-sm">
+                                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-1">
+                                                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                                        <circle cx="12" cy="12" r="3"/>
+                                                    </svg>
+                                                    <?php echo __('view'); ?>
+                                                </a>
+                                                
+                                                <button onclick="addToWishlist(<?php echo $product['id']; ?>)" 
+                                                        class="btn btn-outline-secondary btn-sm">
+                                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-1">
+                                                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                                                    </svg>
+                                                    <?php echo __('wishlist'); ?>
+                                                </button>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -616,28 +294,36 @@ $page_title = __('store') . ' - WeBuy';
                     
                     <!-- Pagination -->
                     <?php if ($total_pages > 1): ?>
-                        <div class="pagination">
-                            <?php if ($page > 1): ?>
-                                <a href="?<?php echo http_build_query(array_merge($_GET, ['page' => $page - 1])); ?>" 
-                                   class="pagination__link">
-                                    <?php echo __('previous'); ?>
-                                </a>
-                            <?php endif; ?>
-                            
-                            <?php for ($i = max(1, $page - 2); $i <= min($total_pages, $page + 2); $i++): ?>
-                                <a href="?<?php echo http_build_query(array_merge($_GET, ['page' => $i])); ?>" 
-                                   class="pagination__link <?php echo $i === $page ? 'pagination__link--active' : ''; ?>">
-                                    <?php echo $i; ?>
-                                </a>
-                            <?php endfor; ?>
-                            
-                            <?php if ($page < $total_pages): ?>
-                                <a href="?<?php echo http_build_query(array_merge($_GET, ['page' => $page + 1])); ?>" 
-                                   class="pagination__link">
-                                    <?php echo __('next'); ?>
-                                </a>
-                            <?php endif; ?>
-                        </div>
+                        <nav aria-label="Products pagination" class="mt-5">
+                            <ul class="pagination justify-content-center">
+                                <?php if ($page > 1): ?>
+                                    <li class="page-item">
+                                        <a href="?<?php echo http_build_query(array_merge($_GET, ['page' => $page - 1])); ?>" 
+                                           class="page-link">
+                                            <?php echo __('previous'); ?>
+                                        </a>
+                                    </li>
+                                <?php endif; ?>
+                                
+                                <?php for ($i = max(1, $page - 2); $i <= min($total_pages, $page + 2); $i++): ?>
+                                    <li class="page-item <?php echo $i === $page ? 'active' : ''; ?>">
+                                        <a href="?<?php echo http_build_query(array_merge($_GET, ['page' => $i])); ?>" 
+                                           class="page-link">
+                                            <?php echo $i; ?>
+                                        </a>
+                                    </li>
+                                <?php endfor; ?>
+                                
+                                <?php if ($page < $total_pages): ?>
+                                    <li class="page-item">
+                                        <a href="?<?php echo http_build_query(array_merge($_GET, ['page' => $page + 1])); ?>" 
+                                           class="page-link">
+                                            <?php echo __('next'); ?>
+                                        </a>
+                                    </li>
+                                <?php endif; ?>
+                            </ul>
+                        </nav>
                     <?php endif; ?>
                 <?php endif; ?>
             </div>
@@ -669,14 +355,6 @@ $page_title = __('store') . ' - WeBuy';
                 showToast('Error adding to wishlist', 'danger');
             });
         }
-        
-        function showToast(message, type = 'info') {
-            if (window.showToast) {
-                window.showToast(type);
-            } else {
-                alert(message);
-            }
-        }
     </script>
 </body>
-</html> 
+</html>
