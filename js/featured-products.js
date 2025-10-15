@@ -35,14 +35,14 @@ class FeaturedProducts {
     }
     
     createStructure() {
-        // Create products grid
+        // Create products grid (Bootstrap grid)
         this.productsGrid = document.createElement('div');
-        this.productsGrid.className = 'grid grid--4 featured-products-grid';
+        this.productsGrid.className = 'row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4 featured-products-grid';
         this.productsGrid.setAttribute('aria-live', 'polite');
         
         // Create load more button
         this.loadMoreBtn = document.createElement('button');
-        this.loadMoreBtn.className = 'btn btn--secondary btn--lg featured-products-load-more';
+        this.loadMoreBtn.className = 'btn btn-secondary btn-lg featured-products-load-more';
         this.loadMoreBtn.textContent = this.options.loadMoreText;
         this.loadMoreBtn.setAttribute('aria-label', this.options.loadMoreText);
         
@@ -103,16 +103,13 @@ class FeaturedProducts {
             const productCard = this.createProductCard(product);
             this.productsGrid.appendChild(productCard);
         });
-        
-        // Trigger layout recalculation for responsive grid
-        this.productsGrid.style.display = 'none';
-        this.productsGrid.offsetHeight; // Force reflow
-        this.productsGrid.style.display = 'grid';
     }
     
     createProductCard(product) {
+        const col = document.createElement('div');
+        col.className = 'col';
         const card = document.createElement('div');
-        card.className = 'card card--product';
+        card.className = 'card h-100 shadow-sm';
         card.setAttribute('data-product-id', product.id);
         
         // Create badges
@@ -133,41 +130,33 @@ class FeaturedProducts {
         card.innerHTML = `
             ${badges.join('')}
             ${wishlistBtn}
-            
-            <a href="product.php?id=${product.id}" class="card__link">
-                <div class="card__image">
-                    <div class="skeleton skeleton--image"></div>
+            <a href="product.php?id=${product.id}" class="text-decoration-none text-dark">
+                <div class="card-img-top" style="height:200px; overflow:hidden;">
+                    <div class="skeleton w-100 h-100"></div>
                     <img src="${product.image.src}" 
                          srcset="${product.image.srcset}"
                          sizes="${product.image.sizes}"
                          alt="${this.escapeHtml(product.name)}" 
                          loading="lazy"
-                         width="300"
-                         height="200"
+                         class="w-100 h-100 object-fit-cover"
                          onload="this.classList.add('loaded'); this.previousElementSibling.style.display='none';">
                 </div>
-                <div class="card__content">
-                    <div class="skeleton skeleton--title"></div>
-                    <h3 class="card__title">${this.escapeHtml(product.name)}</h3>
-                    <div class="skeleton skeleton--text"></div>
-                    <p class="card__description">${this.escapeHtml(product.description)}</p>
-                    
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title">${this.escapeHtml(product.name)}</h5>
+                    <p class="card-text text-muted small">${this.escapeHtml(product.description)}</p>
                     ${ratingStars}
-                    
-                    <div class="skeleton skeleton--price"></div>
-                    <div class="card__price">${this.escapeHtml(product.price)} د.ت</div>
+                    <div class="mt-auto h5 text-primary">${this.escapeHtml(product.price)} د.ت</div>
                 </div>
             </a>
-            
-            <form action="add_to_cart.php" method="get" class="card__form">
-                <input type="hidden" name="id" value="${product.id}">
-                <button type="submit" class="btn btn--primary btn--sm">
-                    إضافة إلى السلة
-                </button>
-            </form>
+            <div class="card-footer bg-white border-0">
+                <form action="add_to_cart.php" method="get" class="d-grid">
+                    <input type="hidden" name="id" value="${product.id}">
+                    <button type="submit" class="btn btn-primary btn-sm">إضافة إلى السلة</button>
+                </form>
+            </div>
         `;
-        
-        return card;
+        col.appendChild(card);
+        return col;
     }
     
     createWishlistButton(productId) {
@@ -193,16 +182,18 @@ class FeaturedProducts {
         
         const stars = [];
         for (let i = 1; i <= 5; i++) {
-            const filled = i <= rating.average ? 'filled' : '';
-            stars.push(`<span class="star ${filled}">★</span>`);
+            const filled = i <= rating.average ? 'text-warning' : 'text-muted';
+            stars.push(`<span class="${filled}">★</span>`);
         }
         
         return `
-            <div class="card__rating">
-                <div class="card__rating-stars">
-                    ${stars.join('')}
+            <div class="mb-2">
+                <div class="d-flex align-items-center">
+                    <div class="me-2">
+                        ${stars.join('')}
+                    </div>
+                    <small class="text-muted">(${rating.count})</small>
                 </div>
-                <span class="card__rating-count">(${rating.count})</span>
             </div>
         `;
     }

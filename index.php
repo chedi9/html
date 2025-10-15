@@ -55,8 +55,8 @@ $priority_products = getPriorityProducts(6);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WeBuy - Online Shopping Platform</title>
     
-    <!-- Bootstrap 5.3+ CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap 5.3+ CSS (local) -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
     
     <!-- WeBuy Custom Bootstrap Configuration -->
     <link rel="stylesheet" href="css/bootstrap-custom.css">

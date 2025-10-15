@@ -46,7 +46,7 @@ try {
         SELECT 
             p.*,
             s.is_disabled,
-            s.name as seller_name,
+            s.store_name as seller_name,
             ds.name AS disabled_seller_name,
             ds.disability_type,
             ds.priority_level,

@@ -14,7 +14,7 @@ class SecurityHeaders {
         if ((!function_exists('isSecurityHeadersEnabled') || isSecurityHeadersEnabled()) && !headers_sent()) {
             // Content Security Policy (CSP) - Prevent XSS attacks
             $csp = "default-src 'self'; " .
-                    "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://checkout.stripe.com https://www.paypal.com https://js.stripe.com https://www.googletagmanager.com https://www.google-analytics.com; " .
+                    "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://checkout.stripe.com https://www.paypal.com https://js.stripe.com https://www.googletagmanager.com https://www.google-analytics.com; " .
                     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; " .
                     "font-src 'self' https://fonts.gstatic.com; " .
                     "img-src 'self' data: https: blob:; " .
