@@ -66,30 +66,17 @@ if ($_SESSION['cart']) {
         $total += $row['subtotal'];
     }
 }
-$lang = $_GET['lang'] ?? $_SESSION['lang'] ?? 'ar';
+$lang = $_GET['lang'] ?? $_SESSION['lang'] ?? 'en';
 ?>
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="<?php echo $lang; ?>" dir="<?php echo $lang === 'ar' ? 'rtl' : 'ltr'; ?>" data-bs-theme="light">
 <head>
     <meta charset="UTF-8">
-    <title>سلة التسوق</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><?php echo __('shopping_cart'); ?> - WeBuy</title>
     
-    <!-- CSS Files - Load in correct order -->
-    <link rel="stylesheet" href="css/base/_variables.css">
-    <link rel="stylesheet" href="css/base/_reset.css">
-    <link rel="stylesheet" href="css/base/_typography.css">
-    <link rel="stylesheet" href="css/base/_utilities.css">
-    <link rel="stylesheet" href="css/components/_buttons.css">
-    <link rel="stylesheet" href="css/components/_forms.css">
-    <link rel="stylesheet" href="css/components/_cards.css">
-    <link rel="stylesheet" href="css/components/_navigation.css">
-    <link rel="stylesheet" href="css/layout/_grid.css">
-    <link rel="stylesheet" href="css/layout/_sections.css">
-    <link rel="stylesheet" href="css/layout/_footer.css">
-    <link rel="stylesheet" href="css/themes/_light.css">
-    <link rel="stylesheet" href="css/themes/_dark.css">
-    <link rel="stylesheet" href="css/build.css">
+    <!-- Bootstrap 5.3+ CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="favicon.ico">
@@ -98,97 +85,220 @@ $lang = $_GET['lang'] ?? $_SESSION['lang'] ?? 'ar';
     <link href="https://fonts.googleapis.com/css2?family=Amiri&display=swap" rel="stylesheet">
     
     <!-- JavaScript -->
+    <script src="js/theme-controller.js" defer></script>
     <script src="main.js?v=1.4" defer></script>
-    
-    <?php if (!empty($_SESSION['is_mobile'])): ?>
-    <link rel="stylesheet" href="mobile.css">
-    <?php endif; ?>
-    <style>
-        .cart-container { max-width: 900px; margin: 40px auto; background: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-        .cart-container h2 { text-align: center; margin-bottom: 30px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { padding: 12px; border-bottom: 1px solid #eee; text-align: center; }
-        th { background: #f4f4f4; }
-        .remove-btn { background: #c00; color: #fff; padding: 6px 16px; border-radius: 5px; text-decoration: none; font-size: 0.95em; margin: 0 4px; }
-        .remove-btn:hover { background: #a00; }
-        .checkout-btn { background: var(--primary-color); color: #fff; padding: 12px 30px; border-radius: 5px; text-decoration: none; font-size: 1.1em; display: inline-block !important; margin-top: 20px; border: none; cursor: pointer; width: auto; max-width: 100%; white-space: nowrap; }
-        .checkout-btn:hover { background: var(--secondary-color); }
-        .cart-container .checkout-btn { display: inline-block !important; visibility: visible !important; opacity: 1 !important; }
-        .cart-container button.checkout-btn { display: inline-block !important; }
-        .cart-container a.checkout-btn { display: inline-block !important; }
-    </style>
 </head>
-<body>
-<div id="pageContent">
-    <div class="cart-container">
-        <h2>سلة التسوق</h2>
-        <?php if ($cart_items): ?>
-        <form method="post">
-        <table>
-            <thead>
-                <tr>
-                    <th>الصورة</th>
-                    <th>المنتج</th>
-                    <th>السعر</th>
-                    <th>الكمية</th>
-                    <th>المجموع الفرعي</th>
-                    <th>إزالة</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($cart_items as $idx => $item): ?>
-  <?php $prod_name = $item['name_' . $lang] ?? $item['name']; ?>
-  <?php $cart_key = array_keys($_SESSION['cart'])[$idx]; ?>
-  <tr>
-    <td><?php if ($item['image']): ?>
-            <div class="product-img-wrap" style="position: relative; overflow: hidden;">
-                <div class="skeleton skeleton--image"></div>
-                <?php 
-                $optimized_image = get_optimized_image('uploads/' . $item['image'], 'card');
-                ?>
-                <img src="<?php echo $optimized_image['src']; ?>" 
-                     srcset="<?php echo $optimized_image['srcset']; ?>" 
-                     sizes="<?php echo $optimized_image['sizes']; ?>"
-                     alt="<?php echo htmlspecialchars($item['name']); ?>" 
-                     loading="lazy" 
-                     width="80" 
-                     height="80" 
-                     style="position: relative; z-index: 2; object-fit: cover; border-radius: 4px;"
-                     onload="this.classList.add('loaded'); this.previousElementSibling.style.display='none';">
+<body class="page-transition">
+    <!-- Skip to main content for accessibility -->
+    <a href="#main-content" class="skip-link"><?php echo __('skip_to_main_content'); ?></a>
+    
+    <?php include 'header.php'; ?>
+    
+    <main id="main-content" role="main">
+        <!-- Cart Section -->
+        <section class="py-5">
+            <div class="container">
+                <h1 class="display-5 fw-bold mb-4"><?php echo __('shopping_cart'); ?></h1>
+                
+                <?php if ($cart_items): ?>
+                    <div class="row g-4">
+                        <!-- Cart Items -->
+                        <div class="col-lg-8">
+                            <div class="card shadow-sm">
+                                <div class="card-body">
+                                    <form method="post">
+                                        <div class="table-responsive">
+                                            <table class="table align-middle">
+                                                <thead class="table-light">
+                                                    <tr>
+                                                        <th><?php echo __('product'); ?></th>
+                                                        <th class="text-center"><?php echo __('price'); ?></th>
+                                                        <th class="text-center"><?php echo __('quantity'); ?></th>
+                                                        <th class="text-center"><?php echo __('subtotal'); ?></th>
+                                                        <th class="text-center"><?php echo __('remove'); ?></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <?php foreach ($cart_items as $idx => $item): ?>
+                                                        <?php $prod_name = $item['name_' . $lang] ?? $item['name']; ?>
+                                                        <?php $cart_key = array_keys($_SESSION['cart'])[$idx]; ?>
+                                                        <tr>
+                                                            <td>
+                                                                <div class="d-flex align-items-center gap-3">
+                                                                    <?php if ($item['image']): ?>
+                                                                        <?php 
+                                                                        $optimized_image = get_optimized_image('uploads/' . $item['image'], 'card');
+                                                                        ?>
+                                                                        <img src="<?php echo $optimized_image['src']; ?>" 
+                                                                             alt="<?php echo htmlspecialchars($item['name']); ?>" 
+                                                                             loading="lazy" 
+                                                                             class="rounded"
+                                                                             style="width: 80px; height: 80px; object-fit: cover;">
+                                                                    <?php endif; ?>
+                                                                    <div>
+                                                                        <a href="product.php?id=<?php echo $item['id']; ?>" class="text-decoration-none text-dark fw-semibold">
+                                                                            <?php echo htmlspecialchars($prod_name); ?>
+                                                                        </a>
+                                                                        <?php if (!empty($item['variant'])): ?>
+                                                                            <div class="small text-muted mt-1">
+                                                                                <?php echo htmlspecialchars($item['variant']); ?>
+                                                                            </div>
+                                                                        <?php endif; ?>
+                                                                    </div>
+                                                                </div>
+                                                            </td>
+                                                            <td class="text-center">
+                                                                <span class="fw-semibold"><?php echo number_format($item['price'], 2); ?> <?php echo __('currency'); ?></span>
+                                                            </td>
+                                                            <td class="text-center">
+                                                                <input type="number" 
+                                                                       name="qty[<?php echo htmlspecialchars($cart_key); ?>]" 
+                                                                       value="<?php echo $item['qty']; ?>" 
+                                                                       min="1" 
+                                                                       class="form-control form-control-sm text-center" 
+                                                                       style="width: 80px; display: inline-block;">
+                                                            </td>
+                                                            <td class="text-center">
+                                                                <span class="fw-bold text-primary"><?php echo number_format($item['subtotal'], 2); ?> <?php echo __('currency'); ?></span>
+                                                            </td>
+                                                            <td class="text-center">
+                                                                <a href="cart.php?remove=<?php echo urlencode($cart_key); ?>" 
+                                                                   class="btn btn-sm btn-outline-danger"
+                                                                   onclick="return confirm('<?php echo __('confirm_remove'); ?>');">
+                                                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                                                                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                                                                    </svg>
+                                                                </a>
+                                                            </td>
+                                                        </tr>
+                                                    <?php endforeach; ?>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        
+                                        <div class="d-flex justify-content-between align-items-center mt-3">
+                                            <a href="store.php" class="btn btn-outline-secondary">
+                                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-2">
+                                                    <line x1="19" y1="12" x2="5" y2="12"></line>
+                                                    <polyline points="12,19 5,12 12,5"></polyline>
+                                                </svg>
+                                                <?php echo __('continue_shopping'); ?>
+                                            </a>
+                                            <button type="submit" name="update" class="btn btn-primary">
+                                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-2">
+                                                    <path d="M21.5 2v6h-6"></path>
+                                                    <path d="M2.5 12a10 10 0 0 1 18.8-4.5L21.5 8"></path>
+                                                    <path d="M2.5 22v-6h6"></path>
+                                                    <path d="M21.5 12a10 10 0 0 1-18.8 4.5L2.5 16"></path>
+                                                </svg>
+                                                <?php echo __('update_cart'); ?>
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Cart Summary -->
+                        <div class="col-lg-4">
+                            <div class="card shadow-sm">
+                                <div class="card-body">
+                                    <h5 class="card-title fw-bold mb-4"><?php echo __('cart_summary'); ?></h5>
+                                    
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span class="text-muted"><?php echo __('subtotal'); ?>:</span>
+                                        <span class="fw-semibold"><?php echo number_format($total, 2); ?> <?php echo __('currency'); ?></span>
+                                    </div>
+                                    
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span class="text-muted"><?php echo __('shipping'); ?>:</span>
+                                        <span class="fw-semibold"><?php echo __('calculated_at_checkout'); ?></span>
+                                    </div>
+                                    
+                                    <hr>
+                                    
+                                    <div class="d-flex justify-content-between mb-4">
+                                        <span class="h5 mb-0"><?php echo __('total'); ?>:</span>
+                                        <span class="h5 mb-0 text-primary fw-bold"><?php echo number_format($total, 2); ?> <?php echo __('currency'); ?></span>
+                                    </div>
+                                    
+                                    <div class="d-grid gap-2">
+                                        <a href="checkout.php" class="btn btn-primary btn-lg">
+                                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-2">
+                                                <path d="M9 22a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"></path>
+                                                <path d="M20 22a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"></path>
+                                                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                                            </svg>
+                                            <?php echo __('proceed_to_checkout'); ?>
+                                        </a>
+                                        
+                                        <?php if (!isset($_SESSION['user_id'])): ?>
+                                            <a href="checkout.php?guest=1" class="btn btn-success">
+                                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-2">
+                                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                                    <circle cx="12" cy="7" r="4"></circle>
+                                                </svg>
+                                                <?php echo __('continue_as_guest'); ?>
+                                            </a>
+                                        <?php endif; ?>
+                                    </div>
+                                    
+                                    <!-- Trust Badges -->
+                                    <div class="mt-4 pt-4 border-top">
+                                        <h6 class="text-muted small mb-3"><?php echo __('we_accept'); ?>:</h6>
+                                        <div class="d-flex gap-2 justify-content-center">
+                                            <span class="badge bg-light text-dark">💳 Visa</span>
+                                            <span class="badge bg-light text-dark">💳 Mastercard</span>
+                                            <span class="badge bg-light text-dark">💰 D17</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Promo Code (Optional) -->
+                            <div class="card shadow-sm mt-3">
+                                <div class="card-body">
+                                    <h6 class="card-title mb-3"><?php echo __('have_promo_code'); ?></h6>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" placeholder="<?php echo __('enter_code'); ?>">
+                                        <button class="btn btn-outline-primary" type="button">
+                                            <?php echo __('apply'); ?>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                <?php else: ?>
+                    <!-- Empty Cart -->
+                    <div class="text-center py-5">
+                        <div class="mb-4">
+                            <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" class="text-muted">
+                                <path d="M9 22a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"></path>
+                                <path d="M20 22a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"></path>
+                                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                            </svg>
+                        </div>
+                        <h2 class="h3 mb-3"><?php echo __('cart_is_empty'); ?></h2>
+                        <p class="text-muted mb-4"><?php echo __('add_products_to_cart'); ?></p>
+                        <a href="store.php" class="btn btn-primary btn-lg">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-2">
+                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                <line x1="3" y1="9" x2="21" y2="9"></line>
+                                <line x1="9" y1="21" x2="9" y2="9"></line>
+                            </svg>
+                            <?php echo __('browse_products'); ?>
+                        </a>
+                    </div>
+                <?php endif; ?>
             </div>
-    <?php endif; ?></td>
-    <td><a href="product.php?id=<?php echo $item['id']; ?>"><?php echo htmlspecialchars($item['name']); ?></a>
-    <?php if (!empty($item['variant'])): ?>
-      <div style="font-size:0.98em;color:#1A237E;margin-top:4px;">(<?php echo htmlspecialchars($item['variant']); ?>)</div>
-    <?php endif; ?>
-    </td>
-          <td><?php echo htmlspecialchars($item['price']); ?> <?php echo __('currency'); ?></td>
-    <td><input type="number" name="qty[<?php echo htmlspecialchars($cart_key); ?>]" value="<?php echo $item['qty']; ?>" min="1" style="width:60px;"></td>
-          <td><?php echo $item['subtotal']; ?> <?php echo __('currency'); ?></td>
-                        <td><a href="cart.php?remove=<?php echo urlencode($cart_key); ?>" class="remove-btn"><?php echo __('remove'); ?></a></td>
-  </tr>
-<?php endforeach; ?>
-            </tbody>
-        </table>
-                  <button type="submit" name="update" class="checkout-btn" style="background:var(--secondary-color);margin-top:20px;display:inline-block !important;visibility:visible !important;opacity:1 !important;">تحديث الكميات</button>
-        </form>
-        <h3 style="text-align:left; margin-top:30px;">الإجمالي: <?php echo $total; ?> د.ت</h3>
-                  <a href="checkout.php" class="checkout-btn" style="width:auto;display:inline-block;">إتمام الشراء</a>
-            <?php if (!isset($_SESSION['user_id'])): ?>
-                <a href="checkout.php?guest=1" class="checkout-btn" style="background: #28a745; margin-top: 10px; width:auto;display:inline-block;">🛒 <?php echo __('continue_as_guest'); ?></a>
-            <?php endif; ?>
-          <?php else: ?>
-          <p style="text-align:center;">سلة التسوق فارغة</p>
-        <?php endif; ?>
-<<<<<<< Current (Your changes)
-        <a href="index.php" class="checkout-btn" style="background:var(--secondary-color);margin-top:30px;display:inline-block !important;visibility:visible !important;opacity:1 !important;width:auto;">العودة للتسوق</a>
-=======
-                  <a href="index.php" class="checkout-btn" style="background:var(--secondary-color);margin-top:30px;display:inline-block !important;visibility:visible !important;opacity:1 !important;width:auto;">العودة للتسوق</a>
->>>>>>> Incoming (Background Agent changes)
-    </div>
-</div>
-
-<!-- Cookie Consent Banner -->
-<?php include 'cookie_consent_banner.php'; ?>
+        </section>
+    </main>
+    
+    <?php include 'footer.php'; ?>
+    
+    <!-- Cookie Consent Banner -->
+    <?php include 'cookie_consent_banner.php'; ?>
 </body>
-</html> 
+</html>

@@ -40,29 +40,53 @@ try {
         exit;
     }
     
+    // Check if disabled_sellers table exists
+    $table_check = $pdo->query("SHOW TABLES LIKE 'disabled_sellers'")->rowCount();
+    $has_disabled_sellers_table = $table_check > 0;
+    
     // Build the query to get featured products
-    // Featured products are those with is_priority_product = 1 or from disabled sellers
-    $sql = "
-        SELECT 
-            p.*,
-            s.is_disabled,
-            s.name as seller_name,
-            ds.name AS disabled_seller_name,
-            ds.disability_type,
-            ds.priority_level,
-            CASE 
-                WHEN ds.id IS NOT NULL THEN 1 
-                WHEN p.is_priority_product = 1 THEN 2 
-                ELSE 3 
-            END as priority_order
-        FROM products p
-        LEFT JOIN sellers s ON p.seller_id = s.id
-        LEFT JOIN disabled_sellers ds ON p.disabled_seller_id = ds.id
-        WHERE p.approved = 1 
-        AND (p.is_priority_product = 1 OR ds.id IS NOT NULL)
-        ORDER BY priority_order ASC, ds.priority_level DESC, p.created_at DESC
-        LIMIT :limit OFFSET :offset
-    ";
+    if ($has_disabled_sellers_table) {
+        // Featured products are those with is_priority_product = 1 or from disabled sellers
+        $sql = "
+            SELECT 
+                p.*,
+                s.is_disabled,
+                s.name as seller_name,
+                ds.name AS disabled_seller_name,
+                ds.disability_type,
+                ds.priority_level,
+                CASE 
+                    WHEN ds.id IS NOT NULL THEN 1 
+                    WHEN p.is_priority_product = 1 THEN 2 
+                    ELSE 3 
+                END as priority_order
+            FROM products p
+            LEFT JOIN sellers s ON p.seller_id = s.id
+            LEFT JOIN disabled_sellers ds ON p.disabled_seller_id = ds.id
+            WHERE p.approved = 1 
+            AND (p.is_priority_product = 1 OR ds.id IS NOT NULL)
+            ORDER BY priority_order ASC, ds.priority_level DESC, p.created_at DESC
+            LIMIT :limit OFFSET :offset
+        ";
+    } else {
+        // Fallback query if disabled_sellers table doesn't exist
+        $sql = "
+            SELECT 
+                p.*,
+                s.is_disabled,
+                s.name as seller_name,
+                NULL AS disabled_seller_name,
+                NULL AS disability_type,
+                NULL AS priority_level,
+                2 as priority_order
+            FROM products p
+            LEFT JOIN sellers s ON p.seller_id = s.id
+            WHERE p.approved = 1 
+            AND p.is_priority_product = 1
+            ORDER BY p.created_at DESC
+            LIMIT :limit OFFSET :offset
+        ";
+    }
     
     $stmt = $pdo->prepare($sql);
     $stmt->bindValue(':limit', $per_page, PDO::PARAM_INT);
@@ -71,13 +95,22 @@ try {
     $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
     
     // Get total count for pagination
-    $count_sql = "
-        SELECT COUNT(*) as total
-        FROM products p
-        LEFT JOIN disabled_sellers ds ON p.disabled_seller_id = ds.id
-        WHERE p.approved = 1 
-        AND (p.is_priority_product = 1 OR ds.id IS NOT NULL)
-    ";
+    if ($has_disabled_sellers_table) {
+        $count_sql = "
+            SELECT COUNT(*) as total
+            FROM products p
+            LEFT JOIN disabled_sellers ds ON p.disabled_seller_id = ds.id
+            WHERE p.approved = 1 
+            AND (p.is_priority_product = 1 OR ds.id IS NOT NULL)
+        ";
+    } else {
+        $count_sql = "
+            SELECT COUNT(*) as total
+            FROM products p
+            WHERE p.approved = 1 
+            AND p.is_priority_product = 1
+        ";
+    }
     
     $count_stmt = $pdo->prepare($count_sql);
     $count_stmt->execute();
