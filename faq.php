@@ -20,6 +20,9 @@ if (session_status() === PHP_SESSION_NONE) session_start();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo __('faq'); ?> - WeBuy</title>
     
+    <!-- Bootstrap CSS (local) -->
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/bootstrap-custom.css">
     <!-- CSS Files -->
     <link rel="stylesheet" href="css/main.css">
     

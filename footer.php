@@ -87,8 +87,8 @@
         </div>
     </footer>
     
-    <!-- Bootstrap 5.3+ JavaScript -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Bootstrap 5.3+ JavaScript (local) -->
+    <script src="js/bootstrap.bundle.min.js"></script>
     
     <!-- Optimized JavaScript -->
     <script src="js/optimized/main.min.js" defer></script>

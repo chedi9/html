@@ -16,6 +16,9 @@ if (!isset($_SESSION['is_mobile'])) {
     <title>سياسة الخصوصية</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
+    <!-- Bootstrap CSS (local) -->
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/bootstrap-custom.css">
     <!-- CSS Files - Load in correct order -->
     <link rel="stylesheet" href="css/base/_variables.css">
     <link rel="stylesheet" href="css/base/_reset.css">
