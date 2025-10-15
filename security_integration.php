@@ -199,6 +199,14 @@ function validateSession() {
         '/admin/login.php'
     ];
     
+    // Allow public access to API endpoints that serve public content
+    if (strpos($current_uri, '/api/featured-products.php') !== false || strpos($current_uri, '/api/') === 0) {
+        if (SECURITY_DEBUG) {
+            error_log("Security: Public API access allowed: $current_uri");
+        }
+        return true;
+    }
+
     // Check if current page is public
     foreach ($public_pages as $public_page) {
         if (strpos($current_uri, $public_page) !== false) {
