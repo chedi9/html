@@ -333,8 +333,9 @@ $page_title = $product['name'] . ' - WeBuy';
         <!-- Product Hero Section -->
         <section class="product-hero">
             <div class="container">
-                <div class="grid grid--2">
+                <div class="row g-4">
                     <!-- Product Gallery -->
+                    <div class="col-12 col-lg-6">
                     <div class="product-gallery">
                         <div class="product-gallery__main">
                             <img id="main-image" src="<?php echo htmlspecialchars($main_image_full); ?>" 
@@ -353,8 +354,10 @@ $page_title = $product['name'] . ' - WeBuy';
                             <?php endforeach; ?>
                         </div>
                     </div>
+                    </div>
                     
                     <!-- Product Info -->
+                    <div class="col-12 col-lg-6">
                     <div class="product-info">
                         <h1 class="product-title"><?php echo htmlspecialchars($product['name']); ?></h1>
                         <div class="product-price"><?php echo number_format($product['price'], 2); ?> <?php echo __('currency'); ?></div>
@@ -422,6 +425,7 @@ $page_title = $product['name'] . ' - WeBuy';
                                 </button>
                             </div>
                         <?php endif; ?>
+                    </div>
                     </div>
                 </div>
             </div>
@@ -653,29 +657,26 @@ $page_title = $product['name'] . ' - WeBuy';
                 <div class="container">
                     <h2 class="section-title"><?php echo __('related_products'); ?></h2>
                     
-                    <div class="grid grid--4">
+                <div class="row g-4">
                         <?php foreach ($related_products as $related): ?>
-                            <div class="product-card">
-                                <a href="product.php?id=<?php echo $related['id']; ?>" class="product-card__image">
+                            <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
+                                <a href="product.php?id=<?php echo $related['id']; ?>" class="text-decoration-none">
                                     <?php 
                                     $optimized_image = get_optimized_image('uploads/' . $related['image'], 'card');
                                     ?>
-                                    <img src="<?php echo $optimized_image['src']; ?>" 
+                                    <img class="card-img-top" src="<?php echo $optimized_image['src']; ?>" 
                                          srcset="<?php echo $optimized_image['srcset']; ?>" 
                                          sizes="<?php echo $optimized_image['sizes']; ?>"
                                          alt="<?php echo htmlspecialchars($related['name']); ?>"
-                                         loading="lazy"
-                                         width="280" 
-                                         height="280"
-                                         onload="this.classList.add('loaded');">
+                                         loading="lazy">
                                 </a>
-                                <div class="product-card__body">
-                                    <h3 class="product-card__title">
+                                <div class="card-body">
+                                    <h5 class="card-title">
                                         <a href="product.php?id=<?php echo $related['id']; ?>">
                                             <?php echo htmlspecialchars($related['name']); ?>
                                         </a>
-                                    </h3>
-                                    <div class="product-card__price">
+                                    </h5>
+                                    <div class="h5 text-primary">
                                         <?php echo number_format($related['price'], 2); ?> <?php echo __('currency'); ?>
                                     </div>
                                 </div>

@@ -330,31 +330,28 @@ $priority_products = getPriorityProducts(6);
         <!-- Featured Products -->
         <section class="section">
             <div class="container">
-                <div class="section__header">
-                    <h2 class="section__title">
+                <div class="text-center mb-4">
+                    <h2 class="h2 fw-bold mb-2">
                         <?php echo __('featured_products'); ?>
                     </h2>
-                    <p class="section__subtitle">
+                    <p class="text-muted">
                         <?php echo __('discover_latest_products'); ?>
                     </p>
                 </div>
                 
-                <div class="grid grid--4">
+                <div class="row g-4">
                     <?php foreach ($products as $i => $product): ?>
-                        <div class="card card--product" data-product-id="<?php echo $product['id']; ?>">
+                        <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
+                        <div class="card h-100 shadow-sm position-relative" data-product-id="<?php echo $product['id']; ?>">
                             <?php if ($i < 3): ?>
-                                <div class="card__badge card__badge--new">
-                                    <?php echo __('new'); ?>
-                                </div>
+                                <span class="badge bg-success position-absolute top-0 start-0 m-2"><?php echo __('new'); ?></span>
                             <?php endif; ?>
                             
                             <?php if (!empty($product['is_disabled'])): ?>
-                                <div class="card__badge card__badge--disabled">
-                                    <?php echo __('disabled_seller'); ?>
-                                </div>
+                                <span class="badge bg-warning position-absolute top-0 end-0 m-2"><?php echo __('disabled_seller'); ?></span>
                             <?php endif; ?>
                             
-                            <button class="card__wishlist" data-product-id="<?php echo $product['id']; ?>" 
+                            <button class="btn btn-outline-secondary btn-sm position-absolute" style="top:44px; right:8px" data-product-id="<?php echo $product['id']; ?>" 
                                     title="<?php echo __('add_to_wishlist'); ?>">
                                 <?php if (!empty($_SESSION['wishlist']) && in_array($product['id'], $_SESSION['wishlist'])): ?>
                                     <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2">
@@ -367,9 +364,9 @@ $priority_products = getPriorityProducts(6);
                                 <?php endif; ?>
                             </button>
                             
-                            <a href="product.php?id=<?php echo $product['id']; ?>" class="card__link">
-                                <div class="card__image">
-                                    <div class="skeleton skeleton--image"></div>
+                            <a href="product.php?id=<?php echo $product['id']; ?>" class="text-decoration-none">
+                                <div class="card-img-top" style="height: 200px; overflow: hidden;">
+                                    <div class="skeleton w-100 h-100"></div>
                                     <?php 
                                     $optimized_image = get_optimized_image('uploads/' . $product['image'], 'card');
                                     ?>
@@ -378,15 +375,12 @@ $priority_products = getPriorityProducts(6);
                                          sizes="<?php echo $optimized_image['sizes']; ?>"
                                          alt="<?php echo htmlspecialchars($product['name']); ?>" 
                                          loading="lazy"
-                                         width="300"
-                                         height="200"
+                                         class="w-100 h-100 object-fit-cover"
                                          onload="this.classList.add('loaded'); this.previousElementSibling.style.display='none';">
                                 </div>
-                                <div class="card__content">
-                                    <div class="skeleton skeleton--title"></div>
-                                    <h3 class="card__title"><?php echo htmlspecialchars($product['name']); ?></h3>
-                                    <div class="skeleton skeleton--text"></div>
-                                    <p class="card__description"><?php echo htmlspecialchars($product['description']); ?></p>
+                                <div class="card-body d-flex flex-column">
+                                    <h5 class="card-title text-dark"><?php echo htmlspecialchars($product['name']); ?></h5>
+                                    <p class="card-text text-muted small"><?php echo htmlspecialchars($product['description']); ?></p>
                                     
                                     <!-- Rating Section -->
                                     <?php
@@ -403,27 +397,31 @@ $priority_products = getPriorityProducts(6);
                                     ?>
                                     
                                     <?php if ($avg_rating > 0): ?>
-                                        <div class="card__rating">
-                                            <div class="card__rating-stars">
-                                                <?php for ($i = 1; $i <= 5; $i++): ?>
-                                                    <span class="star <?php echo $i <= $avg_rating ? 'filled' : ''; ?>">★</span>
-                                                <?php endfor; ?>
+                                        <div class="mb-2">
+                                            <div class="d-flex align-items-center">
+                                                <div class="me-2">
+                                                    <?php for ($i = 1; $i <= 5; $i++): ?>
+                                                        <span class="<?php echo $i <= $avg_rating ? 'text-warning' : 'text-muted'; ?>">★</span>
+                                                    <?php endfor; ?>
+                                                </div>
+                                                <small class="text-muted">(<?php echo $review_count; ?>)</small>
                                             </div>
-                                            <span class="card__rating-count">(<?php echo $review_count; ?>)</span>
                                         </div>
                                     <?php endif; ?>
                                     
-                                    <div class="skeleton skeleton--price"></div>
-                                    <div class="card__price"><?php echo htmlspecialchars($product['price']); ?> <?php echo __('currency'); ?></div>
+                                    <div class="mt-auto h5 text-primary"><?php echo htmlspecialchars($product['price']); ?> <?php echo __('currency'); ?></div>
                                 </div>
                             </a>
                             
-                            <form action="add_to_cart.php" method="get" class="card__form">
-                                <input type="hidden" name="id" value="<?php echo $product['id']; ?>">
-                                <button type="submit" class="btn btn--primary btn--sm">
-                                    <?php echo __('add_to_cart'); ?>
-                                </button>
-                            </form>
+                            <div class="card-footer bg-white border-0">
+                                <form action="add_to_cart.php" method="get" class="d-grid">
+                                    <input type="hidden" name="id" value="<?php echo $product['id']; ?>">
+                                    <button type="submit" class="btn btn-primary btn-sm">
+                                        <?php echo __('add_to_cart'); ?>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
                         </div>
                     <?php endforeach; ?>
                 </div>
@@ -455,26 +453,26 @@ $priority_products = getPriorityProducts(6);
                     </h2>
                 </div>
                 
-                <div class="grid grid--4">
+                <div class="row g-4">
                     <?php foreach ($recently_viewed as $product): ?>
                         <?php $prod_name = $product['name_' . $lang] ?? $product['name']; ?>
-                        <div class="card card--product">
+                        <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
+                        <div class="card h-100 shadow-sm">
                             <?php if (!empty($product['is_disabled'])): ?>
-                                <div class="card__badge card__badge--disabled">
-                                    <?php echo $lang === 'ar' ? 'بائع ذو إعاقة' : 'Disabled Seller'; ?>
-                                </div>
+                                <span class="badge bg-warning position-absolute top-0 end-0 m-2"><?php echo $lang === 'ar' ? 'بائع ذو إعاقة' : 'Disabled Seller'; ?></span>
                             <?php endif; ?>
                             
-                            <a href="product.php?id=<?php echo $product['id']; ?>" class="card__link">
-                                <div class="card__image">
+                            <a href="product.php?id=<?php echo $product['id']; ?>" class="text-decoration-none">
+                                <div class="card-img-top" style="height: 200px; overflow: hidden;">
                                     <img src="uploads/<?php echo htmlspecialchars($product['image']); ?>" 
-                                         alt="<?php echo htmlspecialchars($prod_name); ?>" loading="lazy">
+                                         alt="<?php echo htmlspecialchars($prod_name); ?>" loading="lazy" class="w-100 h-100 object-fit-cover">
                                 </div>
-                                <div class="card__content">
-                                    <h3 class="card__title"><?php echo htmlspecialchars($prod_name); ?></h3>
-                                    <div class="card__price"><?php echo htmlspecialchars($product['price']); ?> <?php echo $lang === 'ar' ? 'د.ت' : 'TND'; ?></div>
+                                <div class="card-body">
+                                    <h5 class="card-title"><?php echo htmlspecialchars($prod_name); ?></h5>
+                                    <div class="h5 text-primary"><?php echo htmlspecialchars($product['price']); ?> <?php echo $lang === 'ar' ? 'د.ت' : 'TND'; ?></div>
                                 </div>
                             </a>
+                        </div>
                         </div>
                     <?php endforeach; ?>
                 </div>

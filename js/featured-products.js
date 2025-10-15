@@ -4,7 +4,7 @@
  */
 class FeaturedProducts {
     constructor(containerId, options = {}) {
-        this.container = document.getElementById(containerId);
+        this.container = document.querySelector('#' + containerId + ' .container') || document.getElementById(containerId);
         this.options = {
             perPage: 12,
             loadMoreText: 'عرض المزيد',
