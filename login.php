@@ -52,14 +52,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 $lang = $_GET['lang'] ?? $_SESSION['lang'] ?? 'en';
 ?>
 <!DOCTYPE html>
-<html lang="<?php echo $lang; ?>" dir="<?php echo $lang === 'ar' ? 'rtl' : 'ltr'; ?>" data-theme="light">
+<html lang="<?php echo $lang; ?>" dir="<?php echo $lang === 'ar' ? 'rtl' : 'ltr'; ?>" data-bs-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo __('login'); ?> - WeBuy</title>
     
-    <!-- CSS Files -->
-    <link rel="stylesheet" href="css/main.css">
+    <!-- Bootstrap 5.3+ CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="favicon.ico">
@@ -71,7 +71,7 @@ $lang = $_GET['lang'] ?? $_SESSION['lang'] ?? 'en';
     <script src="js/theme-controller.js" defer></script>
     <script src="main.js?v=1.5" defer></script>
 </head>
-<body class="page-transition">
+<body class="page-transition bg-light">
     <!-- Skip to main content for accessibility -->
     <a href="#main-content" class="skip-link">Skip to main content</a>
     
@@ -79,123 +79,100 @@ $lang = $_GET['lang'] ?? $_SESSION['lang'] ?? 'en';
     
     <!-- Main Content -->
     <main id="main-content" role="main">
-        <section class="auth-section">
+        <section class="py-5">
             <div class="container">
-                <div class="auth-container">
-                    <div class="auth-card">
-                        <div class="auth-header">
-                            <h1 class="auth-title"><?php echo __('login'); ?></h1>
-                            <p class="auth-subtitle"><?php echo __('welcome_back'); ?></p>
-                        </div>
-                        
-                        <?php if (isset($_GET['message']) && $_GET['message'] === 'login_required_cod'): ?>
-                            <div class="alert alert--warning">
-                                <div class="alert__icon">
-                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
-                                        <line x1="12" y1="9" x2="12" y2="13"></line>
-                                        <line x1="12" y1="17" x2="12.01" y2="17"></line>
-                                    </svg>
+                <div class="row justify-content-center">
+                    <div class="col-md-6 col-lg-5">
+                        <div class="card shadow-sm">
+                            <div class="card-body p-4 p-md-5">
+                                <div class="text-center mb-4">
+                                    <h1 class="h3 fw-bold"><?php echo __('login'); ?></h1>
+                                    <p class="text-muted"><?php echo __('welcome_back'); ?></p>
                                 </div>
-                                <div class="alert__content">
-                                    <strong><?php echo __('login_required'); ?></strong>
-                                    <p><?php echo __('cod_login_message'); ?></p>
+                                
+                                <?php if (isset($_GET['message']) && $_GET['message'] === 'login_required_cod'): ?>
+                                    <div class="alert alert-warning d-flex align-items-center" role="alert">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-2">
+                                            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                                            <line x1="12" y1="9" x2="12" y2="13"></line>
+                                            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                                        </svg>
+                                        <div><?php echo __('login_required_for_cod'); ?></div>
+                                    </div>
+                                <?php endif; ?>
+                                
+                                <?php if ($error): ?>
+                                    <div class="alert alert-danger" role="alert">
+                                        <?php echo $error; ?>
+                                    </div>
+                                <?php endif; ?>
+                                
+                                <?php if ($success): ?>
+                                    <div class="alert alert-success" role="alert">
+                                        <?php echo $success; ?>
+                                    </div>
+                                <?php endif; ?>
+                                
+                                <form method="POST" action="">
+                                    <div class="mb-3">
+                                        <label for="email" class="form-label"><?php echo __('email'); ?></label>
+                                        <input type="email" class="form-control" id="email" name="email" required>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label for="password" class="form-label"><?php echo __('password'); ?></label>
+                                        <input type="password" class="form-control" id="password" name="password" required>
+                                    </div>
+                                    
+                                    <div class="mb-3 form-check">
+                                        <input type="checkbox" class="form-check-input" id="remember_me" name="remember_me">
+                                        <label class="form-check-label" for="remember_me">
+                                            <?php echo __('remember_me'); ?>
+                                        </label>
+                                    </div>
+                                    
+                                    <div class="d-grid mb-3">
+                                        <button type="submit" class="btn btn-primary btn-lg">
+                                            <?php echo __('login'); ?>
+                                        </button>
+                                    </div>
+                                    
+                                    <div class="text-center">
+                                        <a href="forgot_password.php" class="text-decoration-none">
+                                            <?php echo __('forgot_password'); ?>
+                                        </a>
+                                    </div>
+                                </form>
+                                
+                                <hr class="my-4">
+                                
+                                <div class="text-center mb-3">
+                                    <p class="text-muted"><?php echo __('or_login_with'); ?></p>
+                                </div>
+                                
+                                <div class="d-grid gap-2">
+                                    <a href="client/google_login.php" class="btn btn-outline-danger">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" class="me-2">
+                                            <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                                            <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                                            <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+                                            <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+                                        </svg>
+                                        <?php echo __('login_with_google'); ?>
+                                    </a>
+                                </div>
+                                
+                                <hr class="my-4">
+                                
+                                <div class="text-center">
+                                    <p class="text-muted mb-0">
+                                        <?php echo __('dont_have_account'); ?>
+                                        <a href="client/register.php" class="text-decoration-none fw-semibold">
+                                            <?php echo __('register'); ?>
+                                        </a>
+                                    </p>
                                 </div>
                             </div>
-                        <?php endif; ?>
-                        
-                        <?php if ($error): ?>
-                            <div class="alert alert--danger">
-                                <div class="alert__icon">
-                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <circle cx="12" cy="12" r="10"></circle>
-                                        <line x1="15" y1="9" x2="9" y2="15"></line>
-                                        <line x1="9" y1="9" x2="15" y2="15"></line>
-                                    </svg>
-                                </div>
-                                <div class="alert__content">
-                                    <?php echo htmlspecialchars($error); ?>
-                                </div>
-                            </div>
-                        <?php endif; ?>
-                        
-                        <form method="post" class="auth-form" autocomplete="off">
-                            <div class="form-group">
-                                <label for="email" class="form-label"><?php echo __('email'); ?></label>
-                                <div class="form-input-wrapper">
-                                    <svg class="form-input-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
-                                        <polyline points="22,6 12,13 2,6"></polyline>
-                                    </svg>
-                                    <input type="email" 
-                                           name="email" 
-                                           id="email" 
-                                           class="form-input" 
-                                           required 
-                                           autocomplete="email"
-                                           placeholder="<?php echo __('enter_email'); ?>">
-                                </div>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label for="password" class="form-label"><?php echo __('password'); ?></label>
-                                <div class="form-input-wrapper">
-                                    <svg class="form-input-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                                        <circle cx="12" cy="16" r="1"></circle>
-                                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-                                    </svg>
-                                    <input type="password" 
-                                           name="password" 
-                                           id="password" 
-                                           class="form-input" 
-                                           required 
-                                           autocomplete="current-password"
-                                           placeholder="<?php echo __('enter_password'); ?>">
-                                </div>
-                            </div>
-                            
-                            <div class="form-group">
-                                <button type="submit" class="btn btn--primary btn--full">
-                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
-                                        <polyline points="10,17 15,12 10,7"></polyline>
-                                        <line x1="15" y1="12" x2="3" y2="12"></line>
-                                    </svg>
-                                    <?php echo __('login'); ?>
-                                </button>
-                            </div>
-                            
-                            <div class="auth-consent-notice">
-                                <p class="consent-text">
-                                    <?php echo __('by_logging_in_you_agree'); ?> 
-                                    <a href="terms.php" class="consent-link"><?php echo __('terms_and_conditions'); ?></a>, 
-                                    <a href="privacy.php" class="consent-link"><?php echo __('privacy_policy'); ?></a>, 
-                                    <?php echo __('and'); ?> 
-                                    <a href="cookies.php" class="consent-link"><?php echo __('cookie_policy'); ?></a>.
-                                </p>
-                            </div>
-                        </form>
-                        
-                        <div class="auth-divider">
-                            <span><?php echo __('or'); ?></span>
-                        </div>
-                        
-                        <form action="client/google_login.php" method="get" class="auth-form">
-                            <button type="submit" class="btn btn--outline btn--full google-btn">
-                                <img src="google-icon.svg" alt="Google" class="google-icon">
-                                <?php echo __('login_with_google'); ?>
-                            </button>
-                        </form>
-                        
-                        <div class="auth-links">
-                            <a href="forgot_password.php" class="auth-link">
-                                <?php echo __('forgot_password'); ?>?
-                            </a>
-                            <span class="auth-separator">•</span>
-                            <a href="client/register.php" class="auth-link">
-                                <?php echo __('create_new_account'); ?>
-                            </a>
                         </div>
                     </div>
                 </div>
@@ -204,8 +181,5 @@ $lang = $_GET['lang'] ?? $_SESSION['lang'] ?? 'en';
     </main>
     
     <?php include 'footer.php'; ?>
-    
-    <!-- Cookie Consent Banner -->
-    <?php include 'cookie_consent_banner.php'; ?>
 </body>
-</html> 
+</html>

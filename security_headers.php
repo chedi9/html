@@ -15,7 +15,7 @@ class SecurityHeaders {
             // Content Security Policy (CSP) - Prevent XSS attacks
             $csp = "default-src 'self'; " .
                     "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://checkout.stripe.com https://www.paypal.com https://js.stripe.com https://www.googletagmanager.com https://www.google-analytics.com; " .
-                    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; " .
+                    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net; " .
                     "font-src 'self' https://fonts.gstatic.com; " .
                     "img-src 'self' data: https: blob:; " .
                     "connect-src 'self' https://api.stripe.com https://api.paypal.com https://d17.tn https://flouci.com https://www.google-analytics.com https://analytics.google.com; " .
