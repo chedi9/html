@@ -75,7 +75,6 @@ $priority_products = getPriorityProducts(6);
     <script src="js/theme-controller.js" defer></script>
     <script src="main.js?v=1.5" defer></script>
     <script src="js/featured-products.js" defer></script>
-<?php include_once 'include_load_analytics.php'; ?>
 </head>
 <body class="page-transition">
     <!-- Skip to main content for accessibility -->
@@ -377,8 +376,6 @@ $priority_products = getPriorityProducts(6);
                                          sizes="<?php echo $optimized_image['sizes']; ?>"
                                          alt="<?php echo htmlspecialchars($product['name']); ?>" 
                                          loading="lazy"
-                                         width="300"
-                                         height="200"
                                          onload="this.classList.add('loaded'); this.previousElementSibling.style.display='none';">
                                 </div>
                                 <div class="card__content">
@@ -426,21 +423,6 @@ $priority_products = getPriorityProducts(6);
                         </div>
                     <?php endforeach; ?>
                 </div>
-            </div>
-        </section>
-        
-        <!-- Featured Products Section (AJAX Loaded) -->
-        <section class="section section--highlight featured-products" id="featured-products">
-            <div class="container">
-                <div class="section__header">
-                    <h2 class="section__title">
-                        <?php echo __('featured_products'); ?>
-                    </h2>
-                    <p class="section__subtitle">
-                        <?php echo __('featured_products_subtitle'); ?>
-                    </p>
-                </div>
-                <!-- Products will be loaded here via JavaScript -->
             </div>
         </section>
         

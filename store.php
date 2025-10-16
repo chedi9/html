@@ -181,36 +181,8 @@ $page_title = __('store') . ' - WeBuy';
         <!-- Store Results -->
         <section class="py-4">
             <div class="container">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <div class="text-muted">
-                        <?php echo sprintf(__('showing_products'), $total_products); ?>
-                    </div>
-                    
-                    <div class="d-flex align-items-center gap-3">
-                        <span class="text-muted"><?php echo __('sort_by'); ?>:</span>
-                        <select onchange="window.location.href=this.value" class="form-select" style="width: auto;">
-                            <option value="?<?php echo http_build_query(array_merge($_GET, ['sort' => 'newest'])); ?>" 
-                                    <?php echo $sort === 'newest' ? 'selected' : ''; ?>>
-                                <?php echo __('newest'); ?>
-                            </option>
-                            <option value="?<?php echo http_build_query(array_merge($_GET, ['sort' => 'price_low'])); ?>" 
-                                    <?php echo $sort === 'price_low' ? 'selected' : ''; ?>>
-                                <?php echo __('price_low_to_high'); ?>
-                            </option>
-                            <option value="?<?php echo http_build_query(array_merge($_GET, ['sort' => 'price_high'])); ?>" 
-                                    <?php echo $sort === 'price_high' ? 'selected' : ''; ?>>
-                                <?php echo __('price_high_to_low'); ?>
-                            </option>
-                            <option value="?<?php echo http_build_query(array_merge($_GET, ['sort' => 'name'])); ?>" 
-                                    <?php echo $sort === 'name' ? 'selected' : ''; ?>>
-                                <?php echo __('name'); ?>
-                            </option>
-                            <option value="?<?php echo http_build_query(array_merge($_GET, ['sort' => 'popular'])); ?>" 
-                                    <?php echo $sort === 'popular' ? 'selected' : ''; ?>>
-                                <?php echo __('popular'); ?>
-                            </option>
-                        </select>
-                    </div>
+                <div class="text-muted mb-4">
+                    <?php echo sprintf(__('showing_products'), $total_products); ?>
                 </div>
                 
                 <?php if (empty($products)): ?>

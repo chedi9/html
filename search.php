@@ -194,8 +194,6 @@ if (isset($_GET['display_results']) && $_GET['display_results'] === '1') {
                      sizes="<?php echo $optimized_image['sizes']; ?>"
                      alt="<?= __('product_image') ?>" 
                      loading="lazy"
-                     width="220" 
-                     height="140"
                      onload="this.classList.add('loaded');">
             <?php endif; ?>
             <h3><?php echo htmlspecialchars($prod_name); ?></h3>
@@ -291,10 +289,6 @@ $brands = $pdo->query("SELECT DISTINCT s.store_name FROM sellers s JOIN products
     </style>
 </head>
 <body>
-<?php
-if (session_status() === PHP_SESSION_NONE) session_start();
-?>
-
 <?php include 'header.php'; ?>
 
 <div class="search-container">
@@ -401,8 +395,6 @@ if (session_status() === PHP_SESSION_NONE) session_start();
                      sizes="<?php echo $optimized_image['sizes']; ?>"
                      alt="<?= __('product_image') ?>" 
                      loading="lazy"
-                     width="220" 
-                     height="140"
                      onload="this.classList.add('loaded');">
             <?php endif; ?>
             <h3><?php echo htmlspecialchars($prod_name); ?></h3>
