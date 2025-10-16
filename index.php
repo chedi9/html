@@ -75,7 +75,6 @@ $priority_products = getPriorityProducts(6);
     <script src="js/theme-controller.js" defer></script>
     <script src="main.js?v=1.5" defer></script>
     <script src="js/featured-products.js" defer></script>
-<?php include_once 'include_load_analytics.php'; ?>
 </head>
 <body class="page-transition">
     <!-- Skip to main content for accessibility -->
@@ -163,13 +162,13 @@ $priority_products = getPriorityProducts(6);
                     </p>
                 </div>
                 
-                <div class="row g-4">
-                    <?php foreach (array_slice($categories, 0, 6) as $category): ?>
+                <div class="row g-3">
+                    <?php foreach (array_slice($categories, 0, 8) as $category): ?>
                         <?php $cat_name = $category['name_' . $lang] ?? $category['name']; ?>
-                        <div class="col-md-6 col-lg-4">
+                        <div class="col-6 col-sm-4 col-md-3 col-lg-3">
                             <div class="card h-100 shadow-sm">
                                 <a href="store.php?category=<?php echo $category['id']; ?>" class="text-decoration-none">
-                                    <div class="card-img-top" style="height: 200px; overflow: hidden;">
+                                    <div class="card-img-top" style="aspect-ratio: 1/1; overflow: hidden;">
                                         <div class="skeleton w-100 h-100"></div>
                                         <?php if (!empty($category['image'])): ?>
                                             <?php 
@@ -203,8 +202,8 @@ $priority_products = getPriorityProducts(6);
                                             </div>
                                         <?php endif; ?>
                                     </div>
-                                    <div class="card-body text-center">
-                                        <h5 class="card-title text-dark"><?php echo htmlspecialchars($cat_name); ?></h5>
+                                    <div class="card-body text-center p-2">
+                                        <h6 class="card-title text-dark mb-0"><?php echo htmlspecialchars($cat_name); ?></h6>
                                     </div>
                                 </a>
                             </div>
@@ -227,25 +226,25 @@ $priority_products = getPriorityProducts(6);
                     </p>
                 </div>
                 
-                <div class="row g-4">
+                <div class="row g-3">
                     <?php foreach ($priority_products as $product): ?>
-                        <div class="col-md-6 col-lg-4">
+                        <div class="col-6 col-sm-4 col-md-3 col-lg-2">
                             <div class="card h-100 shadow-sm position-relative" data-product-id="<?php echo $product['id']; ?>">
                                 <!-- Priority Badge -->
-                                <span class="badge bg-warning position-absolute top-0 start-0 m-2">
-                                    🌟 <?php echo __('disabled_seller'); ?>
+                                <span class="badge bg-warning position-absolute top-0 start-0 m-1 small">
+                                    🌟
                                 </span>
                                 
                                 <!-- Wishlist Button -->
-                                <button class="btn btn-outline-secondary btn-sm position-absolute top-0 end-0 m-2" 
+                                <button class="btn btn-outline-secondary btn-sm position-absolute top-0 end-0 m-1 p-1" 
                                         data-product-id="<?php echo $product['id']; ?>" 
                                         title="<?php echo __('add_to_wishlist'); ?>">
                                     <?php if (!empty($_SESSION['wishlist']) && in_array($product['id'], $_SESSION['wishlist'])): ?>
-                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2">
                                             <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
                                         </svg>
                                     <?php else: ?>
-                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                             <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
                                         </svg>
                                     <?php endif; ?>
@@ -253,7 +252,7 @@ $priority_products = getPriorityProducts(6);
                                 
                                 <!-- Product Image -->
                                 <a href="product.php?id=<?php echo $product['id']; ?>" class="text-decoration-none">
-                                    <div class="card-img-top" style="height: 200px; overflow: hidden;">
+                                    <div class="card-img-top" style="aspect-ratio: 1/1; overflow: hidden;">
                                         <div class="skeleton w-100 h-100"></div>
                                         <?php 
                                         $optimized_image = get_optimized_image('uploads/' . $product['image'], 'card');
@@ -268,9 +267,8 @@ $priority_products = getPriorityProducts(6);
                                     </div>
                                     
                                     <!-- Product Content -->
-                                    <div class="card-body d-flex flex-column">
-                                        <h5 class="card-title text-dark"><?php echo htmlspecialchars($product['name']); ?></h5>
-                                        <p class="card-text text-muted small"><?php echo htmlspecialchars($product['description']); ?></p>
+                                    <div class="card-body d-flex flex-column p-2">
+                                        <h6 class="card-title text-dark mb-1 text-truncate" title="<?php echo htmlspecialchars($product['name']); ?>"><?php echo htmlspecialchars($product['name']); ?></h6>
                                         
                                         <!-- Rating Section -->
                                         <?php
@@ -287,9 +285,9 @@ $priority_products = getPriorityProducts(6);
                                         ?>
                                         
                                         <?php if ($avg_rating > 0): ?>
-                                            <div class="mb-2">
-                                                <div class="d-flex align-items-center">
-                                                    <div class="text-warning me-2">
+                                            <div class="mb-1">
+                                                <div class="d-flex align-items-center small">
+                                                    <div class="text-warning me-1">
                                                         <?php for ($i = 1; $i <= 5; $i++): ?>
                                                             <span class="<?php echo $i <= $avg_rating ? 'text-warning' : 'text-muted'; ?>">★</span>
                                                         <?php endfor; ?>
@@ -300,13 +298,13 @@ $priority_products = getPriorityProducts(6);
                                         <?php endif; ?>
                                         
                                         <div class="mt-auto">
-                                            <div class="d-flex justify-content-between align-items-center mb-3">
-                                                <span class="h5 mb-0 text-primary"><?php echo htmlspecialchars($product['price']); ?> <?php echo __('currency'); ?></span>
+                                            <div class="mb-2">
+                                                <span class="h6 mb-0 text-primary"><?php echo htmlspecialchars($product['price']); ?> <?php echo __('currency'); ?></span>
                                             </div>
                                             
                                             <form action="add_to_cart.php" method="get">
                                                 <input type="hidden" name="id" value="<?php echo $product['id']; ?>">
-                                                <button type="submit" class="btn btn-primary w-100">
+                                                <button type="submit" class="btn btn-primary btn-sm w-100">
                                                     <?php echo __('add_to_cart'); ?>
                                                 </button>
                                             </form>
@@ -339,7 +337,7 @@ $priority_products = getPriorityProducts(6);
                     </p>
                 </div>
                 
-                <div class="grid grid--4">
+                <div class="grid grid--auto-fill-sm">
                     <?php foreach ($products as $i => $product): ?>
                         <div class="card card--product" data-product-id="<?php echo $product['id']; ?>">
                             <?php if ($i < 3): ?>
@@ -378,8 +376,6 @@ $priority_products = getPriorityProducts(6);
                                          sizes="<?php echo $optimized_image['sizes']; ?>"
                                          alt="<?php echo htmlspecialchars($product['name']); ?>" 
                                          loading="lazy"
-                                         width="300"
-                                         height="200"
                                          onload="this.classList.add('loaded'); this.previousElementSibling.style.display='none';">
                                 </div>
                                 <div class="card__content">
@@ -430,21 +426,6 @@ $priority_products = getPriorityProducts(6);
             </div>
         </section>
         
-        <!-- Featured Products Section (AJAX Loaded) -->
-        <section class="section section--highlight featured-products" id="featured-products">
-            <div class="container">
-                <div class="section__header">
-                    <h2 class="section__title">
-                        <?php echo __('featured_products'); ?>
-                    </h2>
-                    <p class="section__subtitle">
-                        <?php echo __('featured_products_subtitle'); ?>
-                    </p>
-                </div>
-                <!-- Products will be loaded here via JavaScript -->
-            </div>
-        </section>
-        
         <!-- Recently Viewed Products -->
         <?php if (!empty($recently_viewed)): ?>
         <section class="section">
@@ -455,7 +436,7 @@ $priority_products = getPriorityProducts(6);
                     </h2>
                 </div>
                 
-                <div class="grid grid--4">
+                <div class="grid grid--auto-fill-sm">
                     <?php foreach ($recently_viewed as $product): ?>
                         <?php $prod_name = $product['name_' . $lang] ?? $product['name']; ?>
                         <div class="card card--product">

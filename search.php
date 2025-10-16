@@ -194,8 +194,6 @@ if (isset($_GET['display_results']) && $_GET['display_results'] === '1') {
                      sizes="<?php echo $optimized_image['sizes']; ?>"
                      alt="<?= __('product_image') ?>" 
                      loading="lazy"
-                     width="220" 
-                     height="140"
                      onload="this.classList.add('loaded');">
             <?php endif; ?>
             <h3><?php echo htmlspecialchars($prod_name); ?></h3>
@@ -270,10 +268,10 @@ $brands = $pdo->query("SELECT DISTINCT s.store_name FROM sellers s JOIN products
         .search-form { display: flex; flex-wrap: wrap; gap: 20px; margin-bottom: 30px; }
         .search-form input, .search-form select { padding: 10px; border-radius: 5px; border: 1px solid #ccc; min-width: 120px; }
         .search-form button { padding: 10px 24px; border-radius: 5px; background: var(--primary-color); color: #fff; border: none; font-size: 1em; }
-        .product-grid { display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; }
-        .product-card { width: 220px; background: #fafafa; border: 1px solid #eee; border-radius: 10px; padding: 16px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.05); position: relative; }
-        .product-card img { width: 100%; height: 140px; object-fit: cover; border-radius: 8px; }
-        .product-card h3 { margin: 10px 0 5px; font-size: 1.1em; }
+        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 16px; }
+        .product-card { background: #fafafa; border: 1px solid #eee; border-radius: 10px; padding: 12px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.05); position: relative; }
+        .product-card img { width: 100%; aspect-ratio: 1/1; object-fit: cover; border-radius: 8px; }
+        .product-card h3 { margin: 10px 0 5px; font-size: 0.95em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         .product-card .price { color: var(--secondary-color); font-weight: bold; }
         .product-card .stock { color: #228B22; font-size: 0.95em; }
         .product-card .out-stock { color: #c00; font-size: 0.95em; }
@@ -291,10 +289,6 @@ $brands = $pdo->query("SELECT DISTINCT s.store_name FROM sellers s JOIN products
     </style>
 </head>
 <body>
-<?php
-if (session_status() === PHP_SESSION_NONE) session_start();
-?>
-
 <?php include 'header.php'; ?>
 
 <div class="search-container">
@@ -401,8 +395,6 @@ if (session_status() === PHP_SESSION_NONE) session_start();
                      sizes="<?php echo $optimized_image['sizes']; ?>"
                      alt="<?= __('product_image') ?>" 
                      loading="lazy"
-                     width="220" 
-                     height="140"
                      onload="this.classList.add('loaded');">
             <?php endif; ?>
             <h3><?php echo htmlspecialchars($prod_name); ?></h3>

@@ -181,36 +181,8 @@ $page_title = __('store') . ' - WeBuy';
         <!-- Store Results -->
         <section class="py-4">
             <div class="container">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <div class="text-muted">
-                        <?php echo sprintf(__('showing_products'), $total_products); ?>
-                    </div>
-                    
-                    <div class="d-flex align-items-center gap-3">
-                        <span class="text-muted"><?php echo __('sort_by'); ?>:</span>
-                        <select onchange="window.location.href=this.value" class="form-select" style="width: auto;">
-                            <option value="?<?php echo http_build_query(array_merge($_GET, ['sort' => 'newest'])); ?>" 
-                                    <?php echo $sort === 'newest' ? 'selected' : ''; ?>>
-                                <?php echo __('newest'); ?>
-                            </option>
-                            <option value="?<?php echo http_build_query(array_merge($_GET, ['sort' => 'price_low'])); ?>" 
-                                    <?php echo $sort === 'price_low' ? 'selected' : ''; ?>>
-                                <?php echo __('price_low_to_high'); ?>
-                            </option>
-                            <option value="?<?php echo http_build_query(array_merge($_GET, ['sort' => 'price_high'])); ?>" 
-                                    <?php echo $sort === 'price_high' ? 'selected' : ''; ?>>
-                                <?php echo __('price_high_to_low'); ?>
-                            </option>
-                            <option value="?<?php echo http_build_query(array_merge($_GET, ['sort' => 'name'])); ?>" 
-                                    <?php echo $sort === 'name' ? 'selected' : ''; ?>>
-                                <?php echo __('name'); ?>
-                            </option>
-                            <option value="?<?php echo http_build_query(array_merge($_GET, ['sort' => 'popular'])); ?>" 
-                                    <?php echo $sort === 'popular' ? 'selected' : ''; ?>>
-                                <?php echo __('popular'); ?>
-                            </option>
-                        </select>
-                    </div>
+                <div class="text-muted mb-4">
+                    <?php echo sprintf(__('showing_products'), $total_products); ?>
                 </div>
                 
                 <?php if (empty($products)): ?>
@@ -221,12 +193,12 @@ $page_title = __('store') . ' - WeBuy';
                         <a href="store.php" class="btn btn-primary"><?php echo __('view_all_products'); ?></a>
                     </div>
                 <?php else: ?>
-                    <div class="row g-4">
+                    <div class="row g-3">
                         <?php foreach ($products as $product): ?>
-                            <div class="col-md-6 col-lg-4 col-xl-3">
+                            <div class="col-6 col-sm-4 col-md-3 col-lg-2">
                                 <div class="card h-100 shadow-sm">
                                     <div class="position-relative">
-                                        <div class="card-img-top" style="height: 200px; overflow: hidden;">
+                                        <div class="card-img-top" style="aspect-ratio: 1/1; overflow: hidden;">
                                             <div class="skeleton w-100 h-100"></div>
                                             <?php 
                                             $optimized_image = get_optimized_image('uploads/' . $product['image'], 'card');
@@ -247,42 +219,33 @@ $page_title = __('store') . ' - WeBuy';
                                         <?php endif; ?>
                                     </div>
                                     
-                                    <div class="card-body d-flex flex-column">
-                                        <h5 class="card-title">
-                                            <a href="product.php?id=<?php echo $product['id']; ?>" class="text-decoration-none text-dark">
+                                    <div class="card-body d-flex flex-column p-2">
+                                        <h6 class="card-title mb-1">
+                                            <a href="product.php?id=<?php echo $product['id']; ?>" class="text-decoration-none text-dark text-truncate d-block" title="<?php echo htmlspecialchars($product['name']); ?>">
                                                 <?php echo htmlspecialchars($product['name']); ?>
                                             </a>
-                                        </h5>
+                                        </h6>
                                         
-                                        <div class="text-muted small mb-2">
+                                        <div class="text-muted small mb-2 text-truncate">
                                             <span><?php echo htmlspecialchars($product['category_name']); ?></span>
-                                            <?php if ($product['seller_name']): ?>
-                                                <span>•</span>
-                                                <span><?php echo htmlspecialchars($product['seller_name']); ?></span>
-                                            <?php endif; ?>
                                         </div>
                                         
-                                        <div class="h5 text-primary mb-3">
+                                        <div class="h6 text-primary mb-2">
                                             <?php echo number_format($product['price'], 2); ?> <?php echo __('currency'); ?>
                                         </div>
                                         
                                         <div class="mt-auto">
-                                            <div class="d-grid gap-2">
+                                            <div class="d-grid gap-1">
                                                 <a href="product.php?id=<?php echo $product['id']; ?>" 
-                                                   class="btn btn-outline-primary btn-sm">
-                                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-1">
-                                                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                                                        <circle cx="12" cy="12" r="3"/>
-                                                    </svg>
+                                                   class="btn btn-primary btn-sm">
                                                     <?php echo __('view'); ?>
                                                 </a>
                                                 
                                                 <button onclick="addToWishlist(<?php echo $product['id']; ?>)" 
                                                         class="btn btn-outline-secondary btn-sm">
-                                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-1">
+                                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                                         <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
                                                     </svg>
-                                                    <?php echo __('wishlist'); ?>
                                                 </button>
                                             </div>
                                         </div>

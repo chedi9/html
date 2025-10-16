@@ -49,7 +49,7 @@
 .grid--auto-fit-xl { grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); }
 
 /* Auto-fill Grids */
-.grid--auto-fill-sm { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
+.grid--auto-fill-sm { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); }
 .grid--auto-fill-md { grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); }
 .grid--auto-fill-lg { grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); }
 .grid--auto-fill-xl { grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); }
