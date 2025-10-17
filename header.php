@@ -42,26 +42,26 @@ require_once 'db.php';
                 <ul class="navbar-nav <?php echo $lang === 'ar' ? 'ms-auto' : 'me-auto'; ?>">
                     <li class="nav-item">
                         <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) === 'index.php' ? 'active' : ''; ?>" href="index.php">
-                            <?php echo ($lang ?? 'en') === 'ar' ? 'الرئيسية' : 'Home'; ?>
+                            <?php echo ($lang ?? 'en') === 'ar' ? 'الرئيسية' : (($lang ?? 'en') === 'fr' ? 'Accueil' : 'Home'); ?>
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) === 'store.php' ? 'active' : ''; ?>" href="store.php">
-                            <?php echo ($lang ?? 'en') === 'ar' ? 'المتجر' : 'Store'; ?>
+                            <?php echo ($lang ?? 'en') === 'ar' ? 'المتجر' : (($lang ?? 'en') === 'fr' ? 'Boutique' : 'Store'); ?>
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) === 'faq.php' ? 'active' : ''; ?>" href="faq.php">
-                            <?php echo ($lang ?? 'en') === 'ar' ? 'الأسئلة الشائعة' : 'FAQ'; ?>
+                            <?php echo ($lang ?? 'en') === 'ar' ? 'الأسئلة الشائعة' : (($lang ?? 'en') === 'fr' ? 'FAQ' : 'FAQ'); ?>
                         </a>
                     </li>
                 </ul>
                 
                 <!-- Right Side Actions -->
-                <ul class="navbar-nav <?php echo $lang === 'ar' ? 'me-auto' : 'ms-auto'; ?>">
+                <ul class="navbar-nav <?php echo $lang === 'ar' ? 'me-auto' : 'ms-auto'; ?> d-flex align-items-center">
                     <!-- Cart -->
-                    <li class="nav-item">
-                        <a href="cart.php" class="nav-link position-relative d-flex align-items-center" aria-label="<?php echo ($lang ?? 'en') === 'ar' ? 'عربة التسوق' : 'Shopping Cart'; ?>">
+                    <li class="nav-item me-2">
+                        <a href="cart.php" class="nav-link position-relative d-flex align-items-center" aria-label="<?php echo ($lang ?? 'en') === 'ar' ? 'عربة التسوق' : (($lang ?? 'en') === 'fr' ? 'Panier' : 'Shopping Cart'); ?>">
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <path d="M9 22a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"></path>
                                 <path d="M20 22a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"></path>
@@ -77,8 +77,8 @@ require_once 'db.php';
                     </li>
                     
                     <!-- Theme Toggle -->
-                    <li class="nav-item">
-                        <button class="btn btn-outline-secondary btn-sm" id="themeToggle" aria-label="<?php echo ($lang ?? 'en') === 'ar' ? 'تبديل الوضع المظلم' : 'Toggle Dark Mode'; ?>">
+                    <li class="nav-item me-2">
+                        <button class="btn btn-outline-secondary btn-sm" id="themeToggle" aria-label="<?php echo ($lang ?? 'en') === 'ar' ? 'تبديل الوضع المظلم' : (($lang ?? 'en') === 'fr' ? 'Basculer le mode sombre' : 'Toggle Dark Mode'); ?>">
                             <svg class="theme-toggle__icon theme-toggle__icon--light" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <circle cx="12" cy="12" r="5"></circle>
                                 <line x1="12" y1="1" x2="12" y2="3"></line>
@@ -97,7 +97,7 @@ require_once 'db.php';
                     </li>
                     
                     <!-- Language Selector -->
-                    <li class="nav-item dropdown">
+                    <li class="nav-item dropdown me-2">
                         <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button" id="languageDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                             <?php 
                             $current_lang = $lang ?? 'en';
@@ -114,9 +114,9 @@ require_once 'db.php';
                     </li>
                     
                     <!-- Search -->
-                    <li class="nav-item d-none d-lg-block">
+                    <li class="nav-item d-none d-lg-block me-2">
                         <form action="search_suggest.php" method="GET" class="d-flex">
-                            <input type="text" name="q" placeholder="<?php echo ($lang ?? 'en') === 'ar' ? 'البحث عن المنتجات...' : 'Search products...'; ?>" 
+                            <input type="text" name="q" placeholder="<?php echo ($lang ?? 'en') === 'ar' ? 'البحث عن المنتجات...' : (($lang ?? 'en') === 'fr' ? 'Rechercher des produits...' : 'Search products...'); ?>" 
                                    class="form-control form-control-sm <?php echo $lang === 'ar' ? 'ms-2' : 'me-2'; ?>" 
                                    autocomplete="off"
                                    style="min-width: 200px;">
@@ -130,7 +130,7 @@ require_once 'db.php';
                     </li>
                     
                     <!-- Mobile Search Toggle -->
-                    <li class="nav-item d-lg-none">
+                    <li class="nav-item d-lg-none me-2">
                         <button class="btn btn-outline-secondary btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#mobileSearch" aria-expanded="false" aria-controls="mobileSearch">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <circle cx="11" cy="11" r="8"></circle>
@@ -149,14 +149,14 @@ require_once 'db.php';
                         $user = $stmt->fetch();
                         ?>
                         <?php if (!empty($user['is_seller'])): ?>
-                            <li class="nav-item">
-                                <a href="client/seller_dashboard.php" class="btn btn-outline-primary btn-sm" aria-label="<?php echo ($lang ?? 'en') === 'ar' ? 'لوحة تحكم البائع' : 'Seller Dashboard'; ?>">
+                            <li class="nav-item me-2">
+                                <a href="client/seller_dashboard.php" class="btn btn-outline-primary btn-sm" aria-label="<?php echo ($lang ?? 'en') === 'ar' ? 'لوحة تحكم البائع' : (($lang ?? 'en') === 'fr' ? 'Tableau de bord vendeur' : 'Seller Dashboard'); ?>">
                                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                         <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
                                         <path d="M2 17l10 5 10-5"></path>
                                         <path d="M2 12l10 5 10-5"></path>
                                     </svg>
-                                    <span class="<?php echo $lang === 'ar' ? 'me-1' : 'ms-1'; ?>"><?php echo ($lang ?? 'en') === 'ar' ? 'لوحة البائع' : 'Seller'; ?></span>
+                                    <span class="<?php echo $lang === 'ar' ? 'me-1' : 'ms-1'; ?>"><?php echo ($lang ?? 'en') === 'ar' ? 'لوحة البائع' : (($lang ?? 'en') === 'fr' ? 'Vendeur' : 'Seller'); ?></span>
                                 </a>
                             </li>
                         <?php endif; ?>
@@ -180,20 +180,20 @@ require_once 'db.php';
                                             <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                                             <circle cx="12" cy="7" r="4"></circle>
                                         </svg>
-                                        <?php echo ($lang ?? 'en') === 'ar' ? 'الملف الشخصي' : 'Profile'; ?>
+                                        <?php echo ($lang ?? 'en') === 'ar' ? 'الملف الشخصي' : (($lang ?? 'en') === 'fr' ? 'Profil' : 'Profile'); ?>
                                     </a></li>
                                     <li><a class="dropdown-item" href="client/orders.php">
                                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-2">
                                             <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
                                             <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
                                         </svg>
-                                        <?php echo ($lang ?? 'en') === 'ar' ? 'طلباتي' : 'My Orders'; ?>
+                                        <?php echo ($lang ?? 'en') === 'ar' ? 'طلباتي' : (($lang ?? 'en') === 'fr' ? 'Mes commandes' : 'My Orders'); ?>
                                     </a></li>
                                     <li><a class="dropdown-item" href="wishlist.php">
                                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-2">
                                             <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
                                         </svg>
-                                        <?php echo ($lang ?? 'en') === 'ar' ? 'المفضلة' : 'Wishlist'; ?>
+                                        <?php echo ($lang ?? 'en') === 'ar' ? 'المفضلة' : (($lang ?? 'en') === 'fr' ? 'Favoris' : 'Wishlist'); ?>
                                     </a></li>
                                     <li><hr class="dropdown-divider"></li>
                                     <li><a class="dropdown-item text-danger" href="client/logout.php">
@@ -202,13 +202,13 @@ require_once 'db.php';
                                             <polyline points="16,17 21,12 16,7"></polyline>
                                             <line x1="21" y1="12" x2="9" y2="12"></line>
                                         </svg>
-                                        <?php echo ($lang ?? 'en') === 'ar' ? 'تسجيل الخروج' : 'Logout'; ?>
+                                        <?php echo ($lang ?? 'en') === 'ar' ? 'تسجيل الخروج' : (($lang ?? 'en') === 'fr' ? 'Déconnexion' : 'Logout'); ?>
                                     </a></li>
                                 </ul>
                             </div>
                         <?php else: ?>
                             <a href="login.php" class="btn btn-primary btn-sm">
-                                <?php echo ($lang ?? 'en') === 'ar' ? 'تسجيل الدخول' : 'Login'; ?>
+                                <?php echo ($lang ?? 'en') === 'ar' ? 'تسجيل الدخول' : (($lang ?? 'en') === 'fr' ? 'Connexion' : 'Login'); ?>
                             </a>
                         <?php endif; ?>
                     </li>
@@ -220,7 +220,7 @@ require_once 'db.php';
         <div class="collapse" id="mobileSearch">
             <div class="container py-3">
                 <form action="search_suggest.php" method="GET" class="d-flex">
-                    <input type="text" name="q" placeholder="<?php echo ($lang ?? 'en') === 'ar' ? 'البحث عن المنتجات...' : 'Search products...'; ?>" 
+                    <input type="text" name="q" placeholder="<?php echo ($lang ?? 'en') === 'ar' ? 'البحث عن المنتجات...' : (($lang ?? 'en') === 'fr' ? 'Rechercher des produits...' : 'Search products...'); ?>" 
                            class="form-control <?php echo $lang === 'ar' ? 'ms-2' : 'me-2'; ?>" 
                            autocomplete="off">
                     <button type="submit" class="btn btn-primary">

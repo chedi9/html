@@ -134,8 +134,10 @@ $categories = $pdo->query('SELECT * FROM categories ORDER BY sort_order ASC, nam
 <style>
 .categories-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     gap: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
 .category-card {
@@ -145,6 +147,10 @@ $categories = $pdo->query('SELECT * FROM categories ORDER BY sort_order ASC, nam
     box-shadow: 0 2px 10px rgba(0,0,0,0.1);
     border: 1px solid #e0e0e0;
     transition: transform 0.2s, box-shadow 0.2s;
+    aspect-ratio: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
 .category-card:hover {
@@ -154,8 +160,9 @@ $categories = $pdo->query('SELECT * FROM categories ORDER BY sort_order ASC, nam
 
 .category-header {
     display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: 15px;
+    text-align: center;
     margin-bottom: 15px;
     padding-bottom: 15px;
     border-bottom: 1px solid #f0f0f0;
@@ -166,23 +173,25 @@ $categories = $pdo->query('SELECT * FROM categories ORDER BY sort_order ASC, nam
 }
 
 .category-icon-img {
-    width: 50px;
-    height: 50px;
+    width: 60px;
+    height: 60px;
     object-fit: cover;
-    border-radius: 8px;
+    border-radius: 12px;
     border: 2px solid #e0e0e0;
+    margin-bottom: 10px;
 }
 
 .category-icon-placeholder {
-    width: 50px;
-    height: 50px;
+    width: 60px;
+    height: 60px;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border-radius: 8px;
+    border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 24px;
+    font-size: 28px;
     color: white;
+    margin-bottom: 10px;
 }
 
 .category-info {
@@ -198,7 +207,8 @@ $categories = $pdo->query('SELECT * FROM categories ORDER BY sort_order ASC, nam
 
 .category-meta {
     display: flex;
-    gap: 15px;
+    flex-direction: column;
+    gap: 5px;
     font-size: 0.85em;
     color: #666;
 }
@@ -267,9 +277,10 @@ $categories = $pdo->query('SELECT * FROM categories ORDER BY sort_order ASC, nam
 .category-actions {
     display: flex;
     gap: 8px;
-    justify-content: flex-end;
+    justify-content: center;
     padding-top: 15px;
     border-top: 1px solid #f0f0f0;
+    margin-top: auto;
 }
 
 .empty-state {
@@ -295,7 +306,8 @@ $categories = $pdo->query('SELECT * FROM categories ORDER BY sort_order ASC, nam
 
 @media (max-width: 768px) {
     .categories-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 15px;
     }
     
     .category-header {
