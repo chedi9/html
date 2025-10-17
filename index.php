@@ -167,9 +167,9 @@ $priority_products = getPriorityProducts(6);
                     <?php foreach (array_slice($categories, 0, 6) as $category): ?>
                         <?php $cat_name = $category['name_' . $lang] ?? $category['name']; ?>
                         <div class="col-md-6 col-lg-4">
-                            <div class="card h-100 shadow-sm">
-                                <a href="store.php?category=<?php echo $category['id']; ?>" class="text-decoration-none">
-                                    <div class="card-img-top" style="height: 200px; overflow: hidden;">
+                            <div class="card card--category h-100 shadow-sm">
+                                <a href="store.php?category=<?php echo $category['id']; ?>" class="card__link">
+                                    <div class="card__image" style="height: 200px; overflow: hidden;">
                                         <div class="skeleton w-100 h-100"></div>
                                         <?php if (!empty($category['image'])): ?>
                                             <?php 
@@ -194,7 +194,7 @@ $priority_products = getPriorityProducts(6);
                                                  class="w-100 h-100 object-fit-cover"
                                                  onload="this.classList.add('loaded'); this.previousElementSibling.style.display='none';">
                                         <?php else: ?>
-                                            <div class="d-flex align-items-center justify-content-center h-100 bg-light">
+                                            <div class="card__placeholder">
                                                 <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-muted">
                                                     <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
                                                     <circle cx="8.5" cy="8.5" r="1.5"></circle>
@@ -203,8 +203,8 @@ $priority_products = getPriorityProducts(6);
                                             </div>
                                         <?php endif; ?>
                                     </div>
-                                    <div class="card-body text-center">
-                                        <h5 class="card-title text-dark"><?php echo htmlspecialchars($cat_name); ?></h5>
+                                    <div class="card__content text-center">
+                                        <h5 class="card__title"><?php echo htmlspecialchars($cat_name); ?></h5>
                                     </div>
                                 </a>
                             </div>

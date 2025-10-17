@@ -958,6 +958,7 @@
   display: flex;
   flex-direction: column;
   text-align: center;
+  min-height: 300px; /* Match product card height */
 }
 
 .card--category:hover {
@@ -968,7 +969,7 @@
 
 .card--category .card__image {
   position: relative;
-  height: 120px;
+  height: 200px; /* Match product card image height */
   display: flex;
   align-items: center;
   justify-content: center;
