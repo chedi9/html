@@ -58,7 +58,7 @@ require_once 'db.php';
                 </ul>
                 
                 <!-- Right Side Actions -->
-                <ul class="navbar-nav <?php echo $lang === 'ar' ? 'me-auto' : 'ms-auto'; ?>">
+                <ul class="navbar-nav <?php echo $lang === 'ar' ? 'me-auto' : 'ms-auto'; ?> d-flex align-items-center">
                     <!-- Cart -->
                     <li class="nav-item">
                         <a href="cart.php" class="nav-link position-relative d-flex align-items-center" aria-label="<?php echo ($lang ?? 'en') === 'ar' ? 'عربة التسوق' : 'Shopping Cart'; ?>">
